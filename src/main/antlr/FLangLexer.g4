@@ -1,8 +1,8 @@
 lexer grammar FLangLexer;
 
 // Whitespace
-NEWLINE            : '\r\n' | '\r' | '\n' ;
-WS                 : [\t ]+ ;
+NEWLINE            : '\r\n' | '\r' | '\n' -> skip;
+WS                 : [\t ]+ -> skip;
 
 // Keywords
 IS                 : 'is' ;
