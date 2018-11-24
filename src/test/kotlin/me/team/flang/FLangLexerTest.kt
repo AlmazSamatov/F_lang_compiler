@@ -46,19 +46,6 @@ class FLangLexerTest {
     }
 
     @test fun parseLineFunction() {
-        print(tokens(lexerForCode("average is func(array:[integer]): real do\n" +
-                "avg is 0.0;\n" +
-                "for i in array do\n" +
-                "avg := avg + i\n" +
-                "end;\n" +
-                "return avg/length(array)\n" +
-                "end")))
-        assertEquals(listOf("ID", "IS", "FUNC", "LPAR", "ID", "COLUMN", "INTEGER", "RPAR",
-            "LINE_FUN", "ID", "PLUS", "INT_LIT", "EOF"),
-            tokens(lexerForCode("inc is func(p: integer) => p+1")))
-    }
-
-    @test fun parseMultiLineFunction() {
         assertEquals(listOf("ID", "IS", "FUNC", "LPAR", "ID", "COLUMN", "INTEGER", "RPAR",
             "LINE_FUN", "ID", "PLUS", "INT_LIT", "EOF"),
             tokens(lexerForCode("inc is func(p: integer) => p+1")))
