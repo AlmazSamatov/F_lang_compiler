@@ -1,8 +1,8 @@
 lexer grammar FLangLexer;
 
 // Whitespace
-NEWLINE            : '\r\n' | '\r' | '\n' -> skip;
-WS                 : [\t ]+ -> skip;
+NEWLINE            : '\r\n' | '\r' | '\n' ;
+WS                 : [\t ]+ -> skip ;
 
 // Keywords
 IS                 : 'is' ;
@@ -26,6 +26,7 @@ COMPLEX            : 'complex' ;
 STRING             : 'string' ;
 PRINT              : 'print' ;
 RETURN             : 'return' ;
+BREAK		     : 'break' ;
 
 // Standard functions
 TYPE_CONV          : 'round' | 're' | 'im' | 'num' | 'denom' |
@@ -62,9 +63,13 @@ LPAR               : '(' ;
 RPAR               : ')' ;
 LSQUARE            : '[' ;
 RSQUARE            : ']' ;
+LCURLY		     : '{' ;
+RCURLY		     : '}' ;
 SEMI               : ';' ;
 COLUMN             : ':' ;
 COMMA              : ',' ;
+DOT		     : '.' ;
+DOTDOT		     : '..' ;
 
 
 // Identifiers

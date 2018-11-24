@@ -63,3 +63,7 @@ idea {
         sourceDirs += file("generated-src/antlr/main")
     }
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.7'
+}
