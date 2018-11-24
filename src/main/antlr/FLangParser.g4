@@ -21,15 +21,31 @@ conditional:
     IF expression THEN expression ELSE expression END ;
 
 secondary:
-    ( primary
-    | secondary LPAR (expression (COMMA expression)*)? RPAR
-    | secondary LSQUARE expression RSQUARE
-    | secondary DOT ID
-    | secondary DOT INT_LIT ) ;
+    primary secondaryEnd ;
+    //( primary
+    //| secondary LPAR (expression (COMMA expression)*)? RPAR
+    //| secondary LSQUARE expression RSQUARE
+    //| secondary DOT ID
+    //| secondary DOT INT_LIT ) ;
+
+///// added
+secondaryEnd:
+    (secondaryC secondary)? ;
+
+///// added
+secondaryC:
+    ( LPAR (expression (COMMA expression)*)? RPAR
+    | LSQUARE expression RSQUARE
+    | DOT ID
+    | DOT INT_LIT ) ;
 
 expression:
-    ( secondary
-    | expression operatorSign expression ) ;
+    //( secondary
+    //| expression operatorSign expression ) ;
+    secondary expressionEnd ;
+
+expressionEnd:
+    (operatorSign expression)? ;
 
 operatorSign:
     (PLUS | MINUS | MULT | DIVISION | LESS | GREATER |
