@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
+
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class FLangLexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.5.1", RuntimeMetaData.VERSION); }
@@ -88,7 +89,6 @@ public class FLangLexer extends Lexer {
 	public Vocabulary getVocabulary() {
 		return VOCABULARY;
 	}
-
 
 	public FLangLexer(CharStream input) {
 		super(input);
