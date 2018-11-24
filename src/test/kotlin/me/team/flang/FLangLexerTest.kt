@@ -11,7 +11,8 @@ class FLangLexerTest {
 
     fun lexerForCode(code: String) = FLangLexer(ANTLRInputStream(StringReader(code)))
 
-    fun lexerForResource(resourceName: String) = FLangLexer(ANTLRInputStream(this.javaClass.getResourceAsStream("/${resourceName}.sandy")))
+    fun lexerForResource(resourceName: String) =
+        FLangLexer(ANTLRInputStream(this.javaClass.getResourceAsStream("/${resourceName}.sandy")))
 
     fun tokens(lexer: FLangLexer): List<String> {
         val tokens = LinkedList<String>()
@@ -25,41 +26,46 @@ class FLangLexerTest {
         return tokens
     }
 
-    @test fun parseType() {
-        assertEquals(listOf("ID", "IS", "LPAR", "INT_LIT", "XOR", "INT_LIT", "RPAR", "SEMI", "EOF"),
-            tokens(lexerForCode("a is (1 ^ 2);")))
+    @test
+    fun parseType() {
+        assertEquals(
+            listOf("ID", "IS", "LPAR", "INT_LIT", "XOR", "INT_LIT", "RPAR", "SEMI", "EOF"),
+            tokens(lexerForCode("a is (1 ^ 2);"))
+        )
     }
 
-    @test fun parseRational() {
-        assertEquals(listOf("ID", "IS", "RAT_LIT","SEMI", "EOF"),
-            tokens(lexerForCode("r is 4\\5;")))
+    @test
+    fun parseRational() {
+        assertEquals(
+            listOf("ID", "IS", "RAT_LIT", "SEMI", "EOF"),
+            tokens(lexerForCode("r is 4\\5;"))
+        )
     }
 
-    @test fun parseComplexl() {
-        assertEquals(listOf("ID", "IS", "COMP_LIT","SEMI", "EOF"),
-            tokens(lexerForCode("c is 1.5i2;")))
+    @test
+    fun parseComplexl() {
+        assertEquals(
+            listOf("ID", "IS", "COMP_LIT", "SEMI", "EOF"),
+            tokens(lexerForCode("c is 1.5i2;"))
+        )
     }
 
-    @test fun parseString() {
-        assertEquals(listOf("ID", "IS", "STR_LIT","SEMI", "EOF"),
-            tokens(lexerForCode("c is \"Hello, world\";")))
+    @test
+    fun parseString() {
+        assertEquals(
+            listOf("ID", "IS", "STR_LIT", "SEMI", "EOF"),
+            tokens(lexerForCode("c is \"Hello, world\";"))
+        )
     }
 
-    @test fun parseLineFunction() {
-        print(tokens(lexerForCode("average is func(array:[integer]): real do\n" +
-                "avg is 0.0;\n" +
-                "for i in array do\n" +
-                "avg := avg + i\n" +
-                "end;\n" +
-                "return avg/length(array)\n" +
-                "end")))
-        assertEquals(listOf("ID", "IS", "FUNC", "LPAR", "ID", "COLUMN", "INTEGER", "RPAR",
-            "LINE_FUN", "ID", "PLUS", "INT_LIT", "EOF"),
-            tokens(lexerForCode("inc is func(p: integer) => p+1")))
+    @test
+    fun parseLineFunction() {
+        assertEquals(
+            listOf(
+                "ID", "IS", "FUNC", "LPAR", "ID", "COLUMN", "INTEGER", "RPAR",
+                "LINE_FUN", "ID", "PLUS", "INT_LIT", "EOF"
+            ),
+            tokens(lexerForCode("inc is func(p: integer) => p+1"))
+        )
     }
-
-    @test fun parseMultiLineFunction() {
-        assertEquals(listOf("ID", "IS", "FUNC", "LPAR", "ID", "COLUMN", "INTEGER", "RPAR",
-            "LINE_FUN", "ID", "PLUS", "INT_LIT", "EOF"),
-            tokens(lexerForCode("inc is func(p: integer) => p+1")))
-    }
+}
