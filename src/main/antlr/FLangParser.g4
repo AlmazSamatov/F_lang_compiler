@@ -11,9 +11,26 @@ declaration
     ;
 
 // Expressions
-elementary
-    : FALSE | TRUE | INT_LIT | REAL_LIT
-    | RAT_LIT | COMP_LIT | STR_LIT | ID
+expression
+    : secondary //expressionEnd
+    | expression operatorSign expression
+    ;
+
+expressionEnd
+    : (operatorSign expression)?
+    ;
+
+operatorSign
+    : PLUS | MINUS | MULT | DIVISION | LESS | GREATER
+    | LESS_EQ | GREATER_EQ | EQUAL | NOT_EQ | AND | OR | XOR
+    ;
+
+secondary
+    : primary
+    | secondary LPAR (expression (COMMA expression)*)? RPAR
+    | secondary LSQUARE expression RSQUARE
+    | secondary DOT ID
+    | secondary DOT INT_LIT
     ;
 
 primary
@@ -26,50 +43,15 @@ primary
     | LPAR expression RPAR
     ;
 
+elementary
+    : FALSE | TRUE | INT_LIT | REAL_LIT
+    | RAT_LIT | COMP_LIT | STR_LIT | ID
+    ;
+
+
 conditional
     : IF expression THEN expression ELSE expression END
     ;
-
-secondary
-    //: primary secondaryEnd
-    //;
-    : primary
-    | secondary LPAR (expression (COMMA expression)*)? RPAR
-    | secondary LSQUARE expression RSQUARE
-    | secondary DOT ID
-    | secondary DOT INT_LIT
-    ;
-
-///// added
-secondaryEnd
-    : (secondaryC secondary)?
-    ;
-
-///// added
-secondaryC
-    : LPAR (expression (COMMA expression)*)? RPAR
-    | LSQUARE expression RSQUARE
-    | DOT ID
-    | DOT INT_LIT
-    ;
-
-expression
-    //: secondary expressionEnd
-    //;
-    : secondary
-    | expression operatorSign expression
-    ;
-
-
-expressionEnd
-    : (operatorSign expression)?
-    ;
-
-operatorSign
-    : PLUS | MINUS | MULT | DIVISION | LESS | GREATER
-    | LESS_EQ | GREATER_EQ | EQUAL | NOT_EQ | AND | OR | XOR
-    ;
-
 
 // Statements
 statement
@@ -126,7 +108,8 @@ parameter
     ;
 
 body
-    : DO statement END LINE_FUN expression
+    : DO statement END
+    | LINE_FUN expression
     ;
 
 // Arrays
