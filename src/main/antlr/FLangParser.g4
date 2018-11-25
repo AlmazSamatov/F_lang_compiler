@@ -12,12 +12,8 @@ declaration
 
 // Expressions
 expression
-    : secondary //expressionEnd
+    : secondary
     | expression operatorSign expression
-    ;
-
-expressionEnd
-    : (operatorSign expression)?
     ;
 
 operatorSign
