@@ -17,8 +17,13 @@ elementary
     ;
 
 primary
-    : elementary | conditional | function
-    | array | tuple | map | LPAR expression RPAR
+    : elementary
+    | conditional
+    | function
+    | array
+    | tuple
+    | map
+    | LPAR expression RPAR
     ;
 
 conditional
@@ -26,13 +31,14 @@ conditional
     ;
 
 secondary
-    : primary secondaryEnd
+    //: primary secondaryEnd
+    //;
+    : primary
+    | secondary LPAR (expression (COMMA expression)*)? RPAR
+    | secondary LSQUARE expression RSQUARE
+    | secondary DOT ID
+    | secondary DOT INT_LIT
     ;
-    //( primary
-    //| secondary LPAR (expression (COMMA expression)*)? RPAR
-    //| secondary LSQUARE expression RSQUARE
-    //| secondary DOT ID
-    //| secondary DOT INT_LIT ) ;
 
 ///// added
 secondaryEnd
@@ -48,10 +54,11 @@ secondaryC
     ;
 
 expression
-    : secondary expressionEnd
+    //: secondary expressionEnd
+    //;
+    : secondary
+    | expression operatorSign expression
     ;
-    //( secondary
-    //| expression operatorSign expression ) ;
 
 
 expressionEnd
@@ -128,7 +135,7 @@ arrayType
     ;
 
 array
-    : (expression (COMMA expression)*)?
+    : LSQUARE expression (COMMA expression)* RSQUARE
     ;
 
 // Maps
@@ -166,27 +173,27 @@ type
     ;
 
 booleanType
-    : 'boolean'
+    : BOOLEAN
     ;
 
 integerType
-    : 'integer'
+    : INTEGER
     ;
 
 realType
-    : 'real'
+    : REAL
     ;
 
 rationalType
-    : 'rational'
+    : RATIONAL
     ;
 
 complexType
-    : 'complex'
+    : COMPLEX
     ;
 
 stringType
-    : 'string'
+    : STRING
     ;
 
 
