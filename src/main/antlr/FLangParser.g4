@@ -65,11 +65,11 @@ assignment
     ;
 
 ifStatement
-    : IF expression THEN statement (ELSE statement)? END
+    : IF expression THEN statement+ (ELSE statement+)? END
     ;
 
 loopStatement
-    : (loopHeader)? LOOP (statement)? END
+    : (loopHeader)? LOOP statement* END
     ;
 
 loopHeader
