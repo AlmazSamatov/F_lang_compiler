@@ -114,11 +114,14 @@ data class Assignment(val varName: String,
                       val value: Expression,
                       override val position: Position? = null) : Statement
 
-data class FunctionCall(): Statement
+data class FunctionCall(,
+                        override val position: Position? = null): Statement
 
-data class If(): Statement
+data class If(val predicate: Expression, val body: Statement,       //TODO(check)
+              override val position: Position? = null): Statement
 
-data class Loop(): Statement
+data class Loop(val header: Expression, val statement: Statement,   //TODO(check)
+                override val position: Position? = null): Statement
 
 data class Return(override val position: Position? = null): Statement
 
