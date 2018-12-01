@@ -52,18 +52,6 @@ public class FLangParserBaseListener implements FLangParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpressionEnd(FLangParser.ExpressionEndContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpressionEnd(FLangParser.ExpressionEndContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterOperatorSign(FLangParser.OperatorSignContext ctx) { }
 	/**
 	 * {@inheritDoc}

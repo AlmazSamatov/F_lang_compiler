@@ -38,16 +38,6 @@ public interface FLangParserListener extends ParseTreeListener {
 	 */
 	void exitExpression(FLangParser.ExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FLangParser#expressionEnd}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpressionEnd(FLangParser.ExpressionEndContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FLangParser#expressionEnd}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpressionEnd(FLangParser.ExpressionEndContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link FLangParser#operatorSign}.
 	 * @param ctx the parse tree
 	 */

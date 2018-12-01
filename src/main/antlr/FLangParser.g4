@@ -104,7 +104,7 @@ parameter
     ;
 
 body
-    : DO statement END
+    : DO statement+ END
     | LINE_FUN expression
     ;
 
