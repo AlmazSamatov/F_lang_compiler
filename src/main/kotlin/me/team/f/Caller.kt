@@ -1,3 +1,5 @@
+package me.team.f
+
 import me.team.fproject.FLangLexer
 import me.team.fproject.FLangParser
 import org.antlr.v4.runtime.ANTLRInputStream

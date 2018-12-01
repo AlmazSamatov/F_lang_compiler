@@ -2,12 +2,10 @@ package me.team.flang
 
 import me.team.fproject.FLangLexer
 import me.team.fproject.FLangParser
-import me.team.flang.FLangLexerTest
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import toParseTree
+import me.team.f.toParseTree
 import java.io.StringReader
-import java.util.LinkedList
 import org.junit.Test as test
 import kotlin.test.*
 
