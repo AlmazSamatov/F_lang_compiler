@@ -87,6 +87,10 @@ data class Conditional(val predicate: Expression,
 //                    val body: String,
 //                    override val position: Position? = null): Expression
 
+data class ElementOf(val varName: Expression,
+                     val index: Expression,
+                     override val position: Position? = null): Expression
+
 interface BinaryExpression: Expression {
     val left: Expression
     val right: Expression

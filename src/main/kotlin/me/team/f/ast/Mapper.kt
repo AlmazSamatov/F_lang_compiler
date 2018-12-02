@@ -49,7 +49,8 @@ fun BinaryOperationContext.toAst(considerPosition: Boolean = false): Expression 
 fun SecondaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
     is PrimaryExpressionContext -> primary().toAst(considerPosition)
     is CallContext -> toAst(considerPosition)  // TODO(Check)
-    is ElementContext -> toAst(considerPosition)  // TODO(Check)
+    is ElementContext -> ElementOf(secondary().toAst(considerPosition),
+        expression().toAst(considerPosition), toPosition(considerPosition))
     is NamedTupleElementContext -> toAst(considerPosition)  // TODO(Check)
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
