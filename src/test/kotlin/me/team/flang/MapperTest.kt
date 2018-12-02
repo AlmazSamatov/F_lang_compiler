@@ -33,8 +33,8 @@ class MapperTest {
 
     @test
     fun mapConditional() {
-//        val code = "a is if 5 > 1 then 5 else 1"
-        val code = "a is b[0]"
+        val code = "a is if 5 > 1 then 5 else 1"
+//        val code = "a is b[0]"
         val ast = Analyser.parse(code).root!!.toAst()
         println(ast)
     }

@@ -73,8 +73,6 @@ fun ElementaryContext.toAst(considerPosition: Boolean = false): Expression = whe
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
 
-fun ConditionalContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
-    this -> Conditional(predicate.toAst(considerPosition),
+fun ConditionalContext.toAst(considerPosition: Boolean = false): Expression =
+    Conditional(predicate.toAst(considerPosition),
         thenExpr.toAst(considerPosition), elseExpr.toAst(considerPosition))
-    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
-}
