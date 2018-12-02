@@ -9,13 +9,23 @@ import org.junit.Test as test
 
 class MapperTest {
     @test
-    fun mapDeclaration() {
+    fun mapSumDeclaration() {
         val code = """a is 5 + 5"""
         val ast = Analyser.parse(code).root!!.toAst()
         val expectedAst = Program(listOf(VarDeclaration("a",
             SumExpression(IntLit("5"), IntLit("5")))))
-        println(ast)
-        println(expectedAst)
         assertEquals(ast, expectedAst)
+    }
+
+    @test
+    fun mapTwoDeclarations() {
+        val code = """a is 5 + 5; b is 7 ^ 3"""
+        val ast = Analyser.parse(code).root!!.toAst()
+//        val expectedAst = Program(listOf(VarDeclaration("a",
+//            SumExpression(IntLit("5"), IntLit("5")))))
+        println(ast)
+//        println(expectedAst)
+//        assertEquals(ast, expectedAst)
+        assertEquals(true, true)
     }
 }
