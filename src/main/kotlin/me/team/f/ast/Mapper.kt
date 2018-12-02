@@ -52,12 +52,18 @@ fun SecondaryContext.toAst(considerPosition: Boolean = false): Expression = when
     is ElementContext -> ElementOf(secondary().toAst(considerPosition),
         expression().toAst(considerPosition), toPosition(considerPosition))
     is NamedTupleElementContext -> toAst(considerPosition)  // TODO(Check)
+    is UnnamedTupleElementContext -> toAst(considerPosition) // TODO(Check)
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
 
 fun PrimaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
     is ElementaryExpressionContext -> elementary().toAst(considerPosition)
     is ConditionalExpressionContext -> conditional().toAst(considerPosition)
+    is FunctionExpressionContext -> toAst(considerPosition)
+    is ArrayExpressionContext -> toAst(considerPosition)
+    is TupleExpressionContext -> toAst(considerPosition)
+    is MapExpressionContext -> toAst(considerPosition)
+    is ParenExpressionContext -> toAst(considerPosition)
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
 
@@ -76,3 +82,12 @@ fun ElementaryContext.toAst(considerPosition: Boolean = false): Expression = whe
 fun ConditionalContext.toAst(considerPosition: Boolean = false): Expression =
     Conditional(predicate.toAst(considerPosition),
         thenExpr.toAst(considerPosition), elseExpr.toAst(considerPosition))
+
+fun FunctionExpressionContext.toAst(considerPosition: Boolean = false): Expression {
+    return Function
+}
+
+fun StatementContext.toAst(considerPosition: Boolean = false): Statement = when(this) {
+    is LoopStatementContext -> Loop(loopHeader().expression(0).toAst(), statement(0).toAst(), toPosition(considerPosition))
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}

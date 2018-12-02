@@ -82,10 +82,10 @@ data class Conditional(val predicate: Expression,
                        val elseExpr: Expression,
                        override val position: Position? = null): Expression
 
-//data class Function(val params: String,
-//                    val type: String? = null,
-//                    val body: String,
-//                    override val position: Position? = null): Expression
+data class Function(val params: String,
+                    val type: String? = null,
+                    val body: String,
+                    override val position: Position? = null): Expression
 
 data class ElementOf(val varName: Expression,
                      val index: Expression,
