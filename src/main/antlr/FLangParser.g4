@@ -52,7 +52,7 @@ elementary
 
 
 conditional
-    : IF expression THEN expression ELSE expression END
+    : IF predicate=expression THEN thenExpr=expression ELSE elseExpr=expression END
     ;
 
 // Statements

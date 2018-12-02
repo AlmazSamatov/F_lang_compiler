@@ -57,6 +57,6 @@ object Analyser {
 }
 
 data class AnalysisResult(val root: FLangParser.ProgramContext?,
-                        val errors: List<Error>) {
+                          val errors: List<Error>) {
     fun correct() = errors.isEmpty() && root != null
 }

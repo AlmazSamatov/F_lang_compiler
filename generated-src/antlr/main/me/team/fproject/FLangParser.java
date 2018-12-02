@@ -1021,16 +1021,19 @@ public class FLangParser extends Parser {
 	}
 
 	public static class ConditionalContext extends ParserRuleContext {
+		public ExpressionContext predicate;
+		public ExpressionContext thenExpr;
+		public ExpressionContext elseExpr;
 		public TerminalNode IF() { return getToken(FLangParser.IF, 0); }
+		public TerminalNode THEN() { return getToken(FLangParser.THEN, 0); }
+		public TerminalNode ELSE() { return getToken(FLangParser.ELSE, 0); }
+		public TerminalNode END() { return getToken(FLangParser.END, 0); }
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public TerminalNode THEN() { return getToken(FLangParser.THEN, 0); }
-		public TerminalNode ELSE() { return getToken(FLangParser.ELSE, 0); }
-		public TerminalNode END() { return getToken(FLangParser.END, 0); }
 		public ConditionalContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1054,15 +1057,15 @@ public class FLangParser extends Parser {
 			setState(156);
 			match(IF);
 			setState(157);
-			expression(0);
+			((ConditionalContext)_localctx).predicate = expression(0);
 			setState(158);
 			match(THEN);
 			setState(159);
-			expression(0);
+			((ConditionalContext)_localctx).thenExpr = expression(0);
 			setState(160);
 			match(ELSE);
 			setState(161);
-			expression(0);
+			((ConditionalContext)_localctx).elseExpr = expression(0);
 			setState(162);
 			match(END);
 			}

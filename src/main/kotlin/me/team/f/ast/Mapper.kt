@@ -56,6 +56,7 @@ fun SecondaryContext.toAst(considerPosition: Boolean = false): Expression = when
 
 fun PrimaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
     is ElementaryExpressionContext -> elementary().toAst(considerPosition)
+    is ConditionalExpressionContext -> conditional().toAst(considerPosition)
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
 
@@ -68,5 +69,11 @@ fun ElementaryContext.toAst(considerPosition: Boolean = false): Expression = whe
     is CompLiteralContext -> CompLit(text, toPosition(considerPosition))
     is StrLiteralContext -> StrLit(text, toPosition(considerPosition))
     is IdLiteralContext -> VarReference(text, toPosition(considerPosition))
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}
+
+fun ConditionalContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
+    this -> Conditional(predicate.toAst(considerPosition),
+        thenExpr.toAst(considerPosition), elseExpr.toAst(considerPosition))
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }

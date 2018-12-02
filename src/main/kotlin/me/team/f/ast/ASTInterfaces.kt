@@ -77,7 +77,7 @@ data class CompLit(val value: String,
 data class StrLit(val value: String,
                   override val position: Position? = null): Expression
 
-data class Conditional(val predicateExpr: Expression,
+data class Conditional(val predicate: Expression,
                        val thenExpr: Expression,
                        val elseExpr: Expression,
                        override val position: Position? = null): Expression
