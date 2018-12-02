@@ -5,13 +5,15 @@ import me.team.fproject.FLangParser
 import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.atn.ATNConfigSet
 import org.antlr.v4.runtime.dfa.DFA
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
+import java.io.*
 import java.lang.Error
 import java.util.*
 
 object Analyser {
+
+    fun parse(code: String): AnalysisResult {
+        return parse(ByteArrayInputStream(code.toByteArray(Charsets.UTF_8)))
+    }
 
     fun parse(file: File): AnalysisResult {
         return parse(FileInputStream(file))
@@ -23,22 +25,22 @@ object Analyser {
         val errorListener = object: ANTLRErrorListener {
             override fun syntaxError(p0: Recognizer<*, *>?, p1: Any?, p2: Int, p3: Int,
                                      p4: String?, p5: RecognitionException?) {
-                TODO("not implemented")
+//                TODO("not implemented")
             }
 
             override fun reportAmbiguity(p0: Parser?, p1: DFA?, p2: Int, p3: Int,
                                          p4: Boolean, p5: BitSet?, p6: ATNConfigSet?) {
-                TODO("not implemented")
+//                TODO("not implemented")
             }
 
             override fun reportContextSensitivity(p0: Parser?, p1: DFA?, p2: Int,
                                                   p3: Int, p4: Int, p5: ATNConfigSet?) {
-                TODO("not implemented")
+//                TODO("not implemented")
             }
 
             override fun reportAttemptingFullContext(p0: Parser?, p1: DFA?, p2: Int, p3: Int,
                                                      p4: BitSet?, p5: ATNConfigSet?) {
-                TODO("not implemented")
+//                TODO("not implemented")
             }
         }
 

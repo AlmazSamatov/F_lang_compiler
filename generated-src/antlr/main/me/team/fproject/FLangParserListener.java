@@ -122,25 +122,185 @@ public interface FLangParserListener extends ParseTreeListener {
 	 */
 	void exitElement(FLangParser.ElementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FLangParser#primary}.
+	 * Enter a parse tree produced by the {@code elementaryExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
 	 * @param ctx the parse tree
 	 */
-	void enterPrimary(FLangParser.PrimaryContext ctx);
+	void enterElementaryExpression(FLangParser.ElementaryExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FLangParser#primary}.
+	 * Exit a parse tree produced by the {@code elementaryExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
 	 * @param ctx the parse tree
 	 */
-	void exitPrimary(FLangParser.PrimaryContext ctx);
+	void exitElementaryExpression(FLangParser.ElementaryExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FLangParser#elementary}.
+	 * Enter a parse tree produced by the {@code conditionalExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
 	 * @param ctx the parse tree
 	 */
-	void enterElementary(FLangParser.ElementaryContext ctx);
+	void enterConditionalExpression(FLangParser.ConditionalExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FLangParser#elementary}.
+	 * Exit a parse tree produced by the {@code conditionalExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
 	 * @param ctx the parse tree
 	 */
-	void exitElementary(FLangParser.ElementaryContext ctx);
+	void exitConditionalExpression(FLangParser.ConditionalExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code functionExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionExpression(FLangParser.FunctionExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionExpression(FLangParser.FunctionExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arrayExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayExpression(FLangParser.ArrayExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayExpression(FLangParser.ArrayExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code tupleExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void enterTupleExpression(FLangParser.TupleExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code tupleExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void exitTupleExpression(FLangParser.TupleExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code mapExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void enterMapExpression(FLangParser.MapExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code mapExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void exitMapExpression(FLangParser.MapExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parenExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void enterParenExpression(FLangParser.ParenExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parenExpression}
+	 * labeled alternative in {@link FLangParser#primary}.
+	 * @param ctx the parse tree
+	 */
+	void exitParenExpression(FLangParser.ParenExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code falseLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterFalseLiteral(FLangParser.FalseLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code falseLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitFalseLiteral(FLangParser.FalseLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code trueLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterTrueLiteral(FLangParser.TrueLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code trueLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitTrueLiteral(FLangParser.TrueLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code intLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntLiteral(FLangParser.IntLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code intLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntLiteral(FLangParser.IntLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code realLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterRealLiteral(FLangParser.RealLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code realLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitRealLiteral(FLangParser.RealLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ratLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterRatLiteral(FLangParser.RatLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ratLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitRatLiteral(FLangParser.RatLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code compLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterCompLiteral(FLangParser.CompLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code compLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitCompLiteral(FLangParser.CompLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code strLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterStrLiteral(FLangParser.StrLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code strLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitStrLiteral(FLangParser.StrLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code idLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdLiteral(FLangParser.IdLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code idLiteral}
+	 * labeled alternative in {@link FLangParser#elementary}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdLiteral(FLangParser.IdLiteralContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FLangParser#conditional}.
 	 * @param ctx the parse tree

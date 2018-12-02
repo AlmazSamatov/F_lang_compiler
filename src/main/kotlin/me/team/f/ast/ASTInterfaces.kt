@@ -21,13 +21,20 @@ fun getPos(startLine: Int, startCol: Int, endLine: Int, endCol: Int): Position {
 data class Program(val declarations: List<Declaration>,
                    override val position: Position? = null): Node
 
-interface Declaration: Node {}
+interface Declaration: Node
 
-interface Expression: Node {}
+interface Expression: Node
 
-interface Statement: Node {}
+interface Statement: Node
 
-interface Type: Node {}
+interface Type: Node
+
+/**
+ * Declaration
+ */
+
+data class VarDeclaration(val varName: String, val value: Expression,
+                          override val position: Position? = null): Declaration
 
 /**
  * Types
@@ -52,20 +59,23 @@ data class StringType(override val position: Position? = null): Type
 data class VarReference(val name: String,
                         override val position: Position? = null): Expression
 
+data class BoolLit(val value: String,
+                   override val position: Position? = null): Expression
+
 data class IntLit(val value: String,
-                  override val position: Position? = null) : Expression
+                  override val position: Position? = null): Expression
 
 data class RealLit(val value: String,
-                  override val position: Position? = null) : Expression
+                  override val position: Position? = null): Expression
 
 data class RatLit(val value: String,
-                  override val position: Position? = null) : Expression
+                  override val position: Position? = null): Expression
 
 data class CompLit(val value: String,
-                  override val position: Position? = null) : Expression
+                  override val position: Position? = null): Expression
 
 data class StrLit(val value: String,
-                  override val position: Position? = null) : Expression
+                  override val position: Position? = null): Expression
 
 data class Conditional(val predicateExpr: Expression,
                        val thenExpr: Expression,
@@ -140,7 +150,7 @@ data class XorExpression(override val left: Expression,
 
 data class Assignment(val varName: String,
                       val value: Expression,
-                      override val position: Position? = null) : Statement
+                      override val position: Position? = null): Statement
 
 //data class FunctionCall(,
 //                        override val position: Position? = null): Statement

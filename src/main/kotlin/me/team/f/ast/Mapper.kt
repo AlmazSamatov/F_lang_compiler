@@ -1,0 +1,61 @@
+package me.team.f.ast
+
+import me.team.fproject.FLangParser.*
+import org.antlr.v4.runtime.ParserRuleContext
+import org.antlr.v4.runtime.Token
+import kotlin.system.measureTimeMillis
+
+interface ParseTreeToAstMapper<in PTN: ParserRuleContext, out ASTN: Node> {
+    fun map(parseTreeNode: PTN): ASTN
+}
+
+fun ProgramContext.toAst(considerPosition: Boolean = false): Program = Program(
+//    this.declaration().map { it.expression().toAst(considerPosition) }, toPosition(considerPosition))
+    this.declaration().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+fun Token.startPoint() = LineCol(line, charPositionInLine)
+
+fun Token.endPoint() = LineCol(line, charPositionInLine + text.length)
+
+fun ParserRuleContext.toPosition(considerPosition: Boolean): Position? {
+    return if (considerPosition) Position(start.startPoint(), stop.endPoint()) else null
+}
+
+fun DeclarationContext.toAst(considerPosition: Boolean = false): Declaration = VarDeclaration (
+    this.ID().text, this.expression().toAst(considerPosition), toPosition(considerPosition))
+
+fun ExpressionContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
+    is BinaryOperationContext -> toAst(considerPosition)
+    is SecondaryExpressionContext -> secondary().toAst(considerPosition)
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}
+
+fun BinaryOperationContext.toAst(considerPosition: Boolean = false): Expression = when (operatorSign().text) {
+    "+" -> SumExpression(left.toAst(considerPosition), right.toAst(considerPosition), toPosition(considerPosition))
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}
+
+fun SecondaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
+    is PrimaryExpressionContext -> primary().toAst(considerPosition)
+    is CallContext -> toAst(considerPosition)  // TODO(Check)
+    is ElementContext -> toAst(considerPosition)  // TODO(Check)
+    is NamedTupleElementContext -> toAst(considerPosition)  // TODO(Check)
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}
+
+fun PrimaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
+    is ElementaryExpressionContext -> elementary().toAst(considerPosition)
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}
+
+fun ElementaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
+    is FalseLiteralContext -> BoolLit(text, toPosition(considerPosition))
+    is TrueLiteralContext -> BoolLit(text, toPosition(considerPosition))
+    is IntLiteralContext -> IntLit(text, toPosition(considerPosition))
+    is RealLiteralContext-> RealLit(text, toPosition(considerPosition))
+    is RatLiteralContext -> RatLit(text, toPosition(considerPosition))
+    is CompLiteralContext -> CompLit(text, toPosition(considerPosition))
+    is StrLiteralContext -> StrLit(text, toPosition(considerPosition))
+    is IdLiteralContext -> VarReference(text, toPosition(considerPosition))
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}

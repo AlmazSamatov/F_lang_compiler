@@ -12,8 +12,8 @@ declaration
 
 // Expressions
 expression
-    : secondary                             # secondaryExpression
-    | expression operatorSign expression    # binaryOperation
+    : secondary                                        # secondaryExpression
+    | left=expression operatorSign right=expression    # binaryOperation
     ;
 
 operatorSign
@@ -30,18 +30,24 @@ secondary
     ;
 
 primary
-    : elementary
-    | conditional
-    | function
-    | array
-    | tuple
-    | map
-    | LPAR expression RPAR
+    : elementary                # elementaryExpression
+    | conditional               # conditionalExpression
+    | function                  # functionExpression
+    | array                     # arrayExpression
+    | tuple                     # tupleExpression
+    | map                       # mapExpression
+    | LPAR expression RPAR      # parenExpression
     ;
 
 elementary
-    : FALSE | TRUE | INT_LIT | REAL_LIT
-    | RAT_LIT | COMP_LIT | STR_LIT | ID
+    : FALSE     # falseLiteral
+    | TRUE      # trueLiteral
+    | INT_LIT   # intLiteral
+    | REAL_LIT  # realLiteral
+    | RAT_LIT   # ratLiteral
+    | COMP_LIT  # compLiteral
+    | STR_LIT   # strLiteral
+    | ID        # idLiteral
     ;
 
 
