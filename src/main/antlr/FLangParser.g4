@@ -12,8 +12,8 @@ declaration
 
 // Expressions
 expression
-    : secondary
-    | expression operatorSign expression
+    : secondary                             # secondaryExpression
+    | expression operatorSign expression    # binaryOperation
     ;
 
 operatorSign
@@ -22,11 +22,11 @@ operatorSign
     ;
 
 secondary
-    : primary
-    | secondary LPAR (expression (COMMA expression)*)? RPAR
-    | secondary LSQUARE expression RSQUARE
-    | secondary DOT ID
-    | secondary DOT INT_LIT
+    : primary                                                   # primaryExpression
+    | secondary LPAR (expression (COMMA expression)*)? RPAR     # call
+    | secondary LSQUARE expression RSQUARE                      # element
+    | secondary DOT ID                                          # namedTupleElement
+    | secondary DOT INT_LIT                                     # unnamedTupleElement
     ;
 
 primary

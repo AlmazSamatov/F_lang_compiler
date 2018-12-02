@@ -28,15 +28,29 @@ public interface FLangParserListener extends ParseTreeListener {
 	 */
 	void exitDeclaration(FLangParser.DeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FLangParser#expression}.
+	 * Enter a parse tree produced by the {@code secondaryExpression}
+	 * labeled alternative in {@link FLangParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpression(FLangParser.ExpressionContext ctx);
+	void enterSecondaryExpression(FLangParser.SecondaryExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FLangParser#expression}.
+	 * Exit a parse tree produced by the {@code secondaryExpression}
+	 * labeled alternative in {@link FLangParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpression(FLangParser.ExpressionContext ctx);
+	void exitSecondaryExpression(FLangParser.SecondaryExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code binaryOperation}
+	 * labeled alternative in {@link FLangParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinaryOperation(FLangParser.BinaryOperationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code binaryOperation}
+	 * labeled alternative in {@link FLangParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinaryOperation(FLangParser.BinaryOperationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FLangParser#operatorSign}.
 	 * @param ctx the parse tree
@@ -48,15 +62,65 @@ public interface FLangParserListener extends ParseTreeListener {
 	 */
 	void exitOperatorSign(FLangParser.OperatorSignContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FLangParser#secondary}.
+	 * Enter a parse tree produced by the {@code primaryExpression}
+	 * labeled alternative in {@link FLangParser#secondary}.
 	 * @param ctx the parse tree
 	 */
-	void enterSecondary(FLangParser.SecondaryContext ctx);
+	void enterPrimaryExpression(FLangParser.PrimaryExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FLangParser#secondary}.
+	 * Exit a parse tree produced by the {@code primaryExpression}
+	 * labeled alternative in {@link FLangParser#secondary}.
 	 * @param ctx the parse tree
 	 */
-	void exitSecondary(FLangParser.SecondaryContext ctx);
+	void exitPrimaryExpression(FLangParser.PrimaryExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code call}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void enterCall(FLangParser.CallContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code call}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void exitCall(FLangParser.CallContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code unnamedTupleElement}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnnamedTupleElement(FLangParser.UnnamedTupleElementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code unnamedTupleElement}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnnamedTupleElement(FLangParser.UnnamedTupleElementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code namedTupleElement}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void enterNamedTupleElement(FLangParser.NamedTupleElementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code namedTupleElement}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void exitNamedTupleElement(FLangParser.NamedTupleElementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code element}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void enterElement(FLangParser.ElementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code element}
+	 * labeled alternative in {@link FLangParser#secondary}.
+	 * @param ctx the parse tree
+	 */
+	void exitElement(FLangParser.ElementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FLangParser#primary}.
 	 * @param ctx the parse tree

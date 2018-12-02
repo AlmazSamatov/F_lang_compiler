@@ -239,9 +239,31 @@ public class FLangParser extends Parser {
 	}
 
 	public static class ExpressionContext extends ParserRuleContext {
+		public ExpressionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expression; }
+	 
+		public ExpressionContext() { }
+		public void copyFrom(ExpressionContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class SecondaryExpressionContext extends ExpressionContext {
 		public SecondaryContext secondary() {
 			return getRuleContext(SecondaryContext.class,0);
 		}
+		public SecondaryExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterSecondaryExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitSecondaryExpression(this);
+		}
+	}
+	public static class BinaryOperationContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -251,17 +273,14 @@ public class FLangParser extends Parser {
 		public OperatorSignContext operatorSign() {
 			return getRuleContext(OperatorSignContext.class,0);
 		}
-		public ExpressionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_expression; }
+		public BinaryOperationContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterExpression(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterBinaryOperation(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitExpression(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitBinaryOperation(this);
 		}
 	}
 
@@ -281,6 +300,10 @@ public class FLangParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
+			_localctx = new SecondaryExpressionContext(_localctx);
+			_ctx = _localctx;
+			_prevctx = _localctx;
+
 			setState(89);
 			secondary(0);
 			}
@@ -294,7 +317,7 @@ public class FLangParser extends Parser {
 					_prevctx = _localctx;
 					{
 					{
-					_localctx = new ExpressionContext(_parentctx, _parentState);
+					_localctx = new BinaryOperationContext(new ExpressionContext(_parentctx, _parentState));
 					pushNewRecursionContext(_localctx, _startState, RULE_expression);
 					setState(91);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
@@ -378,9 +401,31 @@ public class FLangParser extends Parser {
 	}
 
 	public static class SecondaryContext extends ParserRuleContext {
+		public SecondaryContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_secondary; }
+	 
+		public SecondaryContext() { }
+		public void copyFrom(SecondaryContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class PrimaryExpressionContext extends SecondaryContext {
 		public PrimaryContext primary() {
 			return getRuleContext(PrimaryContext.class,0);
 		}
+		public PrimaryExpressionContext(SecondaryContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterPrimaryExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitPrimaryExpression(this);
+		}
+	}
+	public static class CallContext extends SecondaryContext {
 		public SecondaryContext secondary() {
 			return getRuleContext(SecondaryContext.class,0);
 		}
@@ -396,22 +441,65 @@ public class FLangParser extends Parser {
 		public TerminalNode COMMA(int i) {
 			return getToken(FLangParser.COMMA, i);
 		}
-		public TerminalNode LSQUARE() { return getToken(FLangParser.LSQUARE, 0); }
-		public TerminalNode RSQUARE() { return getToken(FLangParser.RSQUARE, 0); }
-		public TerminalNode DOT() { return getToken(FLangParser.DOT, 0); }
-		public TerminalNode ID() { return getToken(FLangParser.ID, 0); }
-		public TerminalNode INT_LIT() { return getToken(FLangParser.INT_LIT, 0); }
-		public SecondaryContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_secondary; }
+		public CallContext(SecondaryContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterSecondary(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterCall(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitSecondary(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitCall(this);
+		}
+	}
+	public static class UnnamedTupleElementContext extends SecondaryContext {
+		public SecondaryContext secondary() {
+			return getRuleContext(SecondaryContext.class,0);
+		}
+		public TerminalNode DOT() { return getToken(FLangParser.DOT, 0); }
+		public TerminalNode INT_LIT() { return getToken(FLangParser.INT_LIT, 0); }
+		public UnnamedTupleElementContext(SecondaryContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterUnnamedTupleElement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitUnnamedTupleElement(this);
+		}
+	}
+	public static class NamedTupleElementContext extends SecondaryContext {
+		public SecondaryContext secondary() {
+			return getRuleContext(SecondaryContext.class,0);
+		}
+		public TerminalNode DOT() { return getToken(FLangParser.DOT, 0); }
+		public TerminalNode ID() { return getToken(FLangParser.ID, 0); }
+		public NamedTupleElementContext(SecondaryContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterNamedTupleElement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitNamedTupleElement(this);
+		}
+	}
+	public static class ElementContext extends SecondaryContext {
+		public SecondaryContext secondary() {
+			return getRuleContext(SecondaryContext.class,0);
+		}
+		public TerminalNode LSQUARE() { return getToken(FLangParser.LSQUARE, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode RSQUARE() { return getToken(FLangParser.RSQUARE, 0); }
+		public ElementContext(SecondaryContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterElement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitElement(this);
 		}
 	}
 
@@ -432,6 +520,10 @@ public class FLangParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
+			_localctx = new PrimaryExpressionContext(_localctx);
+			_ctx = _localctx;
+			_prevctx = _localctx;
+
 			setState(103);
 			primary();
 			}
@@ -448,7 +540,7 @@ public class FLangParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
 					case 1:
 						{
-						_localctx = new SecondaryContext(_parentctx, _parentState);
+						_localctx = new CallContext(new SecondaryContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_secondary);
 						setState(105);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
@@ -485,7 +577,7 @@ public class FLangParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new SecondaryContext(_parentctx, _parentState);
+						_localctx = new ElementContext(new SecondaryContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_secondary);
 						setState(118);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
@@ -499,7 +591,7 @@ public class FLangParser extends Parser {
 						break;
 					case 3:
 						{
-						_localctx = new SecondaryContext(_parentctx, _parentState);
+						_localctx = new NamedTupleElementContext(new SecondaryContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_secondary);
 						setState(123);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
@@ -511,7 +603,7 @@ public class FLangParser extends Parser {
 						break;
 					case 4:
 						{
-						_localctx = new SecondaryContext(_parentctx, _parentState);
+						_localctx = new UnnamedTupleElementContext(new SecondaryContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_secondary);
 						setState(126);
 						if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
