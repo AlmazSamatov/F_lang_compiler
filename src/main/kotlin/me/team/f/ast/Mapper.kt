@@ -1,8 +1,11 @@
 package me.team.f.ast
 
+import javafx.css.Rule
 import me.team.fproject.FLangParser.*
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.Token
+import javax.lang.model.element.TypeElement
+import javax.lang.model.type.ArrayType
 
 interface ParseTreeToAstMapper<in PTN: ParserRuleContext, out ASTN: Node> {
     fun map(parseTreeNode: PTN): ASTN
@@ -83,11 +86,25 @@ fun ConditionalContext.toAst(considerPosition: Boolean = false): Expression =
     Conditional(predicate.toAst(considerPosition),
         thenExpr.toAst(considerPosition), elseExpr.toAst(considerPosition))
 
-fun FunctionExpressionContext.toAst(considerPosition: Boolean = false): Expression {
-    return Function
-}
 
 fun StatementContext.toAst(considerPosition: Boolean = false): Statement = when(this) {
     is LoopStatementContext -> Loop(loopHeader().expression(0).toAst(), statement(0).toAst(), toPosition(considerPosition))
+    else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}
+
+fun TupleElementContext.toAst(considerPosition: Boolean = false) : Rule =
+        RULE_tupleElement()
+
+fun TypeContext.toAst(considerPosition: Boolean = false) : Type = when(this) {
+    is BooleanTypeContext -> BooleanType(toPosition(considerPosition))
+    is IntegerTypeContext -> IntegerType(toPosition(considerPosition))
+    is RealTypeContext -> RealType(toPosition(considerPosition))
+    is RationalTypeContext -> RationalType(toPosition(considerPosition))
+    is ComplexTypeContext -> ComplexType(toPosition(considerPosition))
+    is StringTypeContext -> StringType(toPosition(considerPosition))
+    is FunctionTypeContext -> FunctionType(toPosition(considerPosition))
+    is TupleTypeContext -> TupleType(toPosition(considerPosition))
+    is ArrayTypeContext -> ArrayType(toPosition(considerPosition))
+    is MapTypeContext -> MapType(toPosition(considerPosition))
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }

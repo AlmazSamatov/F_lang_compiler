@@ -29,6 +29,8 @@ interface Statement: Node
 
 interface Type: Node
 
+interface Primary: Node
+
 /**
  * Declaration
  */
@@ -171,6 +173,18 @@ data class Break(override val position: Position? = null): Statement
 
 data class Print(val value: Expression,
                  override val position: Position? = null): Statement
+
+/**
+ * Tuples
+ */
+data class TupleType(val type: List<Type>,
+                     override val position: Position? = null): Type
+
+data class Tuple(val elements: List<TupleElement>,
+                 override val position: Position? = null): Primary
+
+data class TupleElement(val type: List<Type>,
+                        override val position: Position? = null): Expression
 
 
 
