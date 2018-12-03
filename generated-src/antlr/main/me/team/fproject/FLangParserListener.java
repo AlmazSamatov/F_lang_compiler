@@ -312,15 +312,101 @@ public interface FLangParserListener extends ParseTreeListener {
 	 */
 	void exitConditional(FLangParser.ConditionalContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FLangParser#statement}.
+	 * Enter a parse tree produced by the {@code assignmentStatement}
+	 * labeled alternative in {@link FLangParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void enterStatement(FLangParser.StatementContext ctx);
+	void enterAssignmentStatement(FLangParser.AssignmentStatementContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FLangParser#statement}.
+	 * Exit a parse tree produced by the {@code assignmentStatement}
+	 * labeled alternative in {@link FLangParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void exitStatement(FLangParser.StatementContext ctx);
+	void exitAssignmentStatement(FLangParser.AssignmentStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code functionCallStatement}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallStatement(FLangParser.FunctionCallStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code functionCallStatement}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallStatement(FLangParser.FunctionCallStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code if}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf(FLangParser.IfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code if}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf(FLangParser.IfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code loop}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterLoop(FLangParser.LoopContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code loop}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitLoop(FLangParser.LoopContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code return}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn(FLangParser.ReturnContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code return}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn(FLangParser.ReturnContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code break}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterBreak(FLangParser.BreakContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code break}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitBreak(FLangParser.BreakContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code print}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrint(FLangParser.PrintContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code print}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrint(FLangParser.PrintContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code declarationStatement}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclarationStatement(FLangParser.DeclarationStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code declarationStatement}
+	 * labeled alternative in {@link FLangParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclarationStatement(FLangParser.DeclarationStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FLangParser#functionCall}.
 	 * @param ctx the parse tree
