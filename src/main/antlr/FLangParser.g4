@@ -57,9 +57,14 @@ conditional
 
 // Statements
 statement
-    : assignment | functionCall | ifStatement
-    | loopStatement | returnStatement | breakStatement
-    | printStatement | declaration
+    : assignment            # assignmentStatement
+    | functionCall          # functionCallStatement
+    | ifStatement           # if
+    | loopStatement         # loop
+    | returnStatement       # return
+    | breakStatement        # break
+    | printStatement        # print
+    | declaration           # declarationStatement
     ;
 
 functionCall

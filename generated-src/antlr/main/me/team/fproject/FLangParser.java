@@ -1082,41 +1082,126 @@ public class FLangParser extends Parser {
 	}
 
 	public static class StatementContext extends ParserRuleContext {
-		public AssignmentContext assignment() {
-			return getRuleContext(AssignmentContext.class,0);
-		}
-		public FunctionCallContext functionCall() {
-			return getRuleContext(FunctionCallContext.class,0);
-		}
-		public IfStatementContext ifStatement() {
-			return getRuleContext(IfStatementContext.class,0);
-		}
-		public LoopStatementContext loopStatement() {
-			return getRuleContext(LoopStatementContext.class,0);
-		}
-		public ReturnStatementContext returnStatement() {
-			return getRuleContext(ReturnStatementContext.class,0);
-		}
-		public BreakStatementContext breakStatement() {
-			return getRuleContext(BreakStatementContext.class,0);
-		}
-		public PrintStatementContext printStatement() {
-			return getRuleContext(PrintStatementContext.class,0);
-		}
-		public DeclarationContext declaration() {
-			return getRuleContext(DeclarationContext.class,0);
-		}
 		public StatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
+	 
+		public StatementContext() { }
+		public void copyFrom(StatementContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class DeclarationStatementContext extends StatementContext {
+		public DeclarationContext declaration() {
+			return getRuleContext(DeclarationContext.class,0);
+		}
+		public DeclarationStatementContext(StatementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterStatement(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterDeclarationStatement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitStatement(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitDeclarationStatement(this);
+		}
+	}
+	public static class PrintContext extends StatementContext {
+		public PrintStatementContext printStatement() {
+			return getRuleContext(PrintStatementContext.class,0);
+		}
+		public PrintContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterPrint(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitPrint(this);
+		}
+	}
+	public static class BreakContext extends StatementContext {
+		public BreakStatementContext breakStatement() {
+			return getRuleContext(BreakStatementContext.class,0);
+		}
+		public BreakContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterBreak(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitBreak(this);
+		}
+	}
+	public static class AssignmentStatementContext extends StatementContext {
+		public AssignmentContext assignment() {
+			return getRuleContext(AssignmentContext.class,0);
+		}
+		public AssignmentStatementContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterAssignmentStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitAssignmentStatement(this);
+		}
+	}
+	public static class LoopContext extends StatementContext {
+		public LoopStatementContext loopStatement() {
+			return getRuleContext(LoopStatementContext.class,0);
+		}
+		public LoopContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterLoop(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitLoop(this);
+		}
+	}
+	public static class FunctionCallStatementContext extends StatementContext {
+		public FunctionCallContext functionCall() {
+			return getRuleContext(FunctionCallContext.class,0);
+		}
+		public FunctionCallStatementContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterFunctionCallStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitFunctionCallStatement(this);
+		}
+	}
+	public static class IfContext extends StatementContext {
+		public IfStatementContext ifStatement() {
+			return getRuleContext(IfStatementContext.class,0);
+		}
+		public IfContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterIf(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitIf(this);
+		}
+	}
+	public static class ReturnContext extends StatementContext {
+		public ReturnStatementContext returnStatement() {
+			return getRuleContext(ReturnStatementContext.class,0);
+		}
+		public ReturnContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterReturn(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitReturn(this);
 		}
 	}
 
@@ -1127,6 +1212,7 @@ public class FLangParser extends Parser {
 			setState(172);
 			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
+				_localctx = new AssignmentStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(164);
@@ -1134,6 +1220,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case 2:
+				_localctx = new FunctionCallStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(165);
@@ -1141,6 +1228,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case 3:
+				_localctx = new IfContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(166);
@@ -1148,6 +1236,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case 4:
+				_localctx = new LoopContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(167);
@@ -1155,6 +1244,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case 5:
+				_localctx = new ReturnContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(168);
@@ -1162,6 +1252,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case 6:
+				_localctx = new BreakContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(169);
@@ -1169,6 +1260,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case 7:
+				_localctx = new PrintContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(170);
@@ -1176,6 +1268,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case 8:
+				_localctx = new DeclarationStatementContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(171);
