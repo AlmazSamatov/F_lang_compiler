@@ -1,9 +1,7 @@
 package me.team.flang
 
-//import me.tomassetti.sandy.sandy.ast.*
 import me.team.f.ast.*
 import me.team.f.parsing.Analyser
-//import me.tomassetti.sandy.sandy.parsing.SandyParserFacade
 import kotlin.test.assertEquals
 import org.junit.Test as test
 
@@ -33,8 +31,9 @@ class MapperTest {
 
     @test
     fun mapConditional() {
-        val code = "a is if 5 > 1 then 5 else 1"
+//        val code = "a is if 5 > 1 then 5 else 1"
 //        val code = "a is b[0]"
+        val code = "twice is func(a: integer): integer => a * 2"
         val ast = Analyser.parse(code).root!!.toAst()
         println(ast)
     }
