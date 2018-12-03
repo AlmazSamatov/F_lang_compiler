@@ -12,7 +12,7 @@ class Caller {
     fun lexerForCode(code: String) = FLangLexer(ANTLRInputStream(StringReader(code)))
 
     fun lexerForFile(resourceName: String) =
-        FLangLexer(ANTLRInputStream(javaClass.getResourceAsStream("/${resourceName}.f")))
+        FLangLexer(ANTLRInputStream(javaClass.getResourceAsStream("/$resourceName.f")))
 
     fun parseFile(resourceName: String) : FLangParser.ProgramContext =
         FLangParser(CommonTokenStream(lexerForFile(resourceName))).program()
