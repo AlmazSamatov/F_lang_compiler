@@ -608,15 +608,125 @@ public interface FLangParserListener extends ParseTreeListener {
 	 */
 	void exitTupleElement(FLangParser.TupleElementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FLangParser#type}.
+	 * Enter a parse tree produced by the {@code boolean_type}
+	 * labeled alternative in {@link FLangParser#type}.
 	 * @param ctx the parse tree
 	 */
-	void enterType(FLangParser.TypeContext ctx);
+	void enterBoolean_type(FLangParser.Boolean_typeContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FLangParser#type}.
+	 * Exit a parse tree produced by the {@code boolean_type}
+	 * labeled alternative in {@link FLangParser#type}.
 	 * @param ctx the parse tree
 	 */
-	void exitType(FLangParser.TypeContext ctx);
+	void exitBoolean_type(FLangParser.Boolean_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code integer_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterInteger_type(FLangParser.Integer_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code integer_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitInteger_type(FLangParser.Integer_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code real_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterReal_type(FLangParser.Real_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code real_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitReal_type(FLangParser.Real_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code rational_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterRational_type(FLangParser.Rational_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code rational_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitRational_type(FLangParser.Rational_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code complex_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterComplex_type(FLangParser.Complex_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code complex_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitComplex_type(FLangParser.Complex_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code string_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterString_type(FLangParser.String_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code string_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitString_type(FLangParser.String_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code function_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_type(FLangParser.Function_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code function_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_type(FLangParser.Function_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code tuple_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterTuple_type(FLangParser.Tuple_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code tuple_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitTuple_type(FLangParser.Tuple_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code array_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_type(FLangParser.Array_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code array_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_type(FLangParser.Array_typeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code map_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterMap_type(FLangParser.Map_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code map_type}
+	 * labeled alternative in {@link FLangParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitMap_type(FLangParser.Map_typeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FLangParser#booleanType}.
 	 * @param ctx the parse tree

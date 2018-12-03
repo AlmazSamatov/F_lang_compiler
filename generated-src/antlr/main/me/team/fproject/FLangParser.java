@@ -2619,47 +2619,154 @@ public class FLangParser extends Parser {
 	}
 
 	public static class TypeContext extends ParserRuleContext {
-		public BooleanTypeContext booleanType() {
-			return getRuleContext(BooleanTypeContext.class,0);
-		}
-		public IntegerTypeContext integerType() {
-			return getRuleContext(IntegerTypeContext.class,0);
-		}
-		public RealTypeContext realType() {
-			return getRuleContext(RealTypeContext.class,0);
-		}
-		public RationalTypeContext rationalType() {
-			return getRuleContext(RationalTypeContext.class,0);
-		}
-		public ComplexTypeContext complexType() {
-			return getRuleContext(ComplexTypeContext.class,0);
-		}
-		public StringTypeContext stringType() {
-			return getRuleContext(StringTypeContext.class,0);
-		}
-		public FunctionTypeContext functionType() {
-			return getRuleContext(FunctionTypeContext.class,0);
-		}
-		public TupleTypeContext tupleType() {
-			return getRuleContext(TupleTypeContext.class,0);
-		}
-		public ArrayTypeContext arrayType() {
-			return getRuleContext(ArrayTypeContext.class,0);
-		}
-		public MapTypeContext mapType() {
-			return getRuleContext(MapTypeContext.class,0);
-		}
 		public TypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_type; }
+	 
+		public TypeContext() { }
+		public void copyFrom(TypeContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class Map_typeContext extends TypeContext {
+		public MapTypeContext mapType() {
+			return getRuleContext(MapTypeContext.class,0);
+		}
+		public Map_typeContext(TypeContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterType(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterMap_type(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitType(this);
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitMap_type(this);
+		}
+	}
+	public static class Real_typeContext extends TypeContext {
+		public RealTypeContext realType() {
+			return getRuleContext(RealTypeContext.class,0);
+		}
+		public Real_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterReal_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitReal_type(this);
+		}
+	}
+	public static class String_typeContext extends TypeContext {
+		public StringTypeContext stringType() {
+			return getRuleContext(StringTypeContext.class,0);
+		}
+		public String_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterString_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitString_type(this);
+		}
+	}
+	public static class Rational_typeContext extends TypeContext {
+		public RationalTypeContext rationalType() {
+			return getRuleContext(RationalTypeContext.class,0);
+		}
+		public Rational_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterRational_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitRational_type(this);
+		}
+	}
+	public static class Complex_typeContext extends TypeContext {
+		public ComplexTypeContext complexType() {
+			return getRuleContext(ComplexTypeContext.class,0);
+		}
+		public Complex_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterComplex_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitComplex_type(this);
+		}
+	}
+	public static class Function_typeContext extends TypeContext {
+		public FunctionTypeContext functionType() {
+			return getRuleContext(FunctionTypeContext.class,0);
+		}
+		public Function_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterFunction_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitFunction_type(this);
+		}
+	}
+	public static class Boolean_typeContext extends TypeContext {
+		public BooleanTypeContext booleanType() {
+			return getRuleContext(BooleanTypeContext.class,0);
+		}
+		public Boolean_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterBoolean_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitBoolean_type(this);
+		}
+	}
+	public static class Integer_typeContext extends TypeContext {
+		public IntegerTypeContext integerType() {
+			return getRuleContext(IntegerTypeContext.class,0);
+		}
+		public Integer_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterInteger_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitInteger_type(this);
+		}
+	}
+	public static class Array_typeContext extends TypeContext {
+		public ArrayTypeContext arrayType() {
+			return getRuleContext(ArrayTypeContext.class,0);
+		}
+		public Array_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterArray_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitArray_type(this);
+		}
+	}
+	public static class Tuple_typeContext extends TypeContext {
+		public TupleTypeContext tupleType() {
+			return getRuleContext(TupleTypeContext.class,0);
+		}
+		public Tuple_typeContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).enterTuple_type(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof FLangParserListener ) ((FLangParserListener)listener).exitTuple_type(this);
 		}
 	}
 
@@ -2670,6 +2777,7 @@ public class FLangParser extends Parser {
 			setState(380);
 			switch (_input.LA(1)) {
 			case BOOLEAN:
+				_localctx = new Boolean_typeContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(370);
@@ -2677,6 +2785,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case INTEGER:
+				_localctx = new Integer_typeContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(371);
@@ -2684,6 +2793,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case REAL:
+				_localctx = new Real_typeContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(372);
@@ -2691,6 +2801,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case RATIONAL:
+				_localctx = new Rational_typeContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(373);
@@ -2698,6 +2809,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case COMPLEX:
+				_localctx = new Complex_typeContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(374);
@@ -2705,6 +2817,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case STRING:
+				_localctx = new String_typeContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(375);
@@ -2712,6 +2825,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case FUNC:
+				_localctx = new Function_typeContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(376);
@@ -2719,6 +2833,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case LPAR:
+				_localctx = new Tuple_typeContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(377);
@@ -2726,6 +2841,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case LSQUARE:
+				_localctx = new Array_typeContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(378);
@@ -2733,6 +2849,7 @@ public class FLangParser extends Parser {
 				}
 				break;
 			case LCURLY:
+				_localctx = new Map_typeContext(_localctx);
 				enterOuterAlt(_localctx, 10);
 				{
 				setState(379);
