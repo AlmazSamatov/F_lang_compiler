@@ -24,10 +24,14 @@ fun DeclarationContext.toAst(considerPosition: Boolean = false): Declaration = V
     this.ID().text, this.expression().toAst(considerPosition), toPosition(considerPosition))
 
 fun ExpressionContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
-    is BinaryOperationContext -> toAst(considerPosition)
+    is BinaryOperationContext -> BinaryOperation(left.toAst(considerPosition),
+        right.toAst(considerPosition),
+        operatorSign().text,
+        toPosition(considerPosition))
     is SecondaryExpressionContext -> secondary().toAst(considerPosition)
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
+
 
 fun BinaryOperationContext.toAst(considerPosition: Boolean = false): Expression = when (operatorSign().text) {
     "+" -> SumExpression(left.toAst(considerPosition), right.toAst(considerPosition), toPosition(considerPosition))
@@ -48,22 +52,31 @@ fun BinaryOperationContext.toAst(considerPosition: Boolean = false): Expression 
 
 fun SecondaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
     is PrimaryExpressionContext -> primary().toAst(considerPosition)
-    is CallContext -> toAst(considerPosition)  // TODO(Check)
+    is CallContext -> Call(secondary().toAst(considerPosition),
+        expression().map { it.toAst(considerPosition) },
+        toPosition(considerPosition))
     is ElementContext -> ElementOf(secondary().toAst(considerPosition),
         expression().toAst(considerPosition), toPosition(considerPosition))
-    is NamedTupleElementContext -> toAst(considerPosition)  // TODO(Check)
-    is UnnamedTupleElementContext -> toAst(considerPosition) // TODO(Check)
+    is NamedTupleElementContext -> NamedTupleElement(secondary().toAst(considerPosition),
+        toPosition(considerPosition))
+    is UnnamedTupleElementContext -> UnnamedTupleElement(secondary().toAst(considerPosition),
+        toPosition(considerPosition))
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
 
 fun PrimaryContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
     is ElementaryExpressionContext -> elementary().toAst(considerPosition)
     is ConditionalExpressionContext -> conditional().toAst(considerPosition)
-    is FunctionExpressionContext -> toAst(considerPosition)
-    is ArrayExpressionContext -> toAst(considerPosition)
-    is TupleExpressionContext -> toAst(considerPosition)
-    is MapExpressionContext -> toAst(considerPosition)
-    is ParenExpressionContext -> toAst(considerPosition)
+    is FunctionExpressionContext -> FunctionExpression(function().toAst(considerPosition),
+        toPosition(considerPosition))
+    is ArrayExpressionContext -> ArrayExpression(array().toAst(considerPosition),
+        toPosition(considerPosition))
+    is TupleExpressionContext -> TupleExpression(tuple().toAst(considerPosition),
+        toPosition(considerPosition))
+    is MapExpressionContext -> MapExpression(map().toAst(considerPosition),
+        toPosition(considerPosition))
+    is ParenExpressionContext -> ParenExpression(expression().toAst(considerPosition),
+        toPosition(considerPosition))
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
 

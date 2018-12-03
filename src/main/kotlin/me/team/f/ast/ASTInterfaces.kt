@@ -32,12 +32,53 @@ interface Type: Node
 interface Primary: Node
 
 
+
 /**
  * Declaration
  */
 
 data class VarDeclaration(val varName: String, val value: Expression,
                           override val position: Position? = null): Declaration
+
+data class BinaryOperation(val left:Expression,
+                           val right: Expression,
+                           val operatorSign: String,
+                           override val position: Position? = null): Expression
+
+
+/**
+ * Secondary
+ */
+
+data class Call(val secondary: Expression,
+                val expressions: List<Expression>,
+                override val position: Position? = null): Expression
+
+data class NamedTupleElement(val secondary: Expression,
+                             override val position: Position? = null): Expression
+
+data class UnnamedTupleElement(val secondary: Expression,
+                               override val position: Position? = null): Expression
+
+/**
+ * Expressions
+ */
+
+data class FunctionExpression(val function: Primary,
+                              override val position: Position? = null): Expression
+
+data class ArrayExpression(val array: Primary,
+                           override val position: Position? = null): Expression
+
+data class TupleExpression(val tuple: Primary,
+                           override val position: Position? = null): Expression
+
+data class MapExpression(val map: Primary,
+                         override val position: Position? = null): Expression
+
+data class ParenExpression(val expression: Expression,
+                           override val position: Position? = null) : Expression
+
 
 /**
  * Types
