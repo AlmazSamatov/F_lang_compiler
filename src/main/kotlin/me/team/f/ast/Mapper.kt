@@ -1,11 +1,8 @@
 package me.team.f.ast
 
-import javafx.css.Rule
 import me.team.fproject.FLangParser.*
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.Token
-import javax.lang.model.element.TypeElement
-import javax.lang.model.type.ArrayType
 
 interface ParseTreeToAstMapper<in PTN: ParserRuleContext, out ASTN: Node> {
     fun map(parseTreeNode: PTN): ASTN
@@ -86,15 +83,135 @@ fun ConditionalContext.toAst(considerPosition: Boolean = false): Expression =
     Conditional(predicate.toAst(considerPosition),
         thenExpr.toAst(considerPosition), elseExpr.toAst(considerPosition))
 
-
+/**
+ * Statements
+ */
 fun StatementContext.toAst(considerPosition: Boolean = false): Statement = when(this) {
-    is LoopStatementContext -> Loop(loopHeader().expression(0).toAst(), statement(0).toAst(), toPosition(considerPosition))
+    is FunctionCallContext -> FunctionCall(secondary().toAst(considerPosition),
+        expression().map { it.toAst(considerPosition) },
+        toPosition(considerPosition))
+
+    is AssignmentContext -> Assignment(secondary().toAst(considerPosition),
+        expression().toAst(considerPosition),
+        toPosition(considerPosition))
+
+    is IfStatementContext -> IfStatement(expression().toAst(considerPosition),
+        statement().map { it.toAst(considerPosition) },
+        toPosition(considerPosition))
+
+    is LoopStatementContext -> LoopStatement(loopHeader().toAst(considerPosition),
+        statement().map { it.toAst(considerPosition) },
+        toPosition(considerPosition))
+
+    is ReturnStatementContext -> ReturnStatement(expression().toAst(considerPosition),
+        toPosition(considerPosition))
+
+    is BreakStatementContext -> BreakStatement(toPosition(considerPosition))
+
+    is PrintStatementContext -> PrintStatement(expression().map { it.toAst(considerPosition) },
+        toPosition(considerPosition))
+
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
 
-fun TupleElementContext.toAst(considerPosition: Boolean = false) : Rule =
-        RULE_tupleElement()
+fun FunctionCallContext.toAst(considerPosition: Boolean = false) : Statement =
+        FunctionCall(secondary().toAst(considerPosition),
+            expression().map { it.toAst(considerPosition) },
+            toPosition(considerPosition))
 
+fun AssignmentContext.toAst(considerPosition: Boolean = false) : Statement =
+        Assignment(secondary().toAst(considerPosition),
+            expression().toAst(considerPosition),
+            toPosition(considerPosition))
+
+fun IfStatementContext.toAst(considerPosition: Boolean = false) : Statement =
+        IfStatement(expression().toAst(considerPosition),
+            statement().map { it.toAst(considerPosition) },
+            toPosition(considerPosition))
+
+fun LoopStatementContext.toAst(considerPosition: Boolean = false) : Statement =
+        LoopStatement(loopHeader().toAst(considerPosition),
+            statement().map { it.toAst(considerPosition) },
+            toPosition(considerPosition))
+
+fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader =
+        LoopHeader(expression().map { it.toAst(considerPosition) },
+            toPosition(considerPosition))
+
+fun ReturnStatementContext.toAst(considerPosition: Boolean = false) : Statement =
+        ReturnStatement(expression().toAst(considerPosition),
+            toPosition(considerPosition))
+
+fun BreakStatementContext.toAst(considerPosition: Boolean = false) : Statement =
+        BreakStatement(toPosition(considerPosition))
+
+fun PrintStatementContext.toAst(considerPosition: Boolean = false) : Statement =
+        PrintStatement(expression().map { it.toAst(considerPosition) },
+            toPosition(considerPosition))
+
+
+/**
+ * Functions and function types
+ */
+
+fun FunctionTypeContext.toAst(considerPosition: Boolean = false) : Type =
+        FunctionType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+fun FunctionContext.toAst(considerPosition: Boolean = false) : Primary =
+        Function(body().toAst(considerPosition),
+            parameter().map {it.toAst(considerPosition) },
+            type().toAst(considerPosition),
+            toPosition(considerPosition))
+
+fun ParameterContext.toAst(considerPosition: Boolean = false) : Parameter =
+        Parameter(type().toAst(considerPosition), toPosition(considerPosition))
+
+fun BodyContext.toAst(considerPosition: Boolean = false) : Body =
+        Body(statement().map { it.toAst(considerPosition) },
+            expression().toAst(considerPosition),
+            toPosition(considerPosition))
+
+
+/**
+ * Arrays
+ */
+
+fun ArrayTypeContext.toAst(considerPosition: Boolean = false) : Type =
+        me.team.f.ast.ArrayType(type().toAst(considerPosition), toPosition(considerPosition))
+
+fun ArrayContext.toAst(considerPosition: Boolean = false) : Primary =
+        Array(expression().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+/**
+ * Maps
+ */
+
+fun MapTypeContext.toAst(considerPosition: Boolean = false) : Type =
+        MapType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+fun MapContext.toAst(considerPosition: Boolean = false) : Primary =
+        Map(pair().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+fun PairContext.toAst(considerPosition: Boolean = false) : Pair =
+        Pair(expression().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+
+/**
+ * Tuples
+ */
+fun TupleTypeContext.toAst(considerPosition: Boolean = false) : TupleType =
+        TupleType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+fun TupleContext.toAst(considerPosition: Boolean = false) : Primary =
+        Tuple(tupleElement().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+
+fun TupleElementContext.toAst(considerPosition: Boolean = false) : TupleElement =
+        TupleElement(expression().toAst(considerPosition), toPosition(considerPosition))
+
+
+/**
+ * Atomic Types
+ */
 fun TypeContext.toAst(considerPosition: Boolean = false) : Type = when(this) {
     is BooleanTypeContext -> BooleanType(toPosition(considerPosition))
     is IntegerTypeContext -> IntegerType(toPosition(considerPosition))
@@ -102,9 +219,9 @@ fun TypeContext.toAst(considerPosition: Boolean = false) : Type = when(this) {
     is RationalTypeContext -> RationalType(toPosition(considerPosition))
     is ComplexTypeContext -> ComplexType(toPosition(considerPosition))
     is StringTypeContext -> StringType(toPosition(considerPosition))
-    is FunctionTypeContext -> FunctionType(toPosition(considerPosition))
-    is TupleTypeContext -> TupleType(toPosition(considerPosition))
-    is ArrayTypeContext -> ArrayType(toPosition(considerPosition))
-    is MapTypeContext -> MapType(toPosition(considerPosition))
+    is FunctionTypeContext -> FunctionType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+    is TupleTypeContext -> TupleType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+    is ArrayTypeContext -> ArrayType(type().toAst(considerPosition), toPosition(considerPosition))
+    is MapTypeContext -> MapType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }

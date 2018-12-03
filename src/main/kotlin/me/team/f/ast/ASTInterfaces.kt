@@ -31,6 +31,7 @@ interface Type: Node
 
 interface Primary: Node
 
+
 /**
  * Declaration
  */
@@ -83,11 +84,6 @@ data class Conditional(val predicate: Expression,
                        val thenExpr: Expression,
                        val elseExpr: Expression,
                        override val position: Position? = null): Expression
-
-data class Function(val params: String,
-                    val type: String? = null,
-                    val body: String,
-                    override val position: Position? = null): Expression
 
 data class ElementOf(val varName: Expression,
                      val index: Expression,
@@ -154,25 +150,76 @@ data class XorExpression(override val left: Expression,
  * Statements
  */
 
-data class Assignment(val varName: String,
-                      val value: Expression,
+data class FunctionCall(val secondary: Expression,
+                          val expressions: List<Expression>,
+                          override val position: Position? = null): Statement
+
+data class Assignment(val secondary: Expression,
+                      val expression: Expression,
                       override val position: Position? = null): Statement
 
-//data class FunctionCall(,
-//                        override val position: Position? = null): Statement
+data class IfStatement(val expression: Expression,
+                       val statements: List<Statement>,
+                       override val position: Position? = null): Statement
 
-data class If(val predicate: Expression, val body: Statement,       //TODO(check)
-              override val position: Position? = null): Statement
+data class LoopStatement(val loopHeader: LoopHeader,
+                         val statements: List<Statement>,
+                         override val position: Position? = null) : Statement
 
-data class Loop(val header: Expression, val statement: Statement,   //TODO(check)
+data class LoopHeader(val expressions: List<Expression>,
                 override val position: Position? = null): Statement
 
-data class Return(override val position: Position? = null): Statement
+data class ReturnStatement(val expression: Expression,
+                           override val position: Position? = null): Statement
 
-data class Break(override val position: Position? = null): Statement
+data class BreakStatement(override val position: Position? = null): Statement
 
-data class Print(val value: Expression,
+data class PrintStatement(val expressions: List<Expression>,
                  override val position: Position? = null): Statement
+
+
+/**
+ * Functions and function types
+ */
+data class FunctionType(val types: List<Type>,
+                        override val position: Position? = null): Type
+
+data class Function(val body: Body,
+                    val parameters: List<Parameter>,
+                    val type: Type,
+                    override val position: Position? = null): Primary
+
+data class Parameter(val type: Type,
+                     override val position: Position? = null): Expression
+
+data class Body(val statements: List<Statement>,
+                val expression: Expression,
+                override val position: Position? = null): Expression
+
+
+/**
+ * Arrays
+ */
+data class ArrayType(val type: Type,
+                     override val position: Position? = null): Type
+
+
+data class Array(val expressions: List<Expression>,
+                 override val position: Position? = null): Primary
+
+
+/**
+ * Maps
+ */
+data class MapType(val types: List<Type>,
+                   override val position: Position? = null) : Type
+
+data class Map(val pairs: List<Pair>,
+               override val position: Position? = null): Primary
+
+data class Pair(val expressions: List<Expression>,
+                override val position: Position? = null): Expression
+
 
 /**
  * Tuples
@@ -183,7 +230,7 @@ data class TupleType(val type: List<Type>,
 data class Tuple(val elements: List<TupleElement>,
                  override val position: Position? = null): Primary
 
-data class TupleElement(val type: List<Type>,
+data class TupleElement(val type: Expression,
                         override val position: Position? = null): Expression
 
 
