@@ -29,8 +29,6 @@ interface Statement: Node
 
 interface Type: Node
 
-interface Primary: Node
-
 
 /**
  * Declaration
@@ -71,16 +69,16 @@ data class Conditional(val predicate: Expression,
                        val elseExpr: Expression,
                        override val position: Position? = null): Expression
 
-data class FunctionExpression(val function: Primary,
+data class FunctionExpression(val function: Expression,
                               override val position: Position? = null): Expression
 
-data class ArrayExpression(val array: Primary,
+data class ArrayExpression(val array: Expression,
                            override val position: Position? = null): Expression
 
-data class TupleExpression(val tuple: Primary,
+data class TupleExpression(val tuple: Expression,
                            override val position: Position? = null): Expression
 
-data class MapExpression(val map: Primary,
+data class MapExpression(val map: Expression,
                          override val position: Position? = null): Expression
 
 data class ParenExpression(val expression: Expression,
@@ -226,7 +224,7 @@ data class FunctionType(val types: List<Type>,
 data class Function(val body: Body,
                     val parameters: List<Parameter>,
                     val type: Type? = null,
-                    override val position: Position? = null): Primary
+                    override val position: Position? = null): Expression
 
 data class Parameter(val type: Type,
                      override val position: Position? = null): Expression
@@ -244,7 +242,7 @@ data class ArrayType(val type: Type,
 
 
 data class Array(val expressions: List<Expression>,
-                 override val position: Position? = null): Primary
+                 override val position: Position? = null): Expression
 
 
 /**
@@ -254,7 +252,7 @@ data class MapType(val types: List<Type>,
                    override val position: Position? = null) : Type
 
 data class Map(val pairs: List<Pair>,
-               override val position: Position? = null): Primary
+               override val position: Position? = null): Expression
 
 data class Pair(val expressions: List<Expression>,
                 override val position: Position? = null): Expression
@@ -267,7 +265,7 @@ data class TupleType(val type: List<Type>,
                      override val position: Position? = null): Type
 
 data class Tuple(val elements: List<TupleElement>,
-                 override val position: Position? = null): Primary
+                 override val position: Position? = null): Expression
 
 data class TupleElement(val type: Expression,
                         override val position: Position? = null): Expression

@@ -4,11 +4,6 @@ import me.team.f.ast.toAst
 import me.team.f.parsing.Analyser
 
 fun main(args: Array<String>) {
-    val caller = Caller()
-
-//    val code = """
-//            inc is func(p: integer): integer => p+1
-//        """.trimIndent()
     val code = """
             id is func() do
                 a is 123;

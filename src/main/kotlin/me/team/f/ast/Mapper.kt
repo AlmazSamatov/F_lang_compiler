@@ -167,7 +167,7 @@ fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader =
 fun FunctionTypeContext.toAst(considerPosition: Boolean = false) : Type =
         FunctionType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
-fun FunctionContext.toAst(considerPosition: Boolean = false) : Primary =
+fun FunctionContext.toAst(considerPosition: Boolean = false) : Expression =
         Function(body().toAst(considerPosition),
             parameter().map {it.toAst(considerPosition) },
             type()?.toAst(considerPosition),
@@ -189,7 +189,7 @@ fun BodyContext.toAst(considerPosition: Boolean = false) =
 fun ArrayTypeContext.toAst(considerPosition: Boolean = false) : Type =
         me.team.f.ast.ArrayType(type().toAst(considerPosition), toPosition(considerPosition))
 
-fun ArrayContext.toAst(considerPosition: Boolean = false) : Primary =
+fun ArrayContext.toAst(considerPosition: Boolean = false) : Expression =
         Array(expression().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
 /**
@@ -199,7 +199,7 @@ fun ArrayContext.toAst(considerPosition: Boolean = false) : Primary =
 fun MapTypeContext.toAst(considerPosition: Boolean = false) : Type =
         MapType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
-fun MapContext.toAst(considerPosition: Boolean = false) : Primary =
+fun MapContext.toAst(considerPosition: Boolean = false) : Expression =
         Map(pair().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
 fun PairContext.toAst(considerPosition: Boolean = false) : Pair =
@@ -212,7 +212,7 @@ fun PairContext.toAst(considerPosition: Boolean = false) : Pair =
 fun TupleTypeContext.toAst(considerPosition: Boolean = false) : TupleType =
         TupleType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
-fun TupleContext.toAst(considerPosition: Boolean = false) : Primary =
+fun TupleContext.toAst(considerPosition: Boolean = false) : Expression =
         Tuple(tupleElement().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
 fun TupleElementContext.toAst(considerPosition: Boolean = false) : TupleElement =
