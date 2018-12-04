@@ -3,12 +3,12 @@ package me.team.f.generator
 import me.team.f.ast.*
 import java.lang.StringBuilder
 
-fun declarationToKotlin(ast: VarDeclaration) {
-    if (ast.type != null) {
-        println("val " + ast.varName + ": " + typeToKotlin(ast.type)
+fun declarationToKotlin(ast: VarDeclaration): String {
+    return if (ast.type != null) {
+        ("val " + ast.varName + ": " + typeToKotlin(ast.type)
                 + " = " + exprToKotlin(ast.value))
     } else {
-        println("val " + ast.varName + " = " + exprToKotlin(ast.value))
+        ("val " + ast.varName + " = " + exprToKotlin(ast.value))
     }
 }
 
@@ -35,6 +35,10 @@ fun exprToKotlin(expr: Expression): String {
             resultBuilder.append(binaryToKotlin(it))
         }
 
+        is VarReference -> expr.specificProcess(VarReference::class.java) {
+            resultBuilder.append(it.name)
+        }
+
         is IntLit -> expr.specificProcess(IntLit::class.java) { resultBuilder.append(it.value) }
     }
 
@@ -47,7 +51,42 @@ fun binaryToKotlin(expr: BinaryExpression): String {
         is SumExpression -> expr.specificProcess(SumExpression::class.java) {
             resultBuilder.append(exprToKotlin(it.left) + " + " + exprToKotlin(it.right))
         }
+        is SubExpression -> expr.specificProcess(SubExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " - " + exprToKotlin(it.right))
+        }
+        is MultExpression -> expr.specificProcess(MultExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " * " + exprToKotlin(it.right))
+        }
+        is DivExpression -> expr.specificProcess(DivExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " / " + exprToKotlin(it.right))
+        }
+        is LessExpression -> expr.specificProcess(LessExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " < " + exprToKotlin(it.right))
+        }
+        is GreaterExpression -> expr.specificProcess(GreaterExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " > " + exprToKotlin(it.right))
+        }
+        is LessEqExpression -> expr.specificProcess(LessEqExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " <= " + exprToKotlin(it.right))
+        }
+        is GreaterEqExpression -> expr.specificProcess(GreaterEqExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " >= " + exprToKotlin(it.right))
+        }
+        is EqualExpression -> expr.specificProcess(EqualExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " = " + exprToKotlin(it.right))
+        }
+        is NotEqExpression -> expr.specificProcess(NotEqExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " /= " + exprToKotlin(it.right))
+        }
+        is AndExpression -> expr.specificProcess(AndExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " & " + exprToKotlin(it.right))
+        }
+        is OrExpression -> expr.specificProcess(OrExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " | " + exprToKotlin(it.right))
+        }
+        is XorExpression -> expr.specificProcess(XorExpression::class.java) {
+            resultBuilder.append(exprToKotlin(it.left) + " ^ " + exprToKotlin(it.right))
+        }
     }
-
     return resultBuilder.toString()
 }
