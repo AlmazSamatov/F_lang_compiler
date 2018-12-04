@@ -157,9 +157,16 @@ tupleElement
 
 // Atomic types
 type
-    : booleanType | integerType | realType | rationalType
-    | complexType | stringType | functionType
-    | tupleType | arrayType | mapType
+    : booleanType      # booleanT
+    | integerType      # integerT
+    | realType         # realT
+    | rationalType     # rationalT
+    | complexType      # complexT
+    | stringType       # stringT
+    | functionType     # functionT
+    | tupleType        # tupleT
+    | arrayType        # arrayT
+    | mapType          # mapT
     ;
 
 booleanType

@@ -1,5 +1,9 @@
 package me.team.f.ast
 
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
+
 interface Node {
     val position: Position?
 }
@@ -12,6 +16,57 @@ fun getPos(startLine: Int, startCol: Int, endLine: Int, endCol: Int): Position {
     val start = LineCol(startLine, startCol)
     val end = LineCol(endLine, endCol)
     return Position(start, end)
+}
+
+fun Node.process(operation: (Node) -> Unit) {
+    operation(this)
+    this.javaClass.kotlin.memberProperties.forEach { p ->
+        val v = p.get(this)
+        when (v) {
+            is Node -> v.process(operation)
+            is Collection<*> -> v.forEach { if (it is Node) it.process(operation) }
+        }
+    }
+}
+
+fun <T: Node> Node.specificProcess(classF: Class<T>, operation: (T) -> Unit) {
+    process {
+        if (classF.isInstance(it)) {
+            operation(it as T)
+        }
+    }
+}
+
+fun Node.transform(operation: (Node) -> Node) : Node {
+    operation(this)
+    val changes = HashMap<String, Any>()
+    this.javaClass.kotlin.memberProperties.forEach { p ->
+        val v = p.get(this)
+        when (v) {
+            is Node -> {
+                val newValue = v.transform(operation)
+                if (newValue != v) changes[p.name] = newValue
+            }
+            is Collection<*> -> {
+                val newValue = v.map { if (it is Node) it.transform(operation) else it }
+                if (newValue != v) changes[p.name] = newValue
+            }
+        }
+    }
+    var instanceToTransform = this
+    if (!changes.isEmpty()) {
+        val constructor = this.javaClass.kotlin.primaryConstructor!!
+        val params = HashMap<KParameter, Any?>()
+        constructor.parameters.forEach { param ->
+            if (changes.containsKey(param.name)) {
+                params[param] = changes[param.name]
+            } else {
+                params[param] = this.javaClass.kotlin.memberProperties.find { param.name == it.name }!!.get(this)
+            }
+        }
+        instanceToTransform = constructor.callBy(params)
+    }
+    return operation(instanceToTransform)
 }
 
 /**
@@ -36,7 +91,9 @@ interface Primary: Node
  * Declaration
  */
 
-data class VarDeclaration(val varName: String, val value: Expression,
+data class VarDeclaration(val varName: String,
+                          val type: Type? = null,
+                          val value: Expression,
                           override val position: Position? = null): Declaration
 
 /**
