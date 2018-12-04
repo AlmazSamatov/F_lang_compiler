@@ -89,7 +89,7 @@ data class StringType(override val position: Position? = null): Type
  * Expressions
  */
 
-data class VarReference(val name: String,
+data class VarReference(val referenceName: String,
                         override val position: Position? = null): Expression
 
 data class BoolLit(val value: String,
