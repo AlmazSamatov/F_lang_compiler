@@ -1,14 +1,15 @@
 package me.team.f.generator
 
 import me.team.f.ast.*
+import me.team.f.ast.Function
 import java.lang.StringBuilder
 
 fun declarationToKotlin(ast: VarDeclaration): String {
     return if (ast.type != null) {
-        ("val " + ast.varName + ": " + typeToKotlin(ast.type)
+        ("var " + ast.varName + ": " + typeToKotlin(ast.type)
                 + " = " + exprToKotlin(ast.value))
     } else {
-        ("val " + ast.varName + " = " + exprToKotlin(ast.value))
+        ("var " + ast.varName + " = " + exprToKotlin(ast.value))
     }
 }
 
@@ -35,14 +36,65 @@ fun exprToKotlin(expr: Expression): String {
             resultBuilder.append(binaryToKotlin(it))
         }
 
-        is VarReference -> expr.specificProcess(VarReference::class.java) {
-            resultBuilder.append(it.name)
+        // Elementary
+        is VarReference -> expr.specificProcess(VarReference::class.java) { resultBuilder.append(it.name) }
+        is BoolLit -> expr.specificProcess(BoolLit::class.java) { resultBuilder.append(it.value.toBoolean()) }
+        is IntLit -> expr.specificProcess(IntLit::class.java) { resultBuilder.append(it.value.toInt()) }
+        is RealLit -> expr.specificProcess(RealLit::class.java) { resultBuilder.append(it.value.toDouble()) }
+        is RatLit -> expr.specificProcess(RatLit::class.java) {
+            val parts = it.value.split("\\")
+            resultBuilder.append("Rational(" + parts[0] + ", " + parts[1] + ")")
+        }
+        is CompLit -> expr.specificProcess(CompLit::class.java) {
+            val parts = it.value.split("i")
+            resultBuilder.append("Complex(" + parts[0].toDouble() + ", " + parts[1].toDouble() + ")")
+        }
+        is StrLit -> expr.specificProcess(StrLit::class.java) { resultBuilder.append(it.value) }
+
+        // Conditional
+        is Conditional -> expr.specificProcess(Conditional::class.java) {
+            resultBuilder.append(
+                "if (${exprToKotlin(it.predicate)}) {" +
+                        "\n\t\t${exprToKotlin(it.thenExpr)}\n\t} else {" +
+                        "\n\t\t${exprToKotlin(it.elseExpr)}\n\t}"
+            )
         }
 
-        is IntLit -> expr.specificProcess(IntLit::class.java) { resultBuilder.append(it.value) }
+//         Function
+        is Function -> expr.specificProcess(Function::class.java) {
+            val parameters = StringBuilder()
+            var was = false
+            for (p in it.parameters) {
+                if (was) {
+                    parameters.append(", ")
+                } else {
+                    was = true
+                }
+                parameters.append(p.parName + ": " + typeToKotlin(p.type))
+            }
+
+            val type = if (it.type == null) "" else ": ${typeToKotlin(it.type)}"
+
+            val body = if (it.body.expression != null) {
+                " = " + exprToKotlin(it.body.expression)
+            } else {
+                val statements = StringBuilder()
+                it.body.statements?.map { statements.append(stmtToKotlin(it)) }
+                "{\n\t\t$statements\n\t}"
+            }
+
+            resultBuilder.append(
+                "fun($parameters)$type$body"
+            )
+        }
+
     }
 
     return resultBuilder.toString()
+}
+
+fun stmtToKotlin(stmt: Statement): String {
+    return ""
 }
 
 fun binaryToKotlin(expr: BinaryExpression): String {

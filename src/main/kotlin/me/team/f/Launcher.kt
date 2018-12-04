@@ -7,18 +7,19 @@ import java.io.File
 
 fun main(args: Array<String>) {
 
-    val code = "a is 5 * 3; b is 7 * 2; res is a + b"
+    val code = "a is 5; b is 7 * 2; res is a + b; " +
+            "isOk: boolean is if a > b then true else false;" +
+            "inc is func(v: integer) => v + 1"
 //    val code = "a: integer is 5 + 7; b is a + 2"
+//    val code = "inc is func(v: integer) => v + 1"
 
     val ast = Analyser.parse(code).root!!.toAst()
-    val kotlinProgram = mutableListOf<String>(
-        "fun main(args: Array<String>) {"
-    )
+    val kotlinProgram = mutableListOf("fun main(args: Array<String>) {")
 
-    ast.declarations.map{
+    ast.declarations.map {
         it.specificProcess(VarDeclaration::class.java){ line ->
             println(line)
-            kotlinProgram.add(declarationToKotlin(line))
+            kotlinProgram.add("\t" + declarationToKotlin(line))
         }
     }
 
@@ -31,7 +32,7 @@ fun main(args: Array<String>) {
 }
 
 fun saveToFile(kotlinProgram: List<String>) {
-    val outPath = "generated-src/compilation/kotlin_src.kt"
+    val outPath = "generated-src/compilation/gen_program.kt"
 
     File(outPath).createNewFile()
 
