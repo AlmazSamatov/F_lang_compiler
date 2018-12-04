@@ -235,18 +235,35 @@ fun stmtToKotlin(stmt: Statement): String {
             if (!it.thenStatements.isEmpty()) {
                 resultBuilder.append(" else { ")
                 for (expression in it.elseStatements) {
-                    resultBuilder.append(stmtToKotlin(expression) + "; ")
+                    resultBuilder.append(stmtToKotlin(expression))
                 }
                 resultBuilder.append("}")
             }
         }
 
         is LoopStatement -> stmt.specificProcess(LoopStatement::class.java) {
-            //TODO
+            when (it.loopHeader) {
+                is ForLoopHeader -> it.loopHeader.specificProcess(ForLoopHeader::class.java) {
+                    resultBuilder.append("for (" + it.id + " in " + exprToKotlin(it.expressions[0]) + ") ")
+                    if (it.needRange) {
+                        resultBuilder.append(".." + exprToKotlin(it.expressions[1]))
+                    }
+                }
+
+                is WhileLoopHeader -> it.loopHeader.specificProcess(ForLoopHeader::class.java) {
+                    resultBuilder.append("while (" + exprToKotlin(it.expressions[0]) + ")")
+                }
+            }
+
+            resultBuilder.append("{ ")
+            for (statement in it.statements) {
+                resultBuilder.append(stmtToKotlin(statement))
+            }
+            resultBuilder.append(" }")
         }
 
         is ReturnStatement -> stmt.specificProcess(ReturnStatement::class.java) {
-            resultBuilder.append("return " + exprToKotlin(it.expression))
+            resultBuilder.append("return " + exprToKotlin(it.expression) + ";")
         }
 
         is BreakStatement -> stmt.specificProcess(BreakStatement::class.java) {
@@ -254,14 +271,14 @@ fun stmtToKotlin(stmt: Statement): String {
         }
 
         is PrintStatement -> stmt.specificProcess(PrintStatement::class.java) {
-            resultBuilder.append("print (")
+            resultBuilder.append("print(")
             var i = 0
             while (i < it.expressions.size - 1) {
                 resultBuilder.append(exprToKotlin(it.expressions[i]) + ", ")
                 i += 1
             }
             resultBuilder.append(exprToKotlin(it.expressions[i]))
-            resultBuilder.append(")")
+            resultBuilder.append("); ")
         }
     }
 

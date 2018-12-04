@@ -241,8 +241,15 @@ data class LoopStatement(val loopHeader: LoopHeader,
                          val statements: List<Statement>,
                          override val position: Position? = null): Statement
 
-data class LoopHeader(val expressions: List<Expression>,
-                      override val position: Position? = null): Statement
+interface LoopHeader: Statement
+
+data class ForLoopHeader(val expressions: List<Expression>,
+                         val id: String? = null,
+                         val needRange: Boolean,
+                         override val position: Position? = null): LoopHeader
+
+data class WhileLoopHeader(val expressions: List<Expression>,
+                         override val position: Position? = null): LoopHeader
 
 data class ReturnStatement(val expression: Expression,
                            override val position: Position? = null): Statement
