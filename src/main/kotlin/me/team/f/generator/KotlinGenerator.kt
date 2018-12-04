@@ -91,9 +91,19 @@ fun exprToKotlin(expr: Expression): String {
             )
         }
 
-        // Compose types
+        // Composed types
         is Array -> expr.specificProcess(Array::class.java) {
-
+            val elements = StringBuilder()
+            var was = false
+            for (p in it.expressions) {
+                if (was) {
+                    elements.append(", ")
+                } else {
+                    was = true
+                }
+                elements.append(exprToKotlin(p))
+            }
+            resultBuilder.append("arrayOf($elements)")
         }
 
         is Tuple -> expr.specificProcess(Tuple::class.java) {

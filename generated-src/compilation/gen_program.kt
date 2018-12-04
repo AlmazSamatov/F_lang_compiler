@@ -8,4 +8,5 @@ fun main(args: Array<String>) {
 		false
 	}
 	var inc = fun(v: Int) = v + 1
+	var arr = arrayOf(1, 2, 3)
 }
