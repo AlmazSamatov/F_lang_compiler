@@ -9,7 +9,8 @@ fun main(args: Array<String>) {
 
     val code = "a is 5; b is 7 * 2; res is a + b; " +
             "isOk: boolean is if a > b then true else false;" +
-            "inc is func(v: integer) => v + 1"
+            "inc is func(v: integer) => v + 1;" +
+            "arr is [1, 2, 3]"
 
     val ast = Analyser.parse(code).root!!.toAst()
     val kotlinProgram = mutableListOf("fun main(args: Array<String>) {")
