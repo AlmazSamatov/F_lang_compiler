@@ -306,7 +306,7 @@ data class TupleType(val type: List<Type>,
 data class Tuple(val elements: List<TupleElement>,
                  override val position: Position? = null): Expression
 
-data class TupleElement(val type: Expression,
+data class TupleElement(val name: String? = null, val expression: Expression,
                         override val position: Position? = null): Expression
 
 

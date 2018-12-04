@@ -4,8 +4,7 @@ import me.team.f.ast.*
 import me.team.f.ast.Array
 import me.team.f.ast.Function
 import me.team.f.ast.Map
-import java.lang.StringBuilder
-import kotlin.math.exp
+import kotlin.jvm.internal.FunctionReference
 
 fun declarationToKotlin(ast: VarDeclaration): String {
     return if (ast.type != null) {
@@ -53,6 +52,61 @@ fun exprToKotlin(expr: Expression): String {
             resultBuilder.append("Complex(" + parts[0].toDouble() + ", " + parts[1].toDouble() + ")")
         }
         is StrLit -> expr.specificProcess(StrLit::class.java) { resultBuilder.append(it.value) }
+
+        // Secondary
+        is Call -> expr.specificProcess(Call::class.java) {
+            val call = StringBuilder()
+
+            call.append((it.secondary as FunctionReference).name)
+            call.append("(")
+
+            var was = false
+            for (parameter in it.expressions) {
+                if (was) {
+                    call.append(", ")
+                } else {
+                    was = true
+                }
+                call.append(exprToKotlin(parameter))
+            }
+
+            call.append(")")
+
+            resultBuilder.append(call)
+        }
+
+        is ElementOf -> expr.specificProcess(ElementOf::class.java)  {
+            val elementOf = StringBuilder()
+
+            elementOf.append((it.varName as VarReference).name)
+            elementOf.append("[")
+            elementOf.append(it.index)
+            elementOf.append("]")
+
+            resultBuilder.append(elementOf)
+        }
+
+        is NamedTupleElement -> expr.specificProcess(NamedTupleElement::class.java)  {
+            val call = StringBuilder()
+
+            call.append((it.secondary as VarReference).name)
+            call.append("[\"")
+            call.append(it.fieldName)
+            call.append("\"]")
+
+            resultBuilder.append(call)
+        }
+
+        is UnnamedTupleElement -> expr.specificProcess(UnnamedTupleElement::class.java) {
+            val call = StringBuilder()
+
+            call.append((it.secondary as VarReference).name)
+            call.append("[")
+            call.append(it.fieldNum)
+            call.append("]")
+
+            resultBuilder.append(call)
+        }
 
         // Conditional
         is Conditional -> expr.specificProcess(Conditional::class.java) {
@@ -103,15 +157,48 @@ fun exprToKotlin(expr: Expression): String {
                 }
                 elements.append(exprToKotlin(p))
             }
-            resultBuilder.append("arrayOf($elements)")
+            resultBuilder.append("mutableListOf($elements)")
         }
 
         is Tuple -> expr.specificProcess(Tuple::class.java) {
-
+            val elements = StringBuilder()
+            val declarations = StringBuilder()
+            var was = false
+            var count = 1
+            for (element in it.elements) {
+                if (was) {
+                    elements.append(", ")
+                } else {
+                    was = true
+                }
+                if (element.name != null) {
+                    elements.append('"')
+                    elements.append(element.name)
+                    elements.append('"')
+                } else {
+                    elements.append(count)
+                }
+                elements.append(" to ")
+                elements.append(exprToKotlin(element.expression))
+                count++
+            }
+            resultBuilder.append("mapOf($elements)")
         }
 
         is Map -> expr.specificProcess(Map::class.java) {
-
+            val elements = StringBuilder()
+            var was = false
+            for (pair in it.pairs) {
+                if (was) {
+                    elements.append(", ")
+                } else {
+                    was = true
+                }
+                elements.append(exprToKotlin(pair.expressions[0]))
+                elements.append(" to ")
+                elements.append(exprToKotlin(pair.expressions[1]))
+            }
+            resultBuilder.append("mutableMapOf($elements)")
         }
 
     }
