@@ -84,7 +84,7 @@ interface Statement: Node
 
 interface Type: Node
 
-interface Primary: Node
+//interface Primary: Node
 
 
 /**
@@ -94,7 +94,35 @@ interface Primary: Node
 data class VarDeclaration(val varName: String,
                           val type: Type? = null,
                           val value: Expression,
-                          override val position: Position? = null): Declaration
+                          override val position: Position? = null): Declaration, Statement
+
+/**
+ * Secondary
+ */
+
+data class Call(val secondary: Expression,
+                val expressions: List<Expression>,
+                override val position: Position? = null): Expression
+
+data class ElementOf(val varName: Expression,
+                     val index: Expression,
+                     override val position: Position? = null): Expression
+
+data class NamedTupleElement(val secondary: Expression,
+                             val name: String,
+                             override val position: Position? = null): Expression
+
+data class UnnamedTupleElement(val secondary: Expression,
+                               val fieldNum: String,
+                               override val position: Position? = null): Expression
+
+/**
+ * Primary
+ */
+data class Conditional(val predicate: Expression,
+                       val thenExpr: Expression,
+                       val elseExpr: Expression,
+                       override val position: Position? = null): Expression
 
 /**
  * Types
@@ -126,25 +154,16 @@ data class IntLit(val value: String,
                   override val position: Position? = null): Expression
 
 data class RealLit(val value: String,
-                  override val position: Position? = null): Expression
+                   override val position: Position? = null): Expression
 
 data class RatLit(val value: String,
                   override val position: Position? = null): Expression
 
 data class CompLit(val value: String,
-                  override val position: Position? = null): Expression
+                   override val position: Position? = null): Expression
 
 data class StrLit(val value: String,
                   override val position: Position? = null): Expression
-
-data class Conditional(val predicate: Expression,
-                       val thenExpr: Expression,
-                       val elseExpr: Expression,
-                       override val position: Position? = null): Expression
-
-data class ElementOf(val varName: Expression,
-                     val index: Expression,
-                     override val position: Position? = null): Expression
 
 interface BinaryExpression: Expression {
     val left: Expression
@@ -160,44 +179,44 @@ data class SubExpression(override val left: Expression,
                          override val position: Position? = null): BinaryExpression
 
 data class MultExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                          override val right: Expression,
+                          override val position: Position? = null): BinaryExpression
 
 data class DivExpression(override val left: Expression,
                          override val right: Expression,
                          override val position: Position? = null): BinaryExpression
 
 data class LessExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                          override val right: Expression,
+                          override val position: Position? = null): BinaryExpression
 
 data class GreaterExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                             override val right: Expression,
+                             override val position: Position? = null): BinaryExpression
 
 data class LessEqExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                            override val right: Expression,
+                            override val position: Position? = null): BinaryExpression
 
 data class GreaterEqExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                               override val right: Expression,
+                               override val position: Position? = null): BinaryExpression
 
 data class EqualExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                           override val right: Expression,
+                           override val position: Position? = null): BinaryExpression
 
 data class NotEqExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                           override val right: Expression,
+                           override val position: Position? = null): BinaryExpression
 
 data class AndExpression(override val left: Expression,
                          override val right: Expression,
                          override val position: Position? = null): BinaryExpression
 
 data class OrExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+                        override val right: Expression,
+                        override val position: Position? = null): BinaryExpression
 
 data class XorExpression(override val left: Expression,
                          override val right: Expression,
@@ -207,13 +226,13 @@ data class XorExpression(override val left: Expression,
  * Statements
  */
 
-data class FunctionCall(val secondary: Expression,
-                          val expressions: List<Expression>,
-                          override val position: Position? = null): Statement
-
 data class Assignment(val secondary: Expression,
                       val expression: Expression,
                       override val position: Position? = null): Statement
+
+data class FunctionCall(val secondary: Expression,
+                        val expressions: List<Expression>,
+                        override val position: Position? = null): Statement
 
 data class IfStatement(val expression: Expression,
                        val statements: List<Statement>,
@@ -224,7 +243,7 @@ data class LoopStatement(val loopHeader: LoopHeader,
                          override val position: Position? = null) : Statement
 
 data class LoopHeader(val expressions: List<Expression>,
-                override val position: Position? = null): Statement
+                      override val position: Position? = null): Statement
 
 data class ReturnStatement(val expression: Expression,
                            override val position: Position? = null): Statement
@@ -232,7 +251,7 @@ data class ReturnStatement(val expression: Expression,
 data class BreakStatement(override val position: Position? = null): Statement
 
 data class PrintStatement(val expressions: List<Expression>,
-                 override val position: Position? = null): Statement
+                          override val position: Position? = null): Statement
 
 
 /**
@@ -243,14 +262,15 @@ data class FunctionType(val types: List<Type>,
 
 data class Function(val body: Body,
                     val parameters: List<Parameter>,
-                    val type: Type,
-                    override val position: Position? = null): Primary
+                    val type: Type? = null,
+                    override val position: Position? = null): Expression
 
-data class Parameter(val type: Type,
+data class Parameter(val parName: String,
+                     val type: Type,
                      override val position: Position? = null): Expression
 
-data class Body(val statements: List<Statement>,
-                val expression: Expression,
+data class Body(val statements: List<Statement>? = null,
+                val expression: Expression? = null,
                 override val position: Position? = null): Expression
 
 
@@ -262,7 +282,7 @@ data class ArrayType(val type: Type,
 
 
 data class Array(val expressions: List<Expression>,
-                 override val position: Position? = null): Primary
+                 override val position: Position? = null): Expression
 
 
 /**
@@ -272,7 +292,7 @@ data class MapType(val types: List<Type>,
                    override val position: Position? = null) : Type
 
 data class Map(val pairs: List<Pair>,
-               override val position: Position? = null): Primary
+               override val position: Position? = null): Expression
 
 data class Pair(val expressions: List<Expression>,
                 override val position: Position? = null): Expression
@@ -285,22 +305,7 @@ data class TupleType(val type: List<Type>,
                      override val position: Position? = null): Type
 
 data class Tuple(val elements: List<TupleElement>,
-                 override val position: Position? = null): Primary
+                 override val position: Position? = null): Expression
 
 data class TupleElement(val type: Expression,
                         override val position: Position? = null): Expression
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

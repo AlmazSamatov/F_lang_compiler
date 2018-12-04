@@ -1,5 +1,3 @@
-package me.team.f.generator
-
 import kotlin.math.hypot
 
 class Rational(var numerator: Int, var denominator: Int) {
