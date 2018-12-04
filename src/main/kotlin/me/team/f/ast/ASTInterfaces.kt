@@ -12,6 +12,12 @@ data class LineCol(val line: Int, val col: Int)
 
 data class Position(val start: LineCol, val end: LineCol)
 
+fun Node.isBefore(other: Node) : Boolean =
+    position!!.start.isBefore(other.position!!.start)
+
+fun LineCol.isBefore(other: LineCol) : Boolean =
+    line < other.line || (line == other.line && col < other.col)
+
 fun getPos(startLine: Int, startCol: Int, endLine: Int, endCol: Int): Position {
     val start = LineCol(startLine, startCol)
     val end = LineCol(endLine, endCol)

@@ -4,10 +4,6 @@ import me.team.fproject.FLangParser.*
 import org.antlr.v4.runtime.ParserRuleContext
 import org.antlr.v4.runtime.Token
 
-interface ParseTreeToAstMapper<in PTN: ParserRuleContext, out ASTN: Node> {
-    fun map(parseTreeNode: PTN): ASTN
-}
-
 fun ProgramContext.toAst(considerPosition: Boolean = false): Program = Program(
     this.declaration().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
@@ -200,4 +196,12 @@ fun TypeContext.toAst(considerPosition: Boolean = false) : Type = when(this) {
         toPosition(considerPosition)
     )
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
+}
+
+interface ParseTreeToAstMapper<in PTN: ParserRuleContext, out ASTN: Node> {
+    fun map(parseTreeNode: PTN): ASTN
+}
+
+class FLangParseTreeToAstMapper : ParseTreeToAstMapper<ProgramContext, Program> {
+    override fun map(parseTreeNode: ProgramContext): Program = parseTreeNode.toAst()
 }
