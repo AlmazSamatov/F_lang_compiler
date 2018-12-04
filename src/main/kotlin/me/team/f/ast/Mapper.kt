@@ -118,15 +118,16 @@ fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
             toPosition(considerPosition)
         )
 
-        is AssignmentContext -> Assignment(
-            secondary().toAst(considerPosition),
-            expression().toAst(considerPosition),
+        is AssignmentStatementContext -> Assignment(
+            assignment().secondary().toAst(considerPosition),
+            assignment().expression().toAst(considerPosition),
             toPosition(considerPosition)
         )
 
         is IfContext -> IfStatement(
-            ifStatement().expression().toAst(considerPosition),
-            ifStatement().statement().map { it.toAst(considerPosition) },
+            ifStatement().predicate.toAst(considerPosition),
+            ifStatement().thenStatements.map { it.toAst(considerPosition) },
+            ifStatement().elseStatements.map{ it.toAst(considerPosition) },
             toPosition(considerPosition)
         )
 
@@ -155,41 +156,9 @@ fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
     }
 }
 
-fun FunctionCallContext.toAst(considerPosition: Boolean = false) : Statement =
-        FunctionCall(secondary().toAst(considerPosition),
-            expression().map { it.toAst(considerPosition) },
-            toPosition(considerPosition))
-
-fun AssignmentContext.toAst(considerPosition: Boolean = false) : Statement =
-        Assignment(secondary().toAst(considerPosition),
-            expression().toAst(considerPosition),
-            toPosition(considerPosition))
-
-fun IfStatementContext.toAst(considerPosition: Boolean = false) : Statement =
-        IfStatement(expression().toAst(considerPosition),
-            statement().map { it.toAst(considerPosition) },
-            toPosition(considerPosition))
-
-fun LoopStatementContext.toAst(considerPosition: Boolean = false) : Statement =
-        LoopStatement(loopHeader().toAst(considerPosition),
-            statement().map { it.toAst(considerPosition) },
-            toPosition(considerPosition))
-
 fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader =
         LoopHeader(expression().map { it.toAst(considerPosition) },
             toPosition(considerPosition))
-
-fun ReturnStatementContext.toAst(considerPosition: Boolean = false) : Statement =
-        ReturnStatement(expression().toAst(considerPosition),
-            toPosition(considerPosition))
-
-fun BreakStatementContext.toAst(considerPosition: Boolean = false) : Statement =
-        BreakStatement(toPosition(considerPosition))
-
-fun PrintStatementContext.toAst(considerPosition: Boolean = false) : Statement =
-        PrintStatement(expression().map { it.toAst(considerPosition) },
-            toPosition(considerPosition))
-
 
 /**
  * Functions and function types

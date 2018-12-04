@@ -10,10 +10,11 @@ fun main(args: Array<String>) {
 //            inc is func(p: integer): integer => p+1
 //        """.trimIndent()
     val code = """
-            a is 123;
-            b is 45.6;
-            max is func(p1:integer, p2:integer) => if p1 >= p2 then p1 else p2 end;
-            main1 is func() do print "max = ",max(a,b),"\n" end
+            id is func() do
+                a is 123;
+                b is 45.6;
+                if a = 123 then a := 1 else b := 0 end
+            end
         """.trimIndent()
     val ast = Analyser.parse(code).root!!.toAst()
     println(ast)

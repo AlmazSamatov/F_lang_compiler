@@ -56,7 +56,7 @@ data class ElementOf(val varName: Expression,
                      override val position: Position? = null): Expression
 
 data class NamedTupleElement(val secondary: Expression,
-                             val name: String,
+                             val fieldName: String,
                              override val position: Position? = null): Expression
 
 data class UnnamedTupleElement(val secondary: Expression,
@@ -196,13 +196,14 @@ data class FunctionCall(val secondary: Expression,
                         val expressions: List<Expression>,
                         override val position: Position? = null): Statement
 
-data class IfStatement(val expression: Expression,
-                       val statements: List<Statement>,
+data class IfStatement(val predicate: Expression,
+                       val thenStatements: List<Statement>,
+                       val elseStatements: List<Statement>,
                        override val position: Position? = null): Statement
 
 data class LoopStatement(val loopHeader: LoopHeader,
                          val statements: List<Statement>,
-                         override val position: Position? = null) : Statement
+                         override val position: Position? = null): Statement
 
 data class LoopHeader(val expressions: List<Expression>,
                 override val position: Position? = null): Statement
