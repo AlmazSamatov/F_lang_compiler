@@ -139,11 +139,11 @@ object FLangParserAntlrFacade{
                 p5: BitSet?,
                 p6: ATNConfigSet?
             ) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun reportContextSensitivity(p0: Parser?, p1: DFA?, p2: Int, p3: Int, p4: Int, p5: ATNConfigSet?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun reportAttemptingFullContext(
@@ -154,7 +154,7 @@ object FLangParserAntlrFacade{
                 p4: BitSet?,
                 p5: ATNConfigSet?
             ) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
         }

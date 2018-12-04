@@ -95,7 +95,9 @@ import java.io.InputStream
 fun main(args: Array<String>) {
     val code : InputStream? = when (args.size) {
         0 -> System.`in`
-        1 -> FileInputStream(File(args[0]))
+        1 -> {
+            FileInputStream(File(args[0]))
+        }
         else -> {
             System.err.println("Pass 0 arguments or 1")
             System.exit(1)
