@@ -124,9 +124,9 @@ fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
             toPosition(considerPosition)
         )
 
-        is IfStatementContext -> IfStatement(
-            expression().toAst(considerPosition),
-            statement().map { it.toAst(considerPosition) },
+        is IfContext -> IfStatement(
+            ifStatement().expression().toAst(considerPosition),
+            ifStatement().statement().map { it.toAst(considerPosition) },
             toPosition(considerPosition)
         )
 
@@ -136,15 +136,15 @@ fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
             toPosition(considerPosition)
         )
 
-        is ReturnStatementContext -> ReturnStatement(
-            expression().toAst(considerPosition),
+        is ReturnContext -> ReturnStatement(
+            returnStatement().expression().toAst(considerPosition),
             toPosition(considerPosition)
         )
 
-        is BreakStatementContext -> BreakStatement(toPosition(considerPosition))
+        is BreakContext -> BreakStatement(toPosition(considerPosition))
 
-        is PrintStatementContext -> PrintStatement(
-            expression().map { it.toAst(considerPosition) },
+        is PrintContext -> PrintStatement(
+            printStatement().expression().map { it.toAst(considerPosition) },
             toPosition(considerPosition)
         )
 
@@ -201,7 +201,7 @@ fun FunctionTypeContext.toAst(considerPosition: Boolean = false) : Type =
 fun FunctionContext.toAst(considerPosition: Boolean = false) : Primary =
         Function(body().toAst(considerPosition),
             parameter().map {it.toAst(considerPosition) },
-            type().toAst(considerPosition),
+            type()?.toAst(considerPosition),
             toPosition(considerPosition))
 
 fun ParameterContext.toAst(considerPosition: Boolean = false) =

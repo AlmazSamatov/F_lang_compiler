@@ -224,7 +224,7 @@ data class FunctionType(val types: List<Type>,
 
 data class Function(val body: Body,
                     val parameters: List<Parameter>,
-                    val type: Type,
+                    val type: Type? = null,
                     override val position: Position? = null): Primary
 
 data class Parameter(val type: Type,
