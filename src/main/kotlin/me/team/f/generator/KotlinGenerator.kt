@@ -52,6 +52,61 @@ fun exprToKotlin(expr: Expression): String {
         }
         is StrLit -> expr.specificProcess(StrLit::class.java) { resultBuilder.append(it.value) }
 
+        // Secondary
+        is Call -> expr.specificProcess(Call::class.java) {
+            val call = StringBuilder()
+
+            call.append(it.secondary)
+            call.append("(")
+
+            var was = false
+            for (parameter in it.expressions) {
+                if (was) {
+                    call.append(", ")
+                } else {
+                    was = true
+                }
+                call.append(exprToKotlin(parameter))
+            }
+
+            call.append(")")
+
+            resultBuilder.append(call)
+        }
+
+        is ElementOf -> expr.specificProcess(ElementOf::class.java)  {
+            val elementOf = StringBuilder()
+
+            elementOf.append(it.varName)
+            elementOf.append("[")
+            elementOf.append(it.index)
+            elementOf.append("]")
+
+            resultBuilder.append(elementOf)
+        }
+
+        is NamedTupleElement -> expr.specificProcess(NamedTupleElement::class.java)  {
+            val call = StringBuilder()
+
+            call.append(it.secondary)
+            call.append("[")
+            call.append(it.fieldName)
+            call.append("]")
+
+            resultBuilder.append(call)
+        }
+
+        is UnnamedTupleElement -> expr.specificProcess(UnnamedTupleElement::class.java) {
+            val call = StringBuilder()
+
+            call.append(it.secondary)
+            call.append("[")
+            call.append(it.fieldNum)
+            call.append("]")
+
+            resultBuilder.append(call)
+        }
+
         // Conditional
         is Conditional -> expr.specificProcess(Conditional::class.java) {
             resultBuilder.append(
@@ -150,6 +205,19 @@ fun exprToKotlin(expr: Expression): String {
 
 fun stmtToKotlin(stmt: Statement): String {
     return ""
+}
+
+fun secondaryToKotlin(secondary: Expression): String {
+    val resultBuilder = StringBuilder()
+
+    when(secondary) {
+
+        else -> {
+            resultBuilder.append(exprToKotlin(secondary))
+        }
+    }
+
+    return resultBuilder.toString()
 }
 
 fun binaryToKotlin(expr: BinaryExpression): String {
