@@ -1417,19 +1417,23 @@ public class FLangParser extends Parser {
 	}
 
 	public static class IfStatementContext extends ParserRuleContext {
+		public ExpressionContext predicate;
+		public StatementContext statement;
+		public List<StatementContext> thenStatements = new ArrayList<StatementContext>();
+		public List<StatementContext> elseStatements = new ArrayList<StatementContext>();
 		public TerminalNode IF() { return getToken(FLangParser.IF, 0); }
+		public TerminalNode THEN() { return getToken(FLangParser.THEN, 0); }
+		public TerminalNode END() { return getToken(FLangParser.END, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode THEN() { return getToken(FLangParser.THEN, 0); }
-		public TerminalNode END() { return getToken(FLangParser.END, 0); }
+		public TerminalNode ELSE() { return getToken(FLangParser.ELSE, 0); }
 		public List<StatementContext> statement() {
 			return getRuleContexts(StatementContext.class);
 		}
 		public StatementContext statement(int i) {
 			return getRuleContext(StatementContext.class,i);
 		}
-		public TerminalNode ELSE() { return getToken(FLangParser.ELSE, 0); }
 		public IfStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1454,7 +1458,7 @@ public class FLangParser extends Parser {
 			setState(192);
 			match(IF);
 			setState(193);
-			expression(0);
+			((IfStatementContext)_localctx).predicate = expression(0);
 			setState(194);
 			match(THEN);
 			setState(196); 
@@ -1464,7 +1468,8 @@ public class FLangParser extends Parser {
 				{
 				{
 				setState(195);
-				statement();
+				((IfStatementContext)_localctx).statement = statement();
+				((IfStatementContext)_localctx).thenStatements.add(((IfStatementContext)_localctx).statement);
 				}
 				}
 				setState(198); 
@@ -1484,7 +1489,8 @@ public class FLangParser extends Parser {
 					{
 					{
 					setState(201);
-					statement();
+					((IfStatementContext)_localctx).statement = statement();
+					((IfStatementContext)_localctx).elseStatements.add(((IfStatementContext)_localctx).statement);
 					}
 					}
 					setState(204); 

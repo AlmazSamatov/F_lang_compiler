@@ -29,8 +29,6 @@ interface Statement: Node
 
 interface Type: Node
 
-interface Primary: Node
-
 
 /**
  * Declaration
@@ -56,7 +54,7 @@ data class ElementOf(val varName: Expression,
                      override val position: Position? = null): Expression
 
 data class NamedTupleElement(val secondary: Expression,
-                             val name: String,
+                             val fieldName: String,
                              override val position: Position? = null): Expression
 
 data class UnnamedTupleElement(val secondary: Expression,
@@ -70,21 +68,6 @@ data class Conditional(val predicate: Expression,
                        val thenExpr: Expression,
                        val elseExpr: Expression,
                        override val position: Position? = null): Expression
-
-data class FunctionExpression(val function: Primary,
-                              override val position: Position? = null): Expression
-
-data class ArrayExpression(val array: Primary,
-                           override val position: Position? = null): Expression
-
-data class TupleExpression(val tuple: Primary,
-                           override val position: Position? = null): Expression
-
-data class MapExpression(val map: Primary,
-                         override val position: Position? = null): Expression
-
-data class ParenExpression(val expression: Expression,
-                           override val position: Position? = null) : Expression
 
 /**
  * Types
@@ -196,13 +179,14 @@ data class FunctionCall(val secondary: Expression,
                         val expressions: List<Expression>,
                         override val position: Position? = null): Statement
 
-data class IfStatement(val expression: Expression,
-                       val statements: List<Statement>,
+data class IfStatement(val predicate: Expression,
+                       val thenStatements: List<Statement>,
+                       val elseStatements: List<Statement>,
                        override val position: Position? = null): Statement
 
 data class LoopStatement(val loopHeader: LoopHeader,
                          val statements: List<Statement>,
-                         override val position: Position? = null) : Statement
+                         override val position: Position? = null): Statement
 
 data class LoopHeader(val expressions: List<Expression>,
                 override val position: Position? = null): Statement
@@ -224,8 +208,8 @@ data class FunctionType(val types: List<Type>,
 
 data class Function(val body: Body,
                     val parameters: List<Parameter>,
-                    val type: Type,
-                    override val position: Position? = null): Primary
+                    val type: Type? = null,
+                    override val position: Position? = null): Expression
 
 data class Parameter(val type: Type,
                      override val position: Position? = null): Expression
@@ -243,7 +227,7 @@ data class ArrayType(val type: Type,
 
 
 data class Array(val expressions: List<Expression>,
-                 override val position: Position? = null): Primary
+                 override val position: Position? = null): Expression
 
 
 /**
@@ -253,7 +237,7 @@ data class MapType(val types: List<Type>,
                    override val position: Position? = null) : Type
 
 data class Map(val pairs: List<Pair>,
-               override val position: Position? = null): Primary
+               override val position: Position? = null): Expression
 
 data class Pair(val expressions: List<Expression>,
                 override val position: Position? = null): Expression
@@ -266,7 +250,7 @@ data class TupleType(val type: List<Type>,
                      override val position: Position? = null): Type
 
 data class Tuple(val elements: List<TupleElement>,
-                 override val position: Position? = null): Primary
+                 override val position: Position? = null): Expression
 
 data class TupleElement(val type: Expression,
                         override val position: Position? = null): Expression
