@@ -120,7 +120,65 @@ fun exprToKotlin(expr: Expression): String {
 }
 
 fun stmtToKotlin(stmt: Statement): String {
-    return ""
+    val resultBuilder = StringBuilder()
+
+    when (stmt) {
+        is Assignment -> stmt.specificProcess(Assignment::class.java) {
+            resultBuilder.append(exprToKotlin(it.secondary) + " = " + exprToKotlin(it.expression))
+        }
+
+        is FunctionCall -> stmt.specificProcess(FunctionCall::class.java) {
+            resultBuilder.append(exprToKotlin(it.secondary) + " (")
+            var i = 0
+            while (i < it.expressions.size - 1) {
+                resultBuilder.append(exprToKotlin(it.expressions[i]))
+                resultBuilder.append(", ")
+                i += 1
+            }
+            resultBuilder.append(exprToKotlin(it.expressions[it.expressions.size - 1]))
+            resultBuilder.append(")")
+        }
+
+        is IfStatement -> stmt.specificProcess(IfStatement:: class.java) {
+            resultBuilder.append("if (" + exprToKotlin(it.predicate) + ") { ")
+            for (expression in it.thenStatements) {
+                resultBuilder.append(stmtToKotlin(expression) + "; ")
+            }
+            resultBuilder.append("}")
+            if (!it.thenStatements.isEmpty()) {
+                resultBuilder.append(" else { ")
+                for (expression in it.elseStatements) {
+                    resultBuilder.append(stmtToKotlin(expression) + "; ")
+                }
+                resultBuilder.append("}")
+            }
+        }
+
+        is LoopStatement -> stmt.specificProcess(LoopStatement::class.java) {
+            //TODO
+        }
+
+        is ReturnStatement -> stmt.specificProcess(ReturnStatement::class.java) {
+            resultBuilder.append("return " + exprToKotlin(it.expression))
+        }
+
+        is BreakStatement -> stmt.specificProcess(BreakStatement::class.java) {
+            resultBuilder.append("break; ")
+        }
+
+        is PrintStatement -> stmt.specificProcess(PrintStatement::class.java) {
+            resultBuilder.append("print (")
+            var i = 0
+            while (i < it.expressions.size - 1) {
+                resultBuilder.append(exprToKotlin(it.expressions[i]) + ", ")
+                i += 1
+            }
+            resultBuilder.append(exprToKotlin(it.expressions[i]))
+            resultBuilder.append(")")
+        }
+    }
+
+    return resultBuilder.toString()
 }
 
 fun binaryToKotlin(expr: BinaryExpression): String {
