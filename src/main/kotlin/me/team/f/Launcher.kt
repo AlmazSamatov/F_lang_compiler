@@ -10,15 +10,13 @@ fun main(args: Array<String>) {
     val code = "a is 5; b is 7 * 2; res is a + b; " +
             "isOk: boolean is if a > b then true else false;" +
             "inc is func(v: integer) => v + 1"
-//    val code = "a: integer is 5 + 7; b is a + 2"
-//    val code = "inc is func(v: integer) => v + 1"
 
     val ast = Analyser.parse(code).root!!.toAst()
     val kotlinProgram = mutableListOf("fun main(args: Array<String>) {")
 
     ast.declarations.map {
         it.specificProcess(VarDeclaration::class.java){ line ->
-            println(line)
+//            println(line)
             kotlinProgram.add("\t" + declarationToKotlin(line))
         }
     }

@@ -76,7 +76,7 @@ assignment
     ;
 
 ifStatement
-    : IF expression THEN statement+ (ELSE statement+)? END
+    : IF predicate=expression THEN thenStatements+=statement+ (ELSE elseStatements+=statement+)? END
     ;
 
 loopStatement
