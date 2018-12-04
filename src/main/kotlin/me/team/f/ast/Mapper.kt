@@ -67,26 +67,14 @@ fun PrimaryContext.toAst(considerPosition: Boolean = false): Expression {
     return when (this) {
         is ElementaryExpressionContext -> elementary().toAst(considerPosition)
         is ConditionalExpressionContext -> conditional().toAst(considerPosition)
-        is FunctionExpressionContext -> FunctionExpression(
-            function().toAst(considerPosition),
-            toPosition(considerPosition)
-        )
-        is ArrayExpressionContext -> ArrayExpression(
-            array().toAst(considerPosition),
-            toPosition(considerPosition)
-        )
-        is TupleExpressionContext -> TupleExpression(
-            tuple().toAst(considerPosition),
-            toPosition(considerPosition)
-        )
-        is MapExpressionContext -> MapExpression(
-            map().toAst(considerPosition),
-            toPosition(considerPosition)
-        )
-        is ParenExpressionContext -> ParenExpression(
-            expression().toAst(considerPosition),
-            toPosition(considerPosition)
-        )
+        is FunctionExpressionContext -> Function(function().body().toAst(considerPosition),
+            function().parameter().map {it.toAst(considerPosition) },
+            function().type()?.toAst(considerPosition),
+            toPosition(considerPosition))
+        is ArrayExpressionContext -> Array(array().expression().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+        is TupleExpressionContext -> Tuple(tuple().tupleElement().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+        is MapExpressionContext -> Map(map().pair().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+        is ParenExpressionContext -> expression().toAst(considerPosition)
         else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
     }
 }
@@ -164,15 +152,6 @@ fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader =
  * Functions and function types
  */
 
-fun FunctionTypeContext.toAst(considerPosition: Boolean = false) : Type =
-        FunctionType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
-
-fun FunctionContext.toAst(considerPosition: Boolean = false) : Expression =
-        Function(body().toAst(considerPosition),
-            parameter().map {it.toAst(considerPosition) },
-            type()?.toAst(considerPosition),
-            toPosition(considerPosition))
-
 fun ParameterContext.toAst(considerPosition: Boolean = false) =
         Parameter(type().toAst(considerPosition), toPosition(considerPosition))
 
@@ -183,24 +162,8 @@ fun BodyContext.toAst(considerPosition: Boolean = false) =
 
 
 /**
- * Arrays
- */
-
-fun ArrayTypeContext.toAst(considerPosition: Boolean = false) : Type =
-        me.team.f.ast.ArrayType(type().toAst(considerPosition), toPosition(considerPosition))
-
-fun ArrayContext.toAst(considerPosition: Boolean = false) : Expression =
-        Array(expression().map { it.toAst(considerPosition) }, toPosition(considerPosition))
-
-/**
  * Maps
  */
-
-fun MapTypeContext.toAst(considerPosition: Boolean = false) : Type =
-        MapType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
-
-fun MapContext.toAst(considerPosition: Boolean = false) : Expression =
-        Map(pair().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
 fun PairContext.toAst(considerPosition: Boolean = false) : Pair =
         Pair(expression().map { it.toAst(considerPosition) }, toPosition(considerPosition))
@@ -209,11 +172,6 @@ fun PairContext.toAst(considerPosition: Boolean = false) : Pair =
 /**
  * Tuples
  */
-fun TupleTypeContext.toAst(considerPosition: Boolean = false) : TupleType =
-        TupleType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
-
-fun TupleContext.toAst(considerPosition: Boolean = false) : Expression =
-        Tuple(tupleElement().map { it.toAst(considerPosition) }, toPosition(considerPosition))
 
 fun TupleElementContext.toAst(considerPosition: Boolean = false) : TupleElement =
         TupleElement(expression().toAst(considerPosition), toPosition(considerPosition))

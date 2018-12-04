@@ -69,21 +69,6 @@ data class Conditional(val predicate: Expression,
                        val elseExpr: Expression,
                        override val position: Position? = null): Expression
 
-data class FunctionExpression(val function: Expression,
-                              override val position: Position? = null): Expression
-
-data class ArrayExpression(val array: Expression,
-                           override val position: Position? = null): Expression
-
-data class TupleExpression(val tuple: Expression,
-                           override val position: Position? = null): Expression
-
-data class MapExpression(val map: Expression,
-                         override val position: Position? = null): Expression
-
-data class ParenExpression(val expression: Expression,
-                           override val position: Position? = null) : Expression
-
 /**
  * Types
  */
