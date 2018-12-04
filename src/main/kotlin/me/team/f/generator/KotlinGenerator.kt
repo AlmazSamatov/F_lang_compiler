@@ -1,8 +1,11 @@
 package me.team.f.generator
 
 import me.team.f.ast.*
+import me.team.f.ast.Array
 import me.team.f.ast.Function
+import me.team.f.ast.Map
 import java.lang.StringBuilder
+import kotlin.math.exp
 
 fun declarationToKotlin(ast: VarDeclaration): String {
     return if (ast.type != null) {
@@ -60,7 +63,7 @@ fun exprToKotlin(expr: Expression): String {
             )
         }
 
-//         Function
+        // Function
         is Function -> expr.specificProcess(Function::class.java) {
             val parameters = StringBuilder()
             var was = false
@@ -86,6 +89,19 @@ fun exprToKotlin(expr: Expression): String {
             resultBuilder.append(
                 "fun($parameters)$type$body"
             )
+        }
+
+        // Compose types
+        is Array -> expr.specificProcess(Array::class.java) {
+
+        }
+
+        is Tuple -> expr.specificProcess(Tuple::class.java) {
+
+        }
+
+        is Map -> expr.specificProcess(Map::class.java) {
+
         }
 
     }
