@@ -4,6 +4,7 @@ import me.team.f.ast.*
 import me.team.f.ast.Array
 import me.team.f.ast.Function
 import me.team.f.ast.Map
+import kotlin.jvm.internal.FunctionReference
 
 fun declarationToKotlin(ast: VarDeclaration): String {
     return if (ast.type != null) {
@@ -56,7 +57,7 @@ fun exprToKotlin(expr: Expression): String {
         is Call -> expr.specificProcess(Call::class.java) {
             val call = StringBuilder()
 
-            call.append(it.secondary)
+            call.append((it.secondary as FunctionReference).name)
             call.append("(")
 
             var was = false
@@ -77,7 +78,7 @@ fun exprToKotlin(expr: Expression): String {
         is ElementOf -> expr.specificProcess(ElementOf::class.java)  {
             val elementOf = StringBuilder()
 
-            elementOf.append(it.varName)
+            elementOf.append((it.varName as VarReference).name)
             elementOf.append("[")
             elementOf.append(it.index)
             elementOf.append("]")
@@ -88,10 +89,10 @@ fun exprToKotlin(expr: Expression): String {
         is NamedTupleElement -> expr.specificProcess(NamedTupleElement::class.java)  {
             val call = StringBuilder()
 
-            call.append(it.secondary)
-            call.append("[")
+            call.append((it.secondary as VarReference).name)
+            call.append("[\"")
             call.append(it.fieldName)
-            call.append("]")
+            call.append("\"]")
 
             resultBuilder.append(call)
         }
@@ -99,7 +100,7 @@ fun exprToKotlin(expr: Expression): String {
         is UnnamedTupleElement -> expr.specificProcess(UnnamedTupleElement::class.java) {
             val call = StringBuilder()
 
-            call.append(it.secondary)
+            call.append((it.secondary as VarReference).name)
             call.append("[")
             call.append(it.fieldNum)
             call.append("]")
@@ -171,7 +172,9 @@ fun exprToKotlin(expr: Expression): String {
                     was = true
                 }
                 if (element.name != null) {
+                    elements.append('"')
                     elements.append(element.name)
+                    elements.append('"')
                 } else {
                     elements.append(count)
                 }
@@ -205,19 +208,6 @@ fun exprToKotlin(expr: Expression): String {
 
 fun stmtToKotlin(stmt: Statement): String {
     return ""
-}
-
-fun secondaryToKotlin(secondary: Expression): String {
-    val resultBuilder = StringBuilder()
-
-    when(secondary) {
-
-        else -> {
-            resultBuilder.append(exprToKotlin(secondary))
-        }
-    }
-
-    return resultBuilder.toString()
 }
 
 fun binaryToKotlin(expr: BinaryExpression): String {
