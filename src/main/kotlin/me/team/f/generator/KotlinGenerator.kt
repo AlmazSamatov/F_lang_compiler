@@ -4,8 +4,6 @@ import me.team.f.ast.*
 import me.team.f.ast.Array
 import me.team.f.ast.Function
 import me.team.f.ast.Map
-import java.lang.StringBuilder
-import kotlin.math.exp
 
 fun declarationToKotlin(ast: VarDeclaration): String {
     return if (ast.type != null) {
@@ -103,15 +101,46 @@ fun exprToKotlin(expr: Expression): String {
                 }
                 elements.append(exprToKotlin(p))
             }
-            resultBuilder.append("arrayOf($elements)")
+            resultBuilder.append("mutableListOf($elements)")
         }
 
         is Tuple -> expr.specificProcess(Tuple::class.java) {
-
+            val elements = StringBuilder()
+            val declarations = StringBuilder()
+            var was = false
+            var count = 1
+            for (element in it.elements) {
+                if (was) {
+                    elements.append(", ")
+                } else {
+                    was = true
+                }
+                if (element.name != null) {
+                    elements.append(element.name)
+                } else {
+                    elements.append(count)
+                }
+                elements.append(" to ")
+                elements.append(exprToKotlin(element.expression))
+                count++
+            }
+            resultBuilder.append("mapOf($elements)")
         }
 
         is Map -> expr.specificProcess(Map::class.java) {
-
+            val elements = StringBuilder()
+            var was = false
+            for (pair in it.pairs) {
+                if (was) {
+                    elements.append(", ")
+                } else {
+                    was = true
+                }
+                elements.append(exprToKotlin(pair.expressions[0]))
+                elements.append(" to ")
+                elements.append(exprToKotlin(pair.expressions[1]))
+            }
+            resultBuilder.append("mutableMapOf($elements)")
         }
 
     }
