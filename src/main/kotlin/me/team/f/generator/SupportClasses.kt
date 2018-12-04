@@ -2,11 +2,30 @@ package me.team.f.generator
 
 import kotlin.math.sqrt
 
-class Rational(var numerator: Int, var denominator: Int) {
+class Rational(var numerator: Int, var denominator: Int) : Comparable<Rational> {
+    override fun compareTo(other: Rational): Int {
+        return when {
+            this.less(other) -> -1
+            this.equals(other) -> 0
+            else -> 1
+        }
+    }
+
+    fun compareTo(other: Int): Int {
+        return this.compareTo(Rational(other, 1))
+    }
+
     init {
         check(this.denominator == 0) {
             "Denominator cannot be 0."
         }
+    }
+
+    private fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
+
+    fun normalize(other: Rational): Rational {
+        val gcd = gcd(other.numerator, other.denominator)
+        return Rational(other.numerator / gcd, other.denominator / gcd)
     }
 
     operator fun plus(other: Rational): Rational {
@@ -107,6 +126,14 @@ class Rational(var numerator: Int, var denominator: Int) {
     fun toFloat(): Float {
         return this.numerator * 1.0f / this.denominator
     }
+
+    private fun less(other: Rational): Boolean {
+        return this.numerator * other.denominator < this.denominator * other.numerator
+    }
+
+    fun equals(other: Rational): Boolean {
+        return this.numerator * other.denominator == this.denominator * other.numerator
+    }
 }
 
 operator fun Int.plus(other: Rational): Rational {
@@ -125,7 +152,21 @@ operator fun Int.div(other: Rational): Rational {
     return this * other.inverse()
 }
 
-class Complex(var real: Double, var imaginary: Double) {
+operator fun Int.compareTo(other: Rational): Int {
+    return -1 * other.compareTo(this)
+}
+
+class Complex(var real: Double, var imaginary: Double) : Comparable<Complex> {
+    override fun compareTo(other: Complex): Int {
+        return when {
+            this.real < other.real -> -1
+            this.real == other.real && this.imaginary < other.imaginary -> -1
+            this.real == other.real && this.imaginary == other.imaginary -> 0
+            this.real == other.real && this.imaginary > other.imaginary -> 1
+            else -> 1
+        }
+    }
+
     fun modulus(): Double {
         return sqrt((this * this.conjugate()).real)
     }
