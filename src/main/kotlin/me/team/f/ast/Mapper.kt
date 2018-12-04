@@ -21,7 +21,7 @@ fun ParserRuleContext.toPosition(considerPosition: Boolean): Position? {
 }
 
 fun DeclarationContext.toAst(considerPosition: Boolean = false): Declaration = VarDeclaration (
-    this.ID().text, this.expression().toAst(considerPosition), toPosition(considerPosition))
+    ID().text, type()?.toAst(considerPosition), expression().toAst(considerPosition), toPosition(considerPosition))
 
 fun ExpressionContext.toAst(considerPosition: Boolean = false): Expression = when (this) {
     is BinaryOperationContext -> toAst(considerPosition)
@@ -213,15 +213,15 @@ fun TupleElementContext.toAst(considerPosition: Boolean = false) : TupleElement 
  * Atomic Types
  */
 fun TypeContext.toAst(considerPosition: Boolean = false) : Type = when(this) {
-    is BooleanTypeContext -> BooleanType(toPosition(considerPosition))
-    is IntegerTypeContext -> IntegerType(toPosition(considerPosition))
-    is RealTypeContext -> RealType(toPosition(considerPosition))
-    is RationalTypeContext -> RationalType(toPosition(considerPosition))
-    is ComplexTypeContext -> ComplexType(toPosition(considerPosition))
-    is StringTypeContext -> StringType(toPosition(considerPosition))
-    is FunctionTypeContext -> FunctionType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
-    is TupleTypeContext -> TupleType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
-    is ArrayTypeContext -> ArrayType(type().toAst(considerPosition), toPosition(considerPosition))
-    is MapTypeContext -> MapType(type().map { it.toAst(considerPosition) }, toPosition(considerPosition))
+    is BooleanTContext -> BooleanType(toPosition(considerPosition))
+    is IntegerTContext -> IntegerType(toPosition(considerPosition))
+    is RealTContext -> RealType(toPosition(considerPosition))
+    is RationalTContext -> RationalType(toPosition(considerPosition))
+    is ComplexTContext -> ComplexType(toPosition(considerPosition))
+    is StringTContext -> StringType(toPosition(considerPosition))
+    is FunctionTContext -> functionType().toAst(considerPosition)
+    is TupleTContext -> tupleType().toAst(considerPosition)
+    is ArrayTContext -> arrayType().toAst(considerPosition)
+    is MapTContext -> mapType().toAst(considerPosition)
     else -> throw UnsupportedOperationException(this.javaClass.canonicalName)
 }
