@@ -29,7 +29,6 @@ fun Program.validate(): List<Error> {
     }
 
     this.specificProcess(ForLoopHeader::class.java) {
-        // TODO(fix problems with scopes)
         if (it.id != null)
             varsByName[it.id] = VarDeclaration(it.id, null, VarReference(it.id), it.position)
     }
