@@ -174,7 +174,7 @@ fun PairContext.toAst(considerPosition: Boolean = false) : Pair =
  */
 
 fun TupleElementContext.toAst(considerPosition: Boolean = false) : TupleElement =
-    TupleElement(ID()?.text, expression().toAst(considerPosition), toPosition(considerPosition))
+    TupleElement(ID().text, expression().toAst(considerPosition), toPosition(considerPosition))
 
 /**
  * Atomic Types

@@ -151,7 +151,7 @@ tuple
     ;
 
 tupleElement
-    : (ID IS)? expression
+    : ID IS expression
     ;
 
 
