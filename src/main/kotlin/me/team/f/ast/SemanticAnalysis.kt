@@ -319,7 +319,6 @@ fun Program.validate(): List<Error> {
     }
 
     this.specificProcess(Call::class.java) {
-        val i = 0
         when (it.secondary) {
             is VarReference -> {
                 if (!varsByName.containsKey(it.secondary.name)) {
