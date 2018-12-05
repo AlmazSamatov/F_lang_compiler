@@ -139,9 +139,16 @@ fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
     }
 }
 
-fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader =
-    LoopHeader(expression().map { it.toAst(considerPosition) },
-        toPosition(considerPosition))
+fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader {
+    return if (FOR() != null || FOR().text != null)
+        ForLoopHeader(expression().map { it.toAst(considerPosition) },
+            ID().text,
+            DOTDOT() != null,
+            toPosition(considerPosition))
+    else
+        WhileLoopHeader(expression().map { it.toAst(considerPosition) },
+            toPosition(considerPosition))
+}
 
 /**
  * Functions and function types
