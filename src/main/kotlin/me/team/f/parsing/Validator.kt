@@ -5,6 +5,7 @@ import me.team.f.ast.Array
 import me.team.f.ast.Map
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.exp
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
@@ -121,17 +122,28 @@ fun Program.validate(): List<Error> {
                 is StrLit -> "string"
                 is VarReference -> type(varsByName[expression.referenceName]?.value!!)
                 is Map -> "map"
-                is Array -> "array"
+                is Array -> {
+
+                    "array<" + type(expression.expressions[0]) + ">"
+                }
                 is Pair -> "pair"
+                is Tuple -> "tuple"
                 is BinaryOperation -> {
                     val leftType = type(expression.left)
                     val rightType = type(expression.right)
+                    val typesPair = Pair(leftType, rightType)
                     when (expression.operatorSign) {
                         in listOf("<", "=", ">", "<=", "/=", ">=") -> {
-                            when (Pair(leftType, rightType)) {
+
+                            when (typesPair) {
                                 Pair("integer", "integer") -> "boolean"
                                 Pair("integer", "real") -> "boolean"
                                 Pair("integer", "rational") -> "boolean"
+                                Pair("real", "integer") -> "boolean"
+                                Pair("real", "real") -> "boolean"
+                                Pair("rational", "integer") -> "boolean"
+                                Pair("rational", "rational") -> "boolean"
+                                Pair("complex", "complex") -> "boolean"
                                 else -> {
                                     errors.add(
                                         me.team.f.parsing.Error(
@@ -143,10 +155,70 @@ fun Program.validate(): List<Error> {
                                 }
                             }
                         }
-
+                        in listOf("+", "-", "*", "/") -> {
+                            when (typesPair) {
+                                Pair("integer", "integer") -> "integer"
+                                Pair("integer", "real") -> "real"
+                                Pair("integer", "rational") -> "rational"
+                                Pair("integer", "complex") -> "complex"
+                                Pair("real", "integer") -> "real"
+                                Pair("real", "real") -> "real"
+                                Pair("real", "complex") -> "complex"
+                                Pair("rational", "integer") -> "rational"
+                                Pair("rational", "rational") -> "rational"
+                                Pair("complex", "integer") -> "complex"
+                                Pair("complex", "real") -> "complex"
+                                Pair("complex", "complex") -> "complex"
+                                Pair("map", "map") -> {
+                                    if (expression.operatorSign == "+") {
+                                        "map"
+                                    } else {
+                                        errors.add(
+                                            Error(
+                                                "Unsupported operator ${expression.operatorSign} for expressions of type map.",
+                                                expression.position?.start!!
+                                            )
+                                        )
+                                        ""
+                                    }
+                                }
+                                Pair("array", "array") -> {
+                                    if (expression.operatorSign == "+") {
+                                        "array"
+                                    } else {
+                                        errors.add(
+                                            Error(
+                                                "Unsupported operator ${expression.operatorSign} for expressions of type array.",
+                                                expression.position?.start!!
+                                            )
+                                        )
+                                        ""
+                                    }
+                                }
+                                else -> {
+                                    errors.add(
+                                        Error(
+                                            "Operator ${expression.operatorSign} cannot be applied on operands of types ($leftType, $rightType)",
+                                            expression.position?.start!!
+                                        )
+                                    )
+                                    "any"
+                                }
+                            }
+                        }
+                        in listOf("&", "|", "^") -> {
+                            if (typesPair != Pair("boolean", "boolean")) {
+                                errors.add(
+                                    Error(
+                                        "Cannot use logical operator ${expression.operatorSign}",
+                                        expression.position?.start!!
+                                    )
+                                )
+                                "any"
+                            } else "boolean"
+                        }
                         else -> {
-                            errors.add(Error("Unknown operand", expression.position?.start!!))
-                            ""
+                            "any"
                         }
                     }
                 }
