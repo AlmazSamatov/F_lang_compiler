@@ -47,6 +47,7 @@ fun Program.validate(): List<Error> {
             )
         }
     }
+
     this.specificProcess(Assignment::class.java) {
         it.secondary as VarReference
         if (!varsByName.containsKey(it.secondary.name)) {
@@ -64,6 +65,8 @@ fun Program.validate(): List<Error> {
                 )
             )
         }
+    }
+
 
     fun type(expression: Expression): String {
         return when (expression) {
@@ -215,9 +218,6 @@ fun Program.validate(): List<Error> {
         }
     }
 
-    if (errors.size > 0)
-        return errors
-
     // check a variable is not referred before being declared
     this.specificProcess(VarReference::class.java) {
         if (!varsByName.containsKey(it.name)) {
@@ -263,7 +263,6 @@ fun Program.validate(): List<Error> {
     }
 
     this.specificProcess(FunctionCall::class.java) {
-        val i = 0
         when (it.secondary) {
             is VarReference -> {
                 if (!varsByName.containsKey(it.secondary.name)) {
