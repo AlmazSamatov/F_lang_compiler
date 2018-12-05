@@ -1,8 +1,7 @@
 fun main(args: Array<String>) {
-	var a = mapOf("1" to "Hello", "2" to "World")
-	var printer = fun(str: String): Int{
-	print(str)
-	return 0
+	var a = if (5 * 7 > 55 * 7) {
+	"hello"
+	} else {
+	"world"
 	}
-	var b = printer(a["1"]!!)
 }

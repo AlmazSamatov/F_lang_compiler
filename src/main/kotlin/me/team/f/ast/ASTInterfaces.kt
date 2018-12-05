@@ -132,6 +132,8 @@ data class Conditional(val predicate: Expression,
  * Types
  */
 
+data class UndefinedType(override val position: Position? = null): Type
+
 data class BooleanType(override val position: Position? = null): Type
 
 data class IntegerType(override val position: Position? = null): Type
