@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
 //            "e is func(v: integer) : boolean do if a > b then o is 0 return true else print \"Hello!\" return false end end;" +
 //            "d is func(v: integer) do a := 1 inc(b) print a, b, res end"
 
-    val code = "d is func(v: integer) do j is 1 for i in 1..2 loop print i end end"
+    val code = "d is func(v: integer) do print v for i in 1..2 loop print i end end"
 
     val parseResult = Analyser.parse(code)
 

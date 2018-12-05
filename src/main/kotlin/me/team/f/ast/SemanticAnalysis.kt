@@ -1,62 +1,7 @@
 package me.team.f.ast
 
-import me.team.f.parsing.Analyser
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
 import java.util.*
 import kotlin.collections.HashMap
-
-//fun Node.process(operation: (Node) -> Unit) {
-//    operation(this)
-//    this.javaClass.kotlin.memberProperties.forEach { p ->
-//        val v = p.get(this)
-//        when (v) {
-//            is Node -> v.process(operation)
-//            is Collection<*> -> v.forEach { if (it is Node) it.process(operation) }
-//        }
-//    }
-//}
-//
-//fun Node.transform(operation: (Node) -> Node): Node {
-//    operation(this)
-//    val changes = HashMap<String, Any>()
-//    this.javaClass.kotlin.memberProperties.forEach { p ->
-//        val v = p.get(this)
-//        when (v) {
-//            is Node -> {
-//                val newValue = v.transform(operation)
-//                if (newValue != v) changes[p.name] = newValue
-//            }
-//            is Collection<*> -> {
-//                val newValue = v.map { if (it is Node) it.transform(operation) else it }
-//                if (newValue != v) changes[p.name] = newValue
-//            }
-//        }
-//    }
-//    var instanceToTransform = this
-//    if (!changes.isEmpty()) {
-//        val constructor = this.javaClass.kotlin.primaryConstructor!!
-//        val params = HashMap<KParameter, Any?>()
-//        constructor.parameters.forEach { param ->
-//            if (changes.containsKey(param.name)) {
-//                params[param] = changes[param.name]
-//            } else {
-//                params[param] = this.javaClass.kotlin.memberProperties.find { param.name == it.name }!!.get(this)
-//            }
-//        }
-//        instanceToTransform = constructor.callBy(params)
-//    }
-//    return operation(instanceToTransform)
-//}
-
-//@Suppress("UNCHECKED_CAST")
-//fun <T : Node> Node.specificProcess(type: Class<T>, operation: (T) -> Unit) {
-//    process {
-//        if (type.isInstance(it)) operation(it as T)
-//    }
-//}
 
 data class Error(val message: String, val position: LineCol)
 
@@ -245,33 +190,4 @@ fun Node.isBefore(varDeclaration: VarDeclaration): Boolean {
     return this.position!!.start.line < varDeclaration.position!!.start.line ||
             this.position!!.start.line == varDeclaration.position.start.line &&
             this.position!!.start.col < varDeclaration.position.start.col
-}
-
-object Facade {
-
-    fun parse(code: String): Result = parse(ByteArrayInputStream(code.toByteArray(Charsets.UTF_8)))
-
-    fun parse(file: File): Result = parse(FileInputStream(file))
-
-    fun parse(inputStream: InputStream): Result {
-        val antlrParsingResult = Analyser.parse(inputStream)
-        val lexicalAnsSyntaticErrors = antlrParsingResult.errors
-        val antlrRoot = antlrParsingResult.root
-        val astRoot = antlrRoot
-        val semanticErrors = astRoot?.validate() ?: emptyList()
-        return Result(astRoot, lexicalAnsSyntaticErrors + semanticErrors)
-    }
-
-}
-
-data class Result(
-    val root: Program?,
-    val errors: List<Error>
-) {
-    fun isCorrect(): Boolean = root != null && errors.isEmpty()
-}
-
-fun main(args: kotlin.Array<String>) {
-    Facade.parse(File("./src/main/resources/simple.f"))
-        .errors.forEach { println("Error:\n${it.message}\nPosition:${it.position}") }
 }
