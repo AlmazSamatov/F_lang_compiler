@@ -91,9 +91,9 @@ fun ConditionalContext.toAst(considerPosition: Boolean = false): Expression =
  */
 fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
     return when (this) {
-        is FunctionCallContext -> FunctionCall(
-            secondary().toAst(considerPosition),
-            expression().map { it.toAst(considerPosition) },
+        is FunctionCallStatementContext -> FunctionCall(
+            this.functionCall().secondary().toAst(considerPosition),
+            this.functionCall().expression().map { it.toAst(considerPosition) },
             toPosition(considerPosition)
         )
 
@@ -140,7 +140,7 @@ fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
 }
 
 fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader {
-    return if (FOR() != null || FOR().text != null)
+    return if (FOR() != null)
         ForLoopHeader(expression().map { it.toAst(considerPosition) },
             ID().text,
             DOTDOT() != null,

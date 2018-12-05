@@ -224,7 +224,7 @@ fun stmtToKotlin(stmt: Statement): String {
                 i += 1
             }
             code.append(exprToKotlin(it.expressions[it.expressions.size - 1]))
-            code.append(") ")
+            code.append("); ")
 
             resultBuilder.append(code)
         }
@@ -279,7 +279,7 @@ fun stmtToKotlin(stmt: Statement): String {
         }
 
         is BreakStatement -> stmt.specificProcess(BreakStatement::class.java) {
-            resultBuilder.append("break ")
+            resultBuilder.append("break; ")
         }
 
         is PrintStatement -> stmt.specificProcess(PrintStatement::class.java) {
@@ -287,7 +287,7 @@ fun stmtToKotlin(stmt: Statement): String {
 
             var i = 0
             while (i < it.expressions.size) {
-                code.append("print(${exprToKotlin(it.expressions[i])})\n\t")
+                code.append("print(${exprToKotlin(it.expressions[i])}); ")
                 i += 1
             }
 
@@ -295,7 +295,7 @@ fun stmtToKotlin(stmt: Statement): String {
         }
 
         is VarDeclaration -> stmt.specificProcess((VarDeclaration::class.java)) {
-            resultBuilder.append("${declarationToKotlin(it)}")
+            resultBuilder.append(declarationToKotlin(it) + "; ")
         }
     }
 
