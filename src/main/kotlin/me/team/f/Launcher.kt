@@ -14,10 +14,12 @@ fun main(args: Array<String>) {
 //            "inc is func(v: integer) => v + 1;\n" +
 //            "arr is [1, 2, 3]"
 
-    if (args.size != 1) {
-        throw InputMismatchException("Please, specify filename as only argument")
-    }
-    val code = FileInputStream(args[0])
+//    if (args.size != 1) {
+//        throw InputMismatchException("Please, specify filename as only argument")
+//    }
+//    val code = FileInputStream(args[0])
+    val code = "d is func(v: integer) do j is 1 for i in 1..2 loop print i end end"
+//    val code = "f is func(v: integer) do print v return v end"
 
     val parseResult = Analyser.parse(code)
 
@@ -26,16 +28,15 @@ fun main(args: Array<String>) {
         val kotlinProgram = mutableListOf("fun main(args: Array<String>) {")
 
         ast.declarations.map {
-            it.specificProcess(VarDeclaration::class.java) { line ->
-                kotlinProgram.add("\t" + declarationToKotlin(line))
-            }
+            kotlinProgram.add("\t" + declarationToKotlin(it as VarDeclaration))
         }
 
         kotlinProgram.add("}")
 
-//        kotlinProgram.map { println(it) }
+        kotlinProgram.map { println(it) }
 
         saveToFile(kotlinProgram)
+
     } else {
         val errors = parseResult.errors
         println("ERRORS:")
