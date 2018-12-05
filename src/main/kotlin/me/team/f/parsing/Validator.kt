@@ -121,10 +121,7 @@ fun Program.validate(): List<Error> {
                 is StrLit -> "string"
                 is VarReference -> type(varsByName[expression.referenceName]?.value!!)
                 is Map -> "map"
-                is Array -> {
-
-                    "array<" + type(expression.expressions[0]) + ">"
-                }
+                is Array -> "array"
                 is Pair -> "pair"
                 is Tuple -> "tuple"
                 is BinaryOperation -> {
@@ -191,7 +188,7 @@ fun Program.validate(): List<Error> {
                                                 expression.position?.start!!
                                             )
                                         )
-                                        ""
+                                        "any"
                                     }
                                 }
                                 else -> {
@@ -209,7 +206,7 @@ fun Program.validate(): List<Error> {
                             if (typesPair != Pair("boolean", "boolean")) {
                                 errors.add(
                                     Error(
-                                        "Cannot use logical operator ${expression.operatorSign}",
+                                        "Cannot use logical operator ${expression.operatorSign} on values of types ($leftType, $rightType)",
                                         expression.position?.start!!
                                     )
                                 )
