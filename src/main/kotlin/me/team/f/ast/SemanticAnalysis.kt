@@ -22,6 +22,10 @@ fun Program.validate(): List<Error> {
         }
     }
 
+    this.specificProcess(Parameter::class.java) {
+
+    }
+
     // check a variable is not referred before being declared
     this.specificProcess(VarReference::class.java) {
         if (!varsByName.containsKey(it.name)) {

@@ -25,6 +25,10 @@ fun typeToKotlin(type: Type): String {
         is RationalType -> resultBuilder.append("Rational")
         is ComplexType -> resultBuilder.append("Complex")
         is StringType -> resultBuilder.append("String")
+//        is FunctionType -> resultBuilder.append() // TODO(add support for functional type)
+//        is ArrayType -> resultBuilder.append() // TODO(add support for array type)
+//        is MapType -> resultBuilder.append() // TODO(add support for map type)
+//        is TupleType -> resultBuilder.append() // TODO(add support for tuple type)
     }
 
     return resultBuilder.toString()
@@ -112,8 +116,8 @@ fun exprToKotlin(expr: Expression): String {
         is Conditional -> expr.specificProcess(Conditional::class.java) {
             resultBuilder.append(
                 "if (${exprToKotlin(it.predicate)}) {" +
-                        "\n\t\t${exprToKotlin(it.thenExpr)}\n\t} else {" +
-                        "\n\t\t${exprToKotlin(it.elseExpr)}\n\t}"
+                        "\n\t${exprToKotlin(it.thenExpr)}\n\t} else {" +
+                        "\n\t${exprToKotlin(it.elseExpr)}\n\t}"
             )
         }
 
@@ -236,7 +240,7 @@ fun stmtToKotlin(stmt: Statement): String {
             for (expression in it.thenStatements) {
                 code.append("${stmtToKotlin(expression)}\n\t")
             }
-            code.append("} ")
+            code.append("}")
             if (!it.thenStatements.isEmpty()) {
                 code.append(" else {\n\t")
                 for (expression in it.elseStatements) {
