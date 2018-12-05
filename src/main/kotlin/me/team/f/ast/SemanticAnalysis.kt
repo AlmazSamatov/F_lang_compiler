@@ -80,17 +80,22 @@ fun Program.validate(): List<Error> {
             is Map -> "map"
             is Array -> "array"
             is Pair -> "pair"
-            is Tuple -> "tuple"
+            is Tuple -> {
+                var tupleType = "tuple("
+                expression.elements.forEach { element -> tupleType += type(element.expression) + "," }
+                tupleType += ")"
+                tupleType
+            }
             is Parameter -> {
                 val type = expression.type
-                return when (type) {
+                when (type) {
                     is BooleanType -> "boolean"
                     is IntegerType -> "integer"
                     is RealType -> "real"
                     is RationalType -> "rational"
                     is ComplexType -> "complex"
                     is StringType -> "string"
-                    else -> "null"
+                    else -> "any"
                 }
             }
             is BinaryExpression -> {
@@ -100,110 +105,110 @@ fun Program.validate(): List<Error> {
                 when (expression) {
                     is LessExpression, is EqualExpression, is GreaterExpression, is LessEqExpression, is NotEqExpression, is GreaterEqExpression -> {
 
-                            when (typesPair) {
-                                Pair("integer", "integer") -> "boolean"
-                                Pair("integer", "real") -> "boolean"
-                                Pair("integer", "rational") -> "boolean"
-                                Pair("real", "integer") -> "boolean"
-                                Pair("real", "real") -> "boolean"
-                                Pair("rational", "integer") -> "boolean"
-                                Pair("rational", "rational") -> "boolean"
-                                Pair("complex", "complex") -> "boolean"
-                                else -> {
-                                    errors.add(
-                                        Error(
-                                            "Cannot use comparison operator to operands of types ($leftType, $rightType)",
-                                            expression.position?.start!!
-                                        )
-                                    )
-                                    "any"
-                                }
-                            }
-                        }
-                        is SumExpression, is SubExpression, is MultExpression, is DivExpression -> {
-                            when (typesPair) {
-                                Pair("integer", "integer") -> "integer"
-                                Pair("integer", "real") -> "real"
-                                Pair("integer", "rational") -> "rational"
-                                Pair("integer", "complex") -> "complex"
-                                Pair("real", "integer") -> "real"
-                                Pair("real", "real") -> "real"
-                                Pair("real", "complex") -> "complex"
-                                Pair("rational", "integer") -> "rational"
-                                Pair("rational", "rational") -> "rational"
-                                Pair("complex", "integer") -> "complex"
-                                Pair("complex", "real") -> "complex"
-                                Pair("complex", "complex") -> "complex"
-                                Pair("map", "map") -> {
-                                    if (expression is SumExpression) {
-                                        "map"
-                                    } else {
-                                        errors.add(
-                                            Error(
-                                                "Unsupported operator for expressions of type map.",
-                                                expression.position?.start!!
-                                            )
-                                        )
-                                        "any"
-                                    }
-                                }
-                                Pair("array", "array") -> {
-                                    if (expression is SumExpression) {
-                                        "array"
-                                    } else {
-                                        errors.add(
-                                            Error(
-                                                "Unsupported operator for expressions of type array.",
-                                                expression.position?.start!!
-                                            )
-                                        )
-                                        "any"
-                                    }
-                                }
-                                else -> {
-                                    errors.add(
-                                        Error(
-                                            "Operator cannot be applied on operands of types ($leftType, $rightType)",
-                                            expression.position?.start!!
-                                        )
-                                    )
-                                    "any"
-                                }
-                            }
-                        }
-                        is AndExpression, is OrExpression, is XorExpression -> {
-                            if (typesPair != Pair("boolean", "boolean")) {
+                        when (typesPair) {
+                            Pair("integer", "integer") -> "boolean"
+                            Pair("integer", "real") -> "boolean"
+                            Pair("integer", "rational") -> "boolean"
+                            Pair("real", "integer") -> "boolean"
+                            Pair("real", "real") -> "boolean"
+                            Pair("rational", "integer") -> "boolean"
+                            Pair("rational", "rational") -> "boolean"
+                            Pair("complex", "complex") -> "boolean"
+                            else -> {
                                 errors.add(
                                     Error(
-                                        "Cannot use logical operator on values of types ($leftType, $rightType)",
+                                        "Cannot use comparison operator to operands of types ($leftType, $rightType)",
                                         expression.position?.start!!
                                     )
                                 )
                                 "any"
-                            } else "boolean"
+                            }
                         }
-                        else -> {
+                    }
+                    is SumExpression, is SubExpression, is MultExpression, is DivExpression -> {
+                        when (typesPair) {
+                            Pair("integer", "integer") -> "integer"
+                            Pair("integer", "real") -> "real"
+                            Pair("integer", "rational") -> "rational"
+                            Pair("integer", "complex") -> "complex"
+                            Pair("real", "integer") -> "real"
+                            Pair("real", "real") -> "real"
+                            Pair("real", "complex") -> "complex"
+                            Pair("rational", "integer") -> "rational"
+                            Pair("rational", "rational") -> "rational"
+                            Pair("complex", "integer") -> "complex"
+                            Pair("complex", "real") -> "complex"
+                            Pair("complex", "complex") -> "complex"
+                            Pair("map", "map") -> {
+                                if (expression is SumExpression) {
+                                    "map"
+                                } else {
+                                    errors.add(
+                                        Error(
+                                            "Unsupported operator for expressions of type map.",
+                                            expression.position?.start!!
+                                        )
+                                    )
+                                    "any"
+                                }
+                            }
+                            Pair("array", "array") -> {
+                                if (expression is SumExpression) {
+                                    "array"
+                                } else {
+                                    errors.add(
+                                        Error(
+                                            "Unsupported operator for expressions of type array.",
+                                            expression.position?.start!!
+                                        )
+                                    )
+                                    "any"
+                                }
+                            }
+                            else -> {
+                                errors.add(
+                                    Error(
+                                        "Operator cannot be applied on operands of types ($leftType, $rightType)",
+                                        expression.position?.start!!
+                                    )
+                                )
+                                "any"
+                            }
+                        }
+                    }
+                    is AndExpression, is OrExpression, is XorExpression -> {
+                        if (typesPair != Pair("boolean", "boolean")) {
+                            errors.add(
+                                Error(
+                                    "Cannot use logical operator on values of types ($leftType, $rightType)",
+                                    expression.position?.start!!
+                                )
+                            )
                             "any"
-                        }
+                        } else "boolean"
+                    }
+                    else -> {
+                        "any"
                     }
                 }
-                is Function -> {
-                    when (expression.type) {
-                        is BooleanType -> "boolean"
-                        is IntegerType -> "integer"
-                        is RealType -> "real"
-                        is RationalType -> "rational"
-                        is ComplexType -> "complex"
-                        is StringType -> "string"
-                        is MapType -> "map"
-                        is ArrayType -> "array"
-                        is TupleType -> "tuple"
-                        else -> "func"
-                    }
-                }
-                else -> "any"
             }
+            is Function -> {
+                when (expression.type) {
+                    is BooleanType -> "boolean"
+                    is IntegerType -> "integer"
+                    is RealType -> "real"
+                    is RationalType -> "rational"
+                    is ComplexType -> "complex"
+                    is StringType -> "string"
+                    is MapType -> "map"
+                    is ArrayType -> "array"
+                    is TupleType -> "tuple"
+                    else -> "func"
+                }
+            }
+            else -> "any"
         }
+    }
 
     this.specificProcess(VarDeclaration::class.java) {
         if (varsByName.containsKey(it.varName)) {
@@ -336,7 +341,7 @@ fun Program.validate(): List<Error> {
                 if (expression is Function && expression.type != null) {
                     if (it.expressions.size != expression.parameters.size) {
                         errors.add(
-                            Error (
+                            Error(
                                 "Wrong number of parameters when call function ${it.secondary.name}",
                                 it.secondary.position?.start!!
                             )
@@ -346,21 +351,24 @@ fun Program.validate(): List<Error> {
                             val l = type(expression.parameters[i])
                             if (type(expression.parameters[i]) != type(it.expressions[i])) {
                                 val function = it.expressions[i]
-                                val nameOfVarInCall = when(function)
-                                    {
-                                        is VarReference -> function.name
-                                        is BoolLit -> function.value
-                                        is StrLit -> function.value
-                                        is RealLit -> function.value
-                                        is RatLit -> function.value
-                                        is CompLit -> function.value
-                                        is IntLit -> function.value
-                                        else -> function
-                                    }
+                                val nameOfVarInCall = when (function) {
+                                    is VarReference -> function.name
+                                    is BoolLit -> function.value
+                                    is StrLit -> function.value
+                                    is RealLit -> function.value
+                                    is RatLit -> function.value
+                                    is CompLit -> function.value
+                                    is IntLit -> function.value
+                                    else -> function
+                                }
                                 errors.add(
-                                    Error (
-                                        "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
-                                                "not same as in function declaration parameter with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                    Error(
+                                        "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(
+                                            function
+                                        )} is " +
+                                                "not same as in function declaration parameter with name ${expression.parameters[i].parName} of type ${type(
+                                                    expression.parameters[i]
+                                                )}",
                                         it.expressions[i].position?.start!!
                                     )
                                 )
@@ -377,6 +385,26 @@ fun Program.validate(): List<Error> {
 
     }
 
+    this.specificProcess(Function::class.java) { function ->
+        val functionType = type(function)
+        var returnStatementType = ""
+        function.body.statements?.forEach { statement ->
+            if (statement is ReturnStatement) {
+                val someType = type(statement.expression)
+                if (returnStatementType.isEmpty())
+                    returnStatementType = someType
+                else if (returnStatementType != someType) {
+                    errors.add(
+                        me.team.f.ast.Error(
+                            "Function return type $returnStatementType doesn't match with declared $functionType",
+                            statement.position?.start!!
+                        )
+                    )
+                }
+            }
+        }
+
+    }
     return errors
 }
 
