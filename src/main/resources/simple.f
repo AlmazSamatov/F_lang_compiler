@@ -1,2 +1,4 @@
-a is 1;
-a is 2.3
+a is true;
+b is func() do
+a:=a+1
+end

@@ -2,6 +2,7 @@ package me.team.f.parsing
 
 import me.team.f.ast.LineCol
 import me.team.f.ast.Program
+import me.team.f.ast.getPos
 import me.team.f.ast.toAst
 import me.team.fproject.FLangLexer
 import me.team.fproject.FLangParser
@@ -9,10 +10,8 @@ import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.atn.ATNConfigSet
 import org.antlr.v4.runtime.dfa.DFA
 import java.io.*
-import me.team.f.compilation.Error
+import java.lang.Exception
 import java.util.*
-import me.team.f.compilation.*
-
 object Analyser {
 
     fun parse(code: String): AnalysisResult = parse(ByteArrayInputStream(code.toByteArray(Charsets.UTF_8)))
@@ -34,21 +33,21 @@ object Analyser {
                 p4: Boolean, p5: BitSet?, p6: ATNConfigSet?
             ) {
 
-                errors.add(Error(p5.toString(), LineCol(p2, p3)))
+//                errors.add(Error(p5.toString(), LineCol(p2, p3)))
             }
 
             override fun reportContextSensitivity(
                 p0: Parser?, p1: DFA?, p2: Int,
                 p3: Int, p4: Int, p5: ATNConfigSet?
             ) {
-                errors.add(Error("Prediction $p4", LineCol(p2, p3)))
+//                errors.add(Error("Prediction $p4", LineCol(p2, p3)))
             }
 
             override fun reportAttemptingFullContext(
                 p0: Parser?, p1: DFA?, p2: Int, p3: Int,
                 p4: BitSet?, p5: ATNConfigSet?
             ) {
-                errors.add(Error(p4.toString(), LineCol(p2, p3)))
+//                errors.add(Error(p4.toString(), LineCol(p2, p3)))
             }
         }
 
