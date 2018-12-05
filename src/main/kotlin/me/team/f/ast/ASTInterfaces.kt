@@ -34,7 +34,7 @@ fun Node.process(operation: (Node) -> Unit) {
         }
     }
 }
-
+@Suppress("UNCHECKED_CAST")
 fun <T: Node> Node.specificProcess(classF: Class<T>, operation: (T) -> Unit) {
     process {
         if (classF.isInstance(it)) {

@@ -101,7 +101,7 @@ fun Program.validate(): List<Error> {
                                             expression.position?.start!!
                                         )
                                     )
-                                    ""
+                                    "any"
                                 }
                             }
                         }
@@ -129,7 +129,7 @@ fun Program.validate(): List<Error> {
                                                 expression.position?.start!!
                                             )
                                         )
-                                        ""
+                                        "any"
                                     }
                                 }
                                 Pair("array", "array") -> {
@@ -172,7 +172,21 @@ fun Program.validate(): List<Error> {
                         }
                     }
                 }
-                else -> "null"
+                is Function -> {
+                    when (expression.type) {
+                        is BooleanType -> "boolean"
+                        is IntegerType -> "integer"
+                        is RealType -> "real"
+                        is RationalType -> "rational"
+                        is ComplexType -> "complex"
+                        is StringType -> "string"
+                        is MapType -> "map"
+                        is ArrayType -> "array"
+                        is TupleType -> "tuple"
+                        else -> "func"
+                    }
+                }
+                else -> "any"
             }
         }
 
