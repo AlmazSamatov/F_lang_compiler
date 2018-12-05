@@ -313,7 +313,7 @@ fun Program.validate(): List<Error> {
                                     errors.add(
                                         Error(
                                             "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
-                                                    "not same as in function declaration of type ${type(expression.parameters[i])}",
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
                                             it.expressions[i].position?.start!!
                                         )
                                     )
@@ -379,7 +379,7 @@ fun Program.validate(): List<Error> {
                                     errors.add(
                                         Error(
                                             "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
-                                                    "not same as in function declaration of type ${type(expression.parameters[i])}",
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
                                             it.expressions[i].position?.start!!
                                         )
                                     )
