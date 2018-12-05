@@ -284,15 +284,20 @@ fun stmtToKotlin(stmt: Statement): String {
 
         is PrintStatement -> stmt.specificProcess(PrintStatement::class.java) {
             val code = StringBuilder()
-            code.append("print(")
+
             var i = 0
-            while (i < it.expressions.size - 1) {
-                code.append(exprToKotlin(it.expressions[i]) + ", ")
+            while (i < it.expressions.size) {
+                code.append("print(")
+                code.append(exprToKotlin(it.expressions[i]))
+                code.append("); ")
                 i += 1
             }
-            code.append(exprToKotlin(it.expressions[i]))
-            code.append("); ")
+
             resultBuilder.append(code)
+        }
+
+        is VarDeclaration -> stmt.specificProcess((VarDeclaration::class.java)) {
+            resultBuilder.append(declarationToKotlin(it) + "; ")
         }
     }
 
