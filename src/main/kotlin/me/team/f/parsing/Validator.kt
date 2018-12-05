@@ -5,7 +5,6 @@ import me.team.f.ast.Array
 import me.team.f.ast.Map
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.math.exp
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
