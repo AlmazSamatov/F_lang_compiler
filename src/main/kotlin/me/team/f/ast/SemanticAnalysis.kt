@@ -301,13 +301,23 @@ fun Program.validate(): List<Error> {
                                     is IntLit -> function.value
                                     else -> function
                                 }
-                                errors.add(
-                                    Error(
-                                        "Non-compatible type of parameters. Parameter in call $nameOfVarInCall is " +
-                                                "not same as in function declaration ${expression.parameters[i].parName}",
-                                        it.expressions[i].position?.start!!
+                                if (nameOfVarInCall is String) {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
                                     )
-                                )
+                                } else {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
+                                                    "not same as in function declaration of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -357,17 +367,23 @@ fun Program.validate(): List<Error> {
                                     is IntLit -> function.value
                                     else -> function
                                 }
-                                errors.add(
-                                    Error(
-                                        "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(
-                                            function
-                                        )} is " +
-                                                "not same as in function declaration parameter with name ${expression.parameters[i].parName} of type ${type(
-                                                    expression.parameters[i]
-                                                )}",
-                                        it.expressions[i].position?.start!!
+                                if (nameOfVarInCall is String) {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
                                     )
-                                )
+                                } else {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
+                                                    "not same as in function declaration of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
