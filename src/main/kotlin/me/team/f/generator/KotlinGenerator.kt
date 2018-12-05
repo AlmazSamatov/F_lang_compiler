@@ -211,7 +211,7 @@ fun stmtToKotlin(stmt: Statement): String {
 
     when (stmt) {
         is Assignment -> stmt.specificProcess(Assignment::class.java) {
-            resultBuilder.append(exprToKotlin(it.secondary) + " = " + exprToKotlin(it.expression) + "; ")
+            resultBuilder.append(exprToKotlin(it.secondary) + " = " + exprToKotlin(it.expression) + "")
         }
 
         is FunctionCall -> stmt.specificProcess(FunctionCall::class.java) {
@@ -224,7 +224,7 @@ fun stmtToKotlin(stmt: Statement): String {
                 i += 1
             }
             code.append(exprToKotlin(it.expressions[it.expressions.size - 1]))
-            code.append("); ")
+            code.append(") ")
 
             resultBuilder.append(code)
         }
@@ -232,15 +232,15 @@ fun stmtToKotlin(stmt: Statement): String {
         is IfStatement -> stmt.specificProcess(IfStatement::class.java) {
             val code = StringBuilder()
 
-            code.append("if (" + exprToKotlin(it.predicate) + ") { ")
+            code.append("if (" + exprToKotlin(it.predicate) + ") {\n\t")
             for (expression in it.thenStatements) {
-                code.append(stmtToKotlin(expression) + " ")
+                code.append("${stmtToKotlin(expression)}\n\t")
             }
             code.append("} ")
             if (!it.thenStatements.isEmpty()) {
-                code.append("else { ")
+                code.append(" else {\n\t")
                 for (expression in it.elseStatements) {
-                    code.append(stmtToKotlin(expression))
+                    code.append("${stmtToKotlin(expression)}\n\t")
                 }
                 code.append("} ")
             }
@@ -265,21 +265,21 @@ fun stmtToKotlin(stmt: Statement): String {
                 }
             }
 
-            code.append("{ ")
+            code.append("{\n\t")
             for (statement in it.statements) {
-                code.append(stmtToKotlin(statement))
+                code.append("${stmtToKotlin(statement)}\n\t")
             }
-            code.append(" } ")
+            code.append("} ")
 
             resultBuilder.append(code)
         }
 
         is ReturnStatement -> stmt.specificProcess(ReturnStatement::class.java) {
-            resultBuilder.append("return " + exprToKotlin(it.expression) + "; ")
+            resultBuilder.append("return " + exprToKotlin(it.expression) + "")
         }
 
         is BreakStatement -> stmt.specificProcess(BreakStatement::class.java) {
-            resultBuilder.append("break; ")
+            resultBuilder.append("break ")
         }
 
         is PrintStatement -> stmt.specificProcess(PrintStatement::class.java) {
@@ -287,7 +287,9 @@ fun stmtToKotlin(stmt: Statement): String {
 
             var i = 0
             while (i < it.expressions.size) {
-                code.append("print(${exprToKotlin(it.expressions[i])}); ")
+                code.append("print(${exprToKotlin(it.expressions[i])})")
+                if (i < it.expressions.size - 1)
+                    code.append("\n\t")
                 i += 1
             }
 
@@ -295,7 +297,7 @@ fun stmtToKotlin(stmt: Statement): String {
         }
 
         is VarDeclaration -> stmt.specificProcess((VarDeclaration::class.java)) {
-            resultBuilder.append(declarationToKotlin(it) + "; ")
+            resultBuilder.append(declarationToKotlin(it))
         }
     }
 
