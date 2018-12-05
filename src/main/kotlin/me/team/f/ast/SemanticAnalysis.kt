@@ -24,7 +24,14 @@ fun Program.validate(): List<Error> {
     }
 
     this.specificProcess(Parameter::class.java) {
+        // TODO(fix problems with scopes)
+        varsByName[it.parName] = VarDeclaration(it.parName, it.type, VarReference(it.parName), it.position)
+    }
 
+    this.specificProcess(ForLoopHeader::class.java) {
+        // TODO(fix problems with scopes)
+        if (it.id != null)
+            varsByName[it.id] = VarDeclaration(it.id, null, VarReference(it.id), it.position)
     }
 
     // check a variable is not referred before being declared
