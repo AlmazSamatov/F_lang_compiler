@@ -69,7 +69,7 @@ object Analyser {
 
         val errors = mutableListOf<Error>()
         errors.addAll(lexParseErrors)
-        errors.addAll(semanticErrors)
+        //errors.addAll(semanticErrors)       // TODO(enable)
         return AnalysisResult(ast, errors)
     }
 
