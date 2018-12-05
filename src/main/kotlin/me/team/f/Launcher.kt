@@ -9,10 +9,10 @@ import java.util.*
 
 fun main(args: Array<String>) {
 
-//    if (args.size != 1) {
-//        throw InputMismatchException("Please, specify filename as only argument")
-//    }
-//    val code = FileInputStream(args[0])
+    if (args.size != 1) {
+        throw InputMismatchException("Please, specify filename as only argument")
+    }
+    val code = FileInputStream(args[0])
 
 //    val code = "a is 5;" +
 //            "b is 7 * 2;" +
@@ -25,7 +25,10 @@ fun main(args: Array<String>) {
 //            "e is func(v: integer) : boolean do if a > b then o is 0 return true else print \"Hello!\" return false end end;" +
 //            "d is func(v: integer) do a := 1 inc(b) print a, b, res end"
 
-    val code = "d is func(v: integer) do print v for i in 1..2 loop print i end end"
+    // TODO: fix generator for loop range, e.x for i in 1..(2*2)
+
+//    val code = "d is func(v: integer) do print v for i in 1..5 loop print i end end"
+//    val code = "a is (1 is \"Hello\", 2 is \"World\")"
 
     val parseResult = Analyser.parse(code)
 

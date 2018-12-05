@@ -61,7 +61,7 @@ fun exprToKotlin(expr: Expression): String {
         is Call -> expr.specificProcess(Call::class.java) {
             val call = StringBuilder()
 
-            call.append((it.secondary as FunctionReference).name)
+            call.append((it.secondary as VarReference).name)
             call.append("(")
 
             var was = false
@@ -94,9 +94,7 @@ fun exprToKotlin(expr: Expression): String {
             val call = StringBuilder()
 
             call.append((it.secondary as VarReference).name)
-            call.append("[\"")
-            call.append(it.fieldName)
-            call.append("\"]")
+            call.append("[\"${it.fieldName}\"]!!")
 
             resultBuilder.append(call)
         }
@@ -105,9 +103,7 @@ fun exprToKotlin(expr: Expression): String {
             val call = StringBuilder()
 
             call.append((it.secondary as VarReference).name)
-            call.append("[")
-            call.append(it.fieldNum)
-            call.append("]")
+            call.append("[\"${it.fieldNum}\"]!!")
 
             resultBuilder.append(call)
         }
