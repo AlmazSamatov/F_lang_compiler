@@ -1,8 +1,10 @@
-package me.team.f.parsing
+package me.team.f.ast
 
-import me.team.f.ast.*
-import me.team.f.ast.Array
-import me.team.f.ast.Map
+import me.team.f.parsing.Analyser
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.reflect.KParameter
@@ -142,7 +144,7 @@ fun Program.validate(): List<Error> {
                                 Pair("complex", "complex") -> "boolean"
                                 else -> {
                                     errors.add(
-                                        me.team.f.parsing.Error(
+                                        Error(
                                             "Cannot use comparison operator to operands of types ($leftType, $rightType)",
                                             expression.position?.start!!
                                         )
@@ -245,3 +247,31 @@ fun Node.isBefore(varDeclaration: VarDeclaration): Boolean {
             this.position!!.start.col < varDeclaration.position.start.col
 }
 
+object Facade {
+
+    fun parse(code: String): Result = parse(ByteArrayInputStream(code.toByteArray(Charsets.UTF_8)))
+
+    fun parse(file: File): Result = parse(FileInputStream(file))
+
+    fun parse(inputStream: InputStream): Result {
+        val antlrParsingResult = Analyser.parse(inputStream)
+        val lexicalAnsSyntaticErrors = antlrParsingResult.errors
+        val antlrRoot = antlrParsingResult.root
+        val astRoot = antlrRoot?.toAst(considerPosition = true)
+        val semanticErrors = astRoot?.validate() ?: emptyList()
+        return Result(astRoot, lexicalAnsSyntaticErrors + semanticErrors)
+    }
+
+}
+
+data class Result(
+    val root: Program?,
+    val errors: List<Error>
+) {
+    fun isCorrect(): Boolean = root != null && errors.isEmpty()
+}
+
+fun main(args: kotlin.Array<String>) {
+    Facade.parse(File("./src/main/resources/simple.f"))
+        .errors.forEach { println("Error:\n${it.message}\nPosition:${it.position}") }
+}

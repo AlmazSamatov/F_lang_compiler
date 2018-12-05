@@ -1,17 +1,14 @@
 package me.team.f.parsing
 
-import me.team.f.ast.LineCol
-import me.team.f.ast.Program
-import me.team.f.ast.getPos
-import me.team.f.ast.toAst
+import me.team.f.ast.*
 import me.team.fproject.FLangLexer
 import me.team.fproject.FLangParser
 import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.atn.ATNConfigSet
 import org.antlr.v4.runtime.dfa.DFA
 import java.io.*
-import java.lang.Exception
 import java.util.*
+
 object Analyser {
 
     fun parse(code: String): AnalysisResult = parse(ByteArrayInputStream(code.toByteArray(Charsets.UTF_8)))
@@ -70,31 +67,4 @@ data class AnalysisResult(
     fun isCorrect() = errors.isEmpty() && root != null
 }
 
-data class Result(
-    val root: Program?,
-    val errors: List<Error>
-) {
-    fun isCorrect(): Boolean = root != null && errors.isEmpty()
-}
 
-object Facade {
-
-    fun parse(code: String): Result = parse(ByteArrayInputStream(code.toByteArray(Charsets.UTF_8)))
-
-    fun parse(file: File): Result = parse(FileInputStream(file))
-
-    fun parse(inputStream: InputStream): Result {
-        val antlrParsingResult = Analyser.parse(inputStream)
-        val lexicalAnsSyntaticErrors = antlrParsingResult.errors
-        val antlrRoot = antlrParsingResult.root
-        val astRoot = antlrRoot?.toAst(considerPosition = true)
-        val semanticErrors = astRoot?.validate() ?: emptyList()
-        return Result(astRoot, lexicalAnsSyntaticErrors + semanticErrors)
-    }
-
-}
-
-fun main(args: Array<String>) {
-    Facade.parse(File("./src/main/resources/simple.f"))
-        .errors.forEach { println("Error:\n${it.message}\nPosition:${it.position}") }
-}
