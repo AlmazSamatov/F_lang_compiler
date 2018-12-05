@@ -48,26 +48,6 @@ fun Program.validate(): List<Error> {
         }
     }
 
-    this.specificProcess(Assignment::class.java) {
-        it.secondary as VarReference
-        if (!varsByName.containsKey(it.secondary.name)) {
-            errors.add(
-                Error(
-                    "There is no variable named '${it.secondary.name}'",
-                    it.position!!.start
-                )
-            )
-        } else if (it.isBefore(varsByName[it.secondary.name]!!)) {
-            errors.add(
-                Error(
-                    "You cannot refer to variable '${it.secondary.name}' before its declaration",
-                    it.position!!.start
-                )
-            )
-        }
-    }
-
-
     fun type(expression: Expression): String {
         return when (expression) {
             is BoolLit -> "boolean"
@@ -210,32 +190,6 @@ fun Program.validate(): List<Error> {
         }
     }
 
-    this.specificProcess(VarDeclaration::class.java) {
-        if (varsByName.containsKey(it.varName)) {
-            errors.add(
-                Error(
-                    "A variable named '${it.varName}' has been already declared at ${varsByName[it.varName]!!.position!!.start}",
-                    it.position!!.start
-                )
-            )
-        } else {
-            varsByName[it.varName] = it
-        }
-    }
-
-    // check a variable is not referred before being declared
-    this.specificProcess(VarReference::class.java) {
-        if (!varsByName.containsKey(it.name)) {
-            errors.add(Error("There is no variable named '${it.name}'", it.position!!.start))
-        } else if (it.isBefore(varsByName[it.name]!!)) {
-            errors.add(
-                Error(
-                    "You cannot refer to variable '${it.name}' before its declaration",
-                    it.position!!.start
-                )
-            )
-        }
-    }
     this.specificProcess(Assignment::class.java) {
         it.secondary as VarReference
         if (!varsByName.containsKey(it.secondary.name)) {
@@ -266,6 +220,7 @@ fun Program.validate(): List<Error> {
         }
 
     }
+
 
     this.specificProcess(FunctionCall::class.java) {
         when (it.secondary) {
@@ -324,7 +279,6 @@ fun Program.validate(): List<Error> {
     }
 
     this.specificProcess(Call::class.java) {
-        val i = 0
         when (it.secondary) {
             is VarReference -> {
                 if (!varsByName.containsKey(it.secondary.name)) {
