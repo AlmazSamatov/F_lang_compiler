@@ -12,10 +12,10 @@ data class LineCol(val line: Int, val col: Int)
 
 data class Position(val start: LineCol, val end: LineCol)
 
-fun Node.isBefore(other: Node) : Boolean =
+fun Node.isBefore(other: Node): Boolean =
     position!!.start.isBefore(other.position!!.start)
 
-fun LineCol.isBefore(other: LineCol) : Boolean =
+fun LineCol.isBefore(other: LineCol): Boolean =
     line < other.line || (line == other.line && col < other.col)
 
 fun getPos(startLine: Int, startCol: Int, endLine: Int, endCol: Int): Position {
@@ -34,8 +34,9 @@ fun Node.process(operation: (Node) -> Unit) {
         }
     }
 }
+
 @Suppress("UNCHECKED_CAST")
-fun <T: Node> Node.specificProcess(classF: Class<T>, operation: (T) -> Unit) {
+fun <T : Node> Node.specificProcess(classF: Class<T>, operation: (T) -> Unit) {
     process {
         if (classF.isInstance(it)) {
             operation(it as T)
@@ -43,7 +44,7 @@ fun <T: Node> Node.specificProcess(classF: Class<T>, operation: (T) -> Unit) {
     }
 }
 
-fun Node.transform(operation: (Node) -> Node) : Node {
+fun Node.transform(operation: (Node) -> Node): Node {
     operation(this)
     val changes = HashMap<String, Any>()
     this.javaClass.kotlin.memberProperties.forEach { p ->
@@ -79,250 +80,384 @@ fun Node.transform(operation: (Node) -> Node) : Node {
  * Grammar part
  */
 
-data class Program(val declarations: List<Declaration>,
-                   override val position: Position? = null): Node
+data class Program(
+    val declarations: List<Declaration>,
+    override val position: Position? = null
+) : Node
 
-interface Declaration: Node
+interface Declaration : Node
 
-interface Expression: Node
+interface Expression : Node
 
-interface Statement: Node
+interface Statement : Node
 
-interface Type: Node
+interface Type : Node
 
 
 /**
  * Declaration
  */
 
-data class VarDeclaration(val varName: String,
-                          val type: Type? = null,
-                          val value: Expression,
-                          override val position: Position? = null): Declaration, Statement
+data class VarDeclaration(
+    val varName: String,
+    val type: Type? = null,
+    val value: Expression,
+    override val position: Position? = null
+) : Declaration, Statement
 
 /**
  * Secondary
  */
 
-data class Call(val secondary: Expression,
-                val expressions: List<Expression>,
-                override val position: Position? = null): Expression
+data class Call(
+    val secondary: Expression,
+    val expressions: List<Expression>,
+    override val position: Position? = null
+) : Expression
 
-data class ElementOf(val varName: Expression,
-                     val index: Expression,
-                     override val position: Position? = null): Expression
+data class ElementOf(
+    val varName: Expression,
+    val index: Expression,
+    override val position: Position? = null
+) : Expression
 
-data class NamedTupleElement(val secondary: Expression,
-                             val fieldName: String,
-                             override val position: Position? = null): Expression
+data class NamedTupleElement(
+    val secondary: Expression,
+    val fieldName: String,
+    override val position: Position? = null
+) : Expression
 
-data class UnnamedTupleElement(val secondary: Expression,
-                               val fieldNum: String,
-                               override val position: Position? = null): Expression
+data class UnnamedTupleElement(
+    val secondary: Expression,
+    val fieldNum: String,
+    override val position: Position? = null
+) : Expression
 
 /**
  * Primary
  */
-data class Conditional(val predicate: Expression,
-                       val thenExpr: Expression,
-                       val elseExpr: Expression,
-                       override val position: Position? = null): Expression
+data class Conditional(
+    val predicate: Expression,
+    val thenExpr: Expression,
+    val elseExpr: Expression,
+    override val position: Position? = null
+) : Expression
 
 /**
  * Types
  */
 
-data class BooleanType(override val position: Position? = null): Type
+data class BooleanType(override val position: Position? = null) : Type {
+    override fun toString(): String {
+        return "boolean"
+    }
+}
 
-data class IntegerType(override val position: Position? = null): Type
+data class IntegerType(override val position: Position? = null) : Type {
+    override fun toString(): String {
+        return "integer"
+    }
+}
 
-data class RealType(override val position: Position? = null): Type
+data class RealType(override val position: Position? = null) : Type {
+    override fun toString(): String {
+        return "real"
+    }
+}
 
-data class RationalType(override val position: Position? = null): Type
+data class RationalType(override val position: Position? = null) : Type {
+    override fun toString(): String {
+        return "rational"
+    }
+}
 
-data class ComplexType(override val position: Position? = null): Type
+data class ComplexType(override val position: Position? = null) : Type {
+    override fun toString(): String {
+        return "complex"
+    }
+}
 
-data class StringType(override val position: Position? = null): Type
+data class StringType(override val position: Position? = null) : Type {
+    override fun toString(): String {
+        return "string"
+    }
+}
 
 /**
  * Expressions
  */
 
-data class VarReference(val name: String,
-                        override val position: Position? = null): Expression
+data class VarReference(
+    val name: String,
+    override val position: Position? = null
+) : Expression
 
-data class BoolLit(val value: String,
-                   override val position: Position? = null): Expression
+data class BoolLit(
+    val value: String,
+    override val position: Position? = null
+) : Expression
 
-data class IntLit(val value: String,
-                  override val position: Position? = null): Expression
+data class IntLit(
+    val value: String,
+    override val position: Position? = null
+) : Expression
 
-data class RealLit(val value: String,
-                   override val position: Position? = null): Expression
+data class RealLit(
+    val value: String,
+    override val position: Position? = null
+) : Expression
 
-data class RatLit(val value: String,
-                  override val position: Position? = null): Expression
+data class RatLit(
+    val value: String,
+    override val position: Position? = null
+) : Expression
 
-data class CompLit(val value: String,
-                   override val position: Position? = null): Expression
+data class CompLit(
+    val value: String,
+    override val position: Position? = null
+) : Expression
 
-data class StrLit(val value: String,
-                  override val position: Position? = null): Expression
+data class StrLit(
+    val value: String,
+    override val position: Position? = null
+) : Expression
 
-interface BinaryExpression: Expression {
+interface BinaryExpression : Expression {
     val left: Expression
     val right: Expression
 }
 
-data class SumExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+data class SumExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class SubExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+data class SubExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class MultExpression(override val left: Expression,
-                          override val right: Expression,
-                          override val position: Position? = null): BinaryExpression
+data class MultExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class DivExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+data class DivExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class LessExpression(override val left: Expression,
-                          override val right: Expression,
-                          override val position: Position? = null): BinaryExpression
+data class LessExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class GreaterExpression(override val left: Expression,
-                             override val right: Expression,
-                             override val position: Position? = null): BinaryExpression
+data class GreaterExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class LessEqExpression(override val left: Expression,
-                            override val right: Expression,
-                            override val position: Position? = null): BinaryExpression
+data class LessEqExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class GreaterEqExpression(override val left: Expression,
-                               override val right: Expression,
-                               override val position: Position? = null): BinaryExpression
+data class GreaterEqExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class EqualExpression(override val left: Expression,
-                           override val right: Expression,
-                           override val position: Position? = null): BinaryExpression
+data class EqualExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class NotEqExpression(override val left: Expression,
-                           override val right: Expression,
-                           override val position: Position? = null): BinaryExpression
+data class NotEqExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class AndExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+data class AndExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class OrExpression(override val left: Expression,
-                        override val right: Expression,
-                        override val position: Position? = null): BinaryExpression
+data class OrExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
-data class XorExpression(override val left: Expression,
-                         override val right: Expression,
-                         override val position: Position? = null): BinaryExpression
+data class XorExpression(
+    override val left: Expression,
+    override val right: Expression,
+    override val position: Position? = null
+) : BinaryExpression
 
 /**
  * Statements
  */
 
-data class Assignment(val secondary: Expression,
-                      val expression: Expression,
-                      override val position: Position? = null): Statement
+data class Assignment(
+    val secondary: Expression,
+    val expression: Expression,
+    override val position: Position? = null
+) : Statement
 
-data class FunctionCall(val secondary: Expression,
-                        val expressions: List<Expression>,
-                        override val position: Position? = null): Statement
+data class FunctionCall(
+    val secondary: Expression,
+    val expressions: List<Expression>,
+    override val position: Position? = null
+) : Statement
 
-data class IfStatement(val predicate: Expression,
-                       val thenStatements: List<Statement>,
-                       val elseStatements: List<Statement>,
-                       override val position: Position? = null): Statement
+data class IfStatement(
+    val predicate: Expression,
+    val thenStatements: List<Statement>,
+    val elseStatements: List<Statement>,
+    override val position: Position? = null
+) : Statement
 
-data class LoopStatement(val loopHeader: LoopHeader,
-                         val statements: List<Statement>,
-                         override val position: Position? = null): Statement
+data class LoopStatement(
+    val loopHeader: LoopHeader,
+    val statements: List<Statement>,
+    override val position: Position? = null
+) : Statement
 
-interface LoopHeader: Statement
+interface LoopHeader : Statement
 
-data class ForLoopHeader(val expressions: List<Expression>,
-                         val id: String? = null,
-                         val needRange: Boolean,
-                         override val position: Position? = null): LoopHeader
+data class ForLoopHeader(
+    val expressions: List<Expression>,
+    val id: String? = null,
+    val needRange: Boolean,
+    override val position: Position? = null
+) : LoopHeader
 
-data class WhileLoopHeader(val expressions: List<Expression>,
-                           override val position: Position? = null): LoopHeader
+data class WhileLoopHeader(
+    val expressions: List<Expression>,
+    override val position: Position? = null
+) : LoopHeader
 
 //data class LoopHeader(val expressions: List<Expression>,
 //                      override val position: Position? = null): Statement
 
-data class ReturnStatement(val expression: Expression,
-                           override val position: Position? = null): Statement
+data class ReturnStatement(
+    val expression: Expression,
+    override val position: Position? = null
+) : Statement
 
-data class BreakStatement(override val position: Position? = null): Statement
+data class BreakStatement(override val position: Position? = null) : Statement
 
-data class PrintStatement(val expressions: List<Expression>,
-                          override val position: Position? = null): Statement
+data class PrintStatement(
+    val expressions: List<Expression>,
+    override val position: Position? = null
+) : Statement
 
 
 /**
  * Functions and function types
  */
-data class FunctionType(val types: List<Type>,
-                        override val position: Position? = null): Type
+data class FunctionType(
+    val types: List<Type>,
+    override val position: Position? = null
+) : Type
 
-data class Function(val body: Body,
-                    val parameters: List<Parameter>,
-                    val type: Type? = null,
-                    override val position: Position? = null): Expression
+data class Function(
+    val body: Body,
+    val parameters: List<Parameter>,
+    val type: Type? = null,
+    override val position: Position? = null
+) : Expression
 
-data class Parameter(val parName: String,
-                     val type: Type,
-                     override val position: Position? = null): Expression
+data class Parameter(
+    val parName: String,
+    val type: Type,
+    override val position: Position? = null
+) : Expression
 
-data class Body(val statements: List<Statement>? = null,
-                val expression: Expression? = null,
-                override val position: Position? = null): Expression
+data class Body(
+    val statements: List<Statement>? = null,
+    val expression: Expression? = null,
+    override val position: Position? = null
+) : Expression
 
 
 /**
  * Arrays
  */
-data class ArrayType(val type: Type,
-                     override val position: Position? = null): Type
+data class ArrayType(
+    val type: Type,
+    override val position: Position? = null
+) : Type {
+    override fun toString(): String {
+        return "array[" + type.toString() + "]"
+    }
+}
 
 
-data class Array(val expressions: List<Expression>,
-                 override val position: Position? = null): Expression
+data class Array(
+    val expressions: List<Expression>,
+    override val position: Position? = null
+) : Expression
 
 
 /**
  * Maps
  */
-data class MapType(val types: List<Type>,
-                   override val position: Position? = null) : Type
+data class MapType(
+    val types: List<Type>,
+    override val position: Position? = null
+) : Type {
+    override fun toString(): String {
+        return "map{${types[0]},${types[1]}}"
+    }
+}
 
-data class Map(val pairs: List<Pair>,
-               override val position: Position? = null): Expression
+data class Map(
+    val pairs: List<Pair>,
+    override val position: Position? = null
+) : Expression
 
-data class Pair(val expressions: List<Expression>,
-                override val position: Position? = null): Expression
+data class Pair(
+    val expressions: List<Expression>,
+    override val position: Position? = null
+) : Expression
 
 
 /**
  * Tuples
  */
-data class TupleType(val type: List<Type>,
-                     override val position: Position? = null): Type
+data class TupleType(
+    val types: List<Type>,
+    override val position: Position? = null
+) : Type {
+    override fun toString(): String {
+        var tupleType = ""
+        types.forEach { type ->
+            tupleType += type.toString() + ","
+        }
+        return "tuple($tupleType)"
+    }
+}
 
-data class Tuple(val elements: List<TupleElement>,
-                 override val position: Position? = null): Expression
+data class Tuple(
+    val elements: List<TupleElement>,
+    override val position: Position? = null
+) : Expression
 
-data class TupleElement(val name: String, val expression: Expression,
-                        override val position: Position? = null): Expression
+data class TupleElement(
+    val name: String, val expression: Expression,
+    override val position: Position? = null
+) : Expression
 
 
