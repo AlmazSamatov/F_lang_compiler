@@ -3,6 +3,7 @@ package me.team.f.parsing
 import me.team.f.ast.*
 import me.team.fproject.FLangLexer
 import me.team.fproject.FLangParser
+import me.team.fproject.FLangParserBaseListener
 import org.antlr.v4.runtime.*
 import org.antlr.v4.runtime.atn.ATNConfigSet
 import org.antlr.v4.runtime.dfa.DFA
@@ -37,6 +38,8 @@ object ANTLRAnalyser {
         val parser = FLangParser(CommonTokenStream(lex))
         parser.removeErrorListeners()
         parser.addErrorListener(errorListener)
+        val parseListener = FLangParserBaseListener()
+        parser.addParseListener(parseListener)
         val parseResult = parser.program()
         return ANTLRAnalysisResult(parseResult, lexParseErrors)
     }

@@ -2534,7 +2534,7 @@ public class FLangParser extends Parser {
 			match(LPAR);
 			setState(360);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IF) | (1L << FUNC) | (1L << TRUE) | (1L << FALSE) | (1L << INT_LIT) | (1L << REAL_LIT) | (1L << RAT_LIT) | (1L << COMP_LIT) | (1L << STR_LIT) | (1L << LPAR) | (1L << LSQUARE) | (1L << LCURLY) | (1L << ID))) != 0)) {
+			if (_la==INT_LIT || _la==ID) {
 				{
 				setState(352);
 				tupleElement();
@@ -2573,11 +2573,12 @@ public class FLangParser extends Parser {
 	}
 
 	public static class TupleElementContext extends ParserRuleContext {
+		public TerminalNode IS() { return getToken(FLangParser.IS, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public TerminalNode ID() { return getToken(FLangParser.ID, 0); }
-		public TerminalNode IS() { return getToken(FLangParser.IS, 0); }
+		public TerminalNode INT_LIT() { return getToken(FLangParser.INT_LIT, 0); }
 		public TupleElementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2595,21 +2596,20 @@ public class FLangParser extends Parser {
 	public final TupleElementContext tupleElement() throws RecognitionException {
 		TupleElementContext _localctx = new TupleElementContext(_ctx, getState());
 		enterRule(_localctx, 56, RULE_tupleElement);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(366);
-			switch ( getInterpreter().adaptivePredict(_input,35,_ctx) ) {
-			case 1:
-				{
-				setState(364);
-				match(ID);
-				setState(365);
-				match(IS);
-				}
-				break;
+			setState(364);
+			_la = _input.LA(1);
+			if ( !(_la==INT_LIT || _la==ID) ) {
+			_errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			setState(368);
+			setState(365);
+			match(IS);
+			setState(366);
 			expression(0);
 			}
 		}
@@ -2780,13 +2780,13 @@ public class FLangParser extends Parser {
 		TypeContext _localctx = new TypeContext(_ctx, getState());
 		enterRule(_localctx, 58, RULE_type);
 		try {
-			setState(380);
+			setState(378);
 			switch (_input.LA(1)) {
 			case BOOLEAN:
 				_localctx = new BooleanTContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(370);
+				setState(368);
 				booleanType();
 				}
 				break;
@@ -2794,7 +2794,7 @@ public class FLangParser extends Parser {
 				_localctx = new IntegerTContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(371);
+				setState(369);
 				integerType();
 				}
 				break;
@@ -2802,7 +2802,7 @@ public class FLangParser extends Parser {
 				_localctx = new RealTContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(372);
+				setState(370);
 				realType();
 				}
 				break;
@@ -2810,7 +2810,7 @@ public class FLangParser extends Parser {
 				_localctx = new RationalTContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(373);
+				setState(371);
 				rationalType();
 				}
 				break;
@@ -2818,7 +2818,7 @@ public class FLangParser extends Parser {
 				_localctx = new ComplexTContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(374);
+				setState(372);
 				complexType();
 				}
 				break;
@@ -2826,7 +2826,7 @@ public class FLangParser extends Parser {
 				_localctx = new StringTContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(375);
+				setState(373);
 				stringType();
 				}
 				break;
@@ -2834,7 +2834,7 @@ public class FLangParser extends Parser {
 				_localctx = new FunctionTContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(376);
+				setState(374);
 				functionType();
 				}
 				break;
@@ -2842,7 +2842,7 @@ public class FLangParser extends Parser {
 				_localctx = new TupleTContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(377);
+				setState(375);
 				tupleType();
 				}
 				break;
@@ -2850,7 +2850,7 @@ public class FLangParser extends Parser {
 				_localctx = new ArrayTContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
-				setState(378);
+				setState(376);
 				arrayType();
 				}
 				break;
@@ -2858,7 +2858,7 @@ public class FLangParser extends Parser {
 				_localctx = new MapTContext(_localctx);
 				enterOuterAlt(_localctx, 10);
 				{
-				setState(379);
+				setState(377);
 				mapType();
 				}
 				break;
@@ -2899,7 +2899,7 @@ public class FLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(382);
+			setState(380);
 			match(BOOLEAN);
 			}
 		}
@@ -2936,7 +2936,7 @@ public class FLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(384);
+			setState(382);
 			match(INTEGER);
 			}
 		}
@@ -2973,7 +2973,7 @@ public class FLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(386);
+			setState(384);
 			match(REAL);
 			}
 		}
@@ -3010,7 +3010,7 @@ public class FLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(388);
+			setState(386);
 			match(RATIONAL);
 			}
 		}
@@ -3047,7 +3047,7 @@ public class FLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(390);
+			setState(388);
 			match(COMPLEX);
 			}
 		}
@@ -3084,7 +3084,7 @@ public class FLangParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(392);
+			setState(390);
 			match(STRING);
 			}
 		}
@@ -3130,7 +3130,7 @@ public class FLangParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3<\u018d\4\2\t\2\4"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3<\u018b\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -3158,18 +3158,18 @@ public class FLangParser extends Parser {
 		"\3\31\3\31\3\32\3\32\3\32\3\32\7\32\u014c\n\32\f\32\16\32\u014f\13\32"+
 		"\3\32\3\32\3\33\3\33\3\33\3\33\3\34\3\34\3\34\3\34\7\34\u015b\n\34\f\34"+
 		"\16\34\u015e\13\34\3\34\3\34\3\35\3\35\3\35\3\35\7\35\u0166\n\35\f\35"+
-		"\16\35\u0169\13\35\5\35\u016b\n\35\3\35\3\35\3\36\3\36\5\36\u0171\n\36"+
-		"\3\36\3\36\3\37\3\37\3\37\3\37\3\37\3\37\3\37\3\37\3\37\3\37\5\37\u017f"+
-		"\n\37\3 \3 \3!\3!\3\"\3\"\3#\3#\3$\3$\3%\3%\3%\2\4\6\n&\2\4\6\b\n\f\16"+
-		"\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFH\2\3\3\2\".\u01a8"+
+		"\16\35\u0169\13\35\5\35\u016b\n\35\3\35\3\35\3\36\3\36\3\36\3\36\3\37"+
+		"\3\37\3\37\3\37\3\37\3\37\3\37\3\37\3\37\3\37\5\37\u017d\n\37\3 \3 \3"+
+		"!\3!\3\"\3\"\3#\3#\3$\3$\3%\3%\3%\2\4\6\n&\2\4\6\b\n\f\16\20\22\24\26"+
+		"\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFH\2\4\3\2\".\4\2\35\35<<\u01a5"+
 		"\2J\3\2\2\2\4R\3\2\2\2\6Z\3\2\2\2\bf\3\2\2\2\nh\3\2\2\2\f\u0092\3\2\2"+
 		"\2\16\u009c\3\2\2\2\20\u009e\3\2\2\2\22\u00ae\3\2\2\2\24\u00b0\3\2\2\2"+
 		"\26\u00be\3\2\2\2\30\u00c2\3\2\2\2\32\u00d5\3\2\2\2\34\u00ec\3\2\2\2\36"+
 		"\u00ee\3\2\2\2 \u00f2\3\2\2\2\"\u00f4\3\2\2\2$\u00ff\3\2\2\2&\u010f\3"+
 		"\2\2\2(\u0122\3\2\2\2*\u0130\3\2\2\2,\u0132\3\2\2\2.\u0136\3\2\2\2\60"+
 		"\u0141\3\2\2\2\62\u0147\3\2\2\2\64\u0152\3\2\2\2\66\u0156\3\2\2\28\u0161"+
-		"\3\2\2\2:\u0170\3\2\2\2<\u017e\3\2\2\2>\u0180\3\2\2\2@\u0182\3\2\2\2B"+
-		"\u0184\3\2\2\2D\u0186\3\2\2\2F\u0188\3\2\2\2H\u018a\3\2\2\2JO\5\4\3\2"+
+		"\3\2\2\2:\u016e\3\2\2\2<\u017c\3\2\2\2>\u017e\3\2\2\2@\u0180\3\2\2\2B"+
+		"\u0182\3\2\2\2D\u0184\3\2\2\2F\u0186\3\2\2\2H\u0188\3\2\2\2JO\5\4\3\2"+
 		"KL\7\67\2\2LN\5\4\3\2MK\3\2\2\2NQ\3\2\2\2OM\3\2\2\2OP\3\2\2\2P\3\3\2\2"+
 		"\2QO\3\2\2\2RU\7<\2\2ST\78\2\2TV\5<\37\2US\3\2\2\2UV\3\2\2\2VW\3\2\2\2"+
 		"WX\7\5\2\2XY\5\6\4\2Y\5\3\2\2\2Z[\b\4\1\2[\\\5\n\6\2\\c\3\2\2\2]^\f\3"+
@@ -3259,20 +3259,19 @@ public class FLangParser extends Parser {
 		"\u0163\3\2\2\2\u0166\u0169\3\2\2\2\u0167\u0165\3\2\2\2\u0167\u0168\3\2"+
 		"\2\2\u0168\u016b\3\2\2\2\u0169\u0167\3\2\2\2\u016a\u0162\3\2\2\2\u016a"+
 		"\u016b\3\2\2\2\u016b\u016c\3\2\2\2\u016c\u016d\7\62\2\2\u016d9\3\2\2\2"+
-		"\u016e\u016f\7<\2\2\u016f\u0171\7\5\2\2\u0170\u016e\3\2\2\2\u0170\u0171"+
-		"\3\2\2\2\u0171\u0172\3\2\2\2\u0172\u0173\5\6\4\2\u0173;\3\2\2\2\u0174"+
-		"\u017f\5> \2\u0175\u017f\5@!\2\u0176\u017f\5B\"\2\u0177\u017f\5D#\2\u0178"+
-		"\u017f\5F$\2\u0179\u017f\5H%\2\u017a\u017f\5$\23\2\u017b\u017f\5\66\34"+
-		"\2\u017c\u017f\5,\27\2\u017d\u017f\5\60\31\2\u017e\u0174\3\2\2\2\u017e"+
-		"\u0175\3\2\2\2\u017e\u0176\3\2\2\2\u017e\u0177\3\2\2\2\u017e\u0178\3\2"+
-		"\2\2\u017e\u0179\3\2\2\2\u017e\u017a\3\2\2\2\u017e\u017b\3\2\2\2\u017e"+
-		"\u017c\3\2\2\2\u017e\u017d\3\2\2\2\u017f=\3\2\2\2\u0180\u0181\7\24\2\2"+
-		"\u0181?\3\2\2\2\u0182\u0183\7\22\2\2\u0183A\3\2\2\2\u0184\u0185\7\23\2"+
-		"\2\u0185C\3\2\2\2\u0186\u0187\7\25\2\2\u0187E\3\2\2\2\u0188\u0189\7\26"+
-		"\2\2\u0189G\3\2\2\2\u018a\u018b\7\27\2\2\u018bI\3\2\2\2\'OUcru\u0083\u0085"+
+		"\u016e\u016f\t\3\2\2\u016f\u0170\7\5\2\2\u0170\u0171\5\6\4\2\u0171;\3"+
+		"\2\2\2\u0172\u017d\5> \2\u0173\u017d\5@!\2\u0174\u017d\5B\"\2\u0175\u017d"+
+		"\5D#\2\u0176\u017d\5F$\2\u0177\u017d\5H%\2\u0178\u017d\5$\23\2\u0179\u017d"+
+		"\5\66\34\2\u017a\u017d\5,\27\2\u017b\u017d\5\60\31\2\u017c\u0172\3\2\2"+
+		"\2\u017c\u0173\3\2\2\2\u017c\u0174\3\2\2\2\u017c\u0175\3\2\2\2\u017c\u0176"+
+		"\3\2\2\2\u017c\u0177\3\2\2\2\u017c\u0178\3\2\2\2\u017c\u0179\3\2\2\2\u017c"+
+		"\u017a\3\2\2\2\u017c\u017b\3\2\2\2\u017d=\3\2\2\2\u017e\u017f\7\24\2\2"+
+		"\u017f?\3\2\2\2\u0180\u0181\7\22\2\2\u0181A\3\2\2\2\u0182\u0183\7\23\2"+
+		"\2\u0183C\3\2\2\2\u0184\u0185\7\25\2\2\u0185E\3\2\2\2\u0186\u0187\7\26"+
+		"\2\2\u0187G\3\2\2\2\u0188\u0189\7\27\2\2\u0189I\3\2\2\2&OUcru\u0083\u0085"+
 		"\u0092\u009c\u00ae\u00b7\u00ba\u00c8\u00ce\u00d0\u00d5\u00db\u00e3\u00e8"+
 		"\u00ec\u00f0\u00fa\u00fd\u0106\u0109\u0116\u0119\u011e\u012a\u0130\u013c"+
-		"\u014d\u015c\u0167\u016a\u0170\u017e";
+		"\u014d\u015c\u0167\u016a\u017c";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

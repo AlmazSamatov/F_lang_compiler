@@ -12,7 +12,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -67,7 +66,8 @@ build/
 /buildSrc/out
 /buildSrc/subprojects/*/*.iml
 /buildSrc/subprojects/*/out
-/out
+/out/production
+/out/test
 /subprojects/*/*.iml
 /subprojects/*/out
 /.teamcity/*.iml

@@ -34,7 +34,7 @@ fun Node.process(operation: (Node) -> Unit) {
         }
     }
 }
-
+@Suppress("UNCHECKED_CAST")
 fun <T: Node> Node.specificProcess(classF: Class<T>, operation: (T) -> Unit) {
     process {
         if (classF.isInstance(it)) {
@@ -322,7 +322,7 @@ data class TupleType(val type: List<Type>,
 data class Tuple(val elements: List<TupleElement>,
                  override val position: Position? = null): Expression
 
-data class TupleElement(val name: String? = null, val expression: Expression,
+data class TupleElement(val name: String, val expression: Expression,
                         override val position: Position? = null): Expression
 
 

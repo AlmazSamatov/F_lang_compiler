@@ -1,1 +1,3 @@
-d is func(v: integer) do j is 1 for i in 1..2 loop print i end end
+a is (1 is "Hello", 2 is "World");
+printer is func(str: string): integer do print str return 0 end;
+b is printer(a.1)
