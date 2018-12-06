@@ -37,8 +37,12 @@ fun main(args: Array<String>) {
     } else {
         val errors = parseResult.errors
         println("ERRORS:")
-        errors.forEach { println("[Line: ${it.position.line}, " +
-                "Column: ${it.position.col}] -> ${it.message}") }
+        errors.forEach {
+            println(
+                "[Line: ${it.position.line}, " +
+                        "Column: ${it.position.col}] -> ${it.message}"
+            )
+        }
     }
 
 }

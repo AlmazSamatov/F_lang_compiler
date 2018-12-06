@@ -4,12 +4,12 @@ import me.team.f.ast.*
 import me.team.f.ast.Array
 import me.team.f.ast.Function
 import me.team.f.ast.Map
-import kotlin.jvm.internal.FunctionReference
 
 fun declarationToKotlin(ast: VarDeclaration): String {
     return if (ast.type != null) {
         ("var " + ast.varName + ": " + typeToKotlin(ast.type)
                 + " = " + exprToKotlin(ast.value))
+
     } else {
         ("var " + ast.varName + " = " + exprToKotlin(ast.value))
     }
@@ -25,7 +25,18 @@ fun typeToKotlin(type: Type): String {
         is RationalType -> resultBuilder.append("Rational")
         is ComplexType -> resultBuilder.append("Complex")
         is StringType -> resultBuilder.append("String")
-//        is FunctionType -> resultBuilder.append() // TODO(add support for functional type)
+        is FunctionType -> {
+            resultBuilder.append("(")
+            for (i in 0 until type.types.size) {
+                if (i == type.types.size - 1)
+                    resultBuilder.append(") -> (${typeToKotlin(type.types[i])})")
+                else {
+                    resultBuilder.append(typeToKotlin(type.types[i]))
+                    if (i < type.types.size - 2)
+                        resultBuilder.append(", ")
+                }
+            }
+        }
 //        is ArrayType -> resultBuilder.append() // TODO(add support for array type)
 //        is MapType -> resultBuilder.append() // TODO(add support for map type)
 //        is TupleType -> resultBuilder.append() // TODO(add support for tuple type)

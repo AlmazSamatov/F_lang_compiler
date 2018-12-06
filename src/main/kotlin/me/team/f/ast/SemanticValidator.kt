@@ -37,8 +37,33 @@ object Validator {
         if (symbolTable.containsKey(Pair(declaration.varName, scope.peek())))
             errors.add(Error("Variable ${declaration.varName} is already declared.",
                 declaration.position!!.start))
-        else
+        else {
+            // TODO(add checking for defined type vs resulting)
+            val decType = getO(getType(declaration.value))
+            val assType = if (declaration.type == null) decType else getActualType(declaration.type)
+            if (decType != assType) {
+                errors.add(Error("Variable type $decType doesn't correspond to " +
+                        "actual declaration type $assType",
+                    declaration.position!!.start))
+            }
             symbolTable[Pair(declaration.varName, scope.peek())] = getO(getType(declaration.value))
+        }
+    }
+
+    private fun getActualType(type: Type): Type {
+        return when (type) {
+            is BooleanType -> BooleanType()
+            is IntegerType -> IntegerType()
+            is RealType -> RealType()
+            is RationalType -> RationalType()
+            is ComplexType -> ComplexType()
+            is StringType -> StringType()
+            is FunctionType -> { FunctionType(type.types.map { getActualType(it) }) }
+//        is ArrayType -> resultBuilder.append() // TODO(add support for array type)
+//        is MapType -> resultBuilder.append() // TODO(add support for map type)
+//        is TupleType -> resultBuilder.append() // TODO(add support for tuple type)
+            else -> throw UnsupportedOperationException("No such type exist")
+        }
     }
 
     private fun getType(value: Expression): Type {

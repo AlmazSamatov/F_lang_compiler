@@ -1,1 +1,1 @@
-a is func(f: integer, s: integer): string => 5 * 7 + (s - f)
+a: integer is 7
