@@ -209,6 +209,6 @@ interface ParseTreeToAstMapper<in PTN: ParserRuleContext, out ASTN: Node> {
     fun map(parseTreeNode: PTN): ASTN
 }
 
-class FLangParseTreeToAstMapper : ParseTreeToAstMapper<ProgramContext, Program> {
-    override fun map(parseTreeNode: ProgramContext): Program = parseTreeNode.toAst()
-}
+//class FLangParseTreeToAstMapper : ParseTreeToAstMapper<ProgramContext, Program> {
+//    override fun map(parseTreeNode: ProgramContext): Program = parseTreeNode.toAst()
+//}

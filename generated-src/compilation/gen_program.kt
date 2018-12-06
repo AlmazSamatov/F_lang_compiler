@@ -1,16 +1,19 @@
 fun main(args: Array<String>) {
-	var a: (Int, Int) -> (Int) = fun(f: Int, s: Int) = 5 * 7 + s - f
-	var b: String = if (5 + 1 > 2) {
-	"Hello"
+	var max_value: (List<Int>) -> (Int) = fun(arr: List<Int>): Int{
+	var max: Int = 0
+	for (i in arr) {
+	if (max < i) {
+	max = i
 	} else {
-	"World"
+	} 
+	} 
+	return max
 	}
-	var t: List<Int> = mutableListOf(5, 7, 9)
-	var r: Int = t[1]
-	var printer: (Int) -> (Int) = fun(value: Int): Int {
-	print("Result is ")
-	print(value)
-	return 5
+	var main: () -> (Int) = fun(): Int{
+	var max: Int = max_value(mutableListOf(1, 2, 3, 4, 7, 11, 5, 9))
+	print("Max value is ")
+	print(max)
+	return 0
 	}
-	var printed_r: Int = printer(r)
+	var res: Int = main()
 }

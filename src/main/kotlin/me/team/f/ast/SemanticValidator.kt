@@ -9,10 +9,12 @@ import me.team.f.ast.Error as Error
 
 object Validator {
     val symbolTable = HashMap<Pair<String, String>, Type>()
+    val tupleTable = HashMap<Pair<String, String>, List<Pair<String, Type>>>()
     val scope = Stack<String>()
     val errors = mutableListOf<Error>()
     var funcId = 0
     var loopId = 0
+    var currentDecl = ""
 
     fun validate(ast: Program): List<Error> {
         scope.push("main")
@@ -21,8 +23,6 @@ object Validator {
             validateDeclaration(it as VarDeclaration)
         }
 
-//        println(allowedLogical.containsKey(createTypePair(BooleanType(), BooleanType())))
-//        println(allowedLogical[createTypePair(BooleanType(), BooleanType())]?.simpleName)
 //        println("***** Symbol table start *****")
 //        symbolTable.map {
 //            println(it)
@@ -33,6 +33,7 @@ object Validator {
 
     private fun validateDeclaration(declaration: VarDeclaration) {
         // Check if variable already exists
+        currentDecl = declaration.varName
         if (symbolTable.containsKey(Pair(declaration.varName, scope.peek())))
             errors.add(Error("Variable ${declaration.varName} is already declared.",
                 declaration.position!!.start))
@@ -44,11 +45,11 @@ object Validator {
                         "actual declaration type $assType",
                     declaration.position!!.start))
             }
-            symbolTable[Pair(declaration.varName, scope.peek())] = getO(getType(declaration.value))
+            symbolTable[Pair(declaration.varName, scope.peek())] = decType
         }
     }
 
-    /*private */fun getActualType(type: Type): Type {
+    private fun getActualType(type: Type): Type {
         return when (type) {
             is BooleanType -> BooleanType()
             is IntegerType -> IntegerType()
@@ -64,7 +65,7 @@ object Validator {
         }
     }
 
-    /*private */fun getType(value: Expression): Type {
+    private fun getType(value: Expression): Type {
         return when (value) {
             is BinaryExpression -> getBinaryType(value)
 
@@ -105,7 +106,11 @@ object Validator {
             }
             // Secondary - Primary - Tuple
             is Tuple -> {
-                TupleType(value.elements.map { getType(it.expression) })
+                val elements: List<Pair<String, Type>> = value.elements.map {
+                    Pair(it.name, getType(it.expression))
+                }
+                tupleTable[Pair(currentDecl, scope.peek())] = elements
+                TupleType(elements.map { it.second })
             }
 
             // Secondary - Primary - Map
@@ -157,7 +162,15 @@ object Validator {
 
         return if (callerType.javaClass == TupleType::class.java) {
             val name = (value.secondary as VarReference).name
-            symbolTable[Pair(name, scope.peek())]!!
+            if (tupleTable.containsKey(Pair(name, scope.peek()))) {
+                var type: Type = UndefinedType()
+                tupleTable[Pair(name, scope.peek())]!!.map {
+                    if (it.first == value.fieldName)
+                        type = it.second
+                }
+                return type
+            }
+            UndefinedType()
         } else {
             errors.add(Error("${callerType.javaClass.simpleName} " +
                     "is not a TupleType",
@@ -264,15 +277,38 @@ object Validator {
 
     private fun getCallType(value: Call): Type {
         val callerType = getType(value.secondary)
-        return if (callerType.javaClass == FunctionType::class.java) {
+        if (callerType.javaClass == FunctionType::class.java) {
             val funcTypes = (callerType as FunctionType).types
-            funcTypes[funcTypes.size - 1]
+            if (funcTypes.size - 1 != value.expressions.size) {
+                errors.add(Error("Wrong number of parameters, " +
+                        "expected ${funcTypes.size}, received ${value.expressions.size}",
+                    value.position!!.start))
+                return UndefinedType()
+            }
+            var good = true
+            val till = funcTypes.lastIndex - 1
+            for (i in 0..till) {
+                if (getActualType(funcTypes[i]) != getType(value.expressions[i])) {
+                    good = false
+                    break
+                }
+            }
+            if (good)
+                return funcTypes[funcTypes.size - 1]
+            else {
+                errors.add(Error("Incompatible parameter types: " +
+                        "expected ${funcTypes.subList(0, funcTypes.size - 1).map { it.javaClass.simpleName }}" +
+                        ", but received ${value.expressions.map { getType(it).javaClass.simpleName }}",
+                    value.position!!.start)
+                )
+                return UndefinedType()
+            }
         } else {
             errors.add(Error("Value of type " +
                     "${callerType.javaClass.simpleName} can't be called",
                 value.position!!.start)
             )
-            UndefinedType()
+            return UndefinedType()
         }
     }
 

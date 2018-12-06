@@ -1,40 +1,28 @@
 package me.team.f
 
-import me.team.f.ast.*
 import me.team.f.parsing.Analyser
 import me.team.f.generator.*
 import java.io.File
 import java.io.FileInputStream
-import java.util.*
 
 fun main(args: Array<String>) {
 
 //    if (args.size != 1) {
 //        throw InputMismatchException("Please, specify filename as only argument")
 //    }
-//    val code = FileInputStream(args[0])
-//    val printer: (Int) -> Int = fun(value: Int) {
-//        print("Result is")
-//        print(value)
-//        return value
-//    }
+
+//    var t: Map<String, Any> = mapOf("name" to "Dima", "surname" to 5)
+//    println(t["surname"])
 
     val code = FileInputStream("test_code.f")
-
-    // TODO: fix generator for loop range, e.x for i in 1..(2*2)
-
 
     val parseResult = Analyser.parse(code)
 
     if (parseResult.correct()) {
         val ast = parseResult.root!!
+
         val kotlinProgram = mutableListOf("fun main(args: Array<String>) {")
-
-//        ast.declarations.map {
-//            kotlinProgram.add("\t" + declarationToKotlin(it as VarDeclaration))
-//        }
         kotlinProgram.addAll(programToKotlin(ast))
-
         kotlinProgram.add("}")
 
         kotlinProgram.map { println(it) }

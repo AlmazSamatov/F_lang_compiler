@@ -76,8 +76,7 @@ fun typeToKotlin(type: Type): String {
         }
         is MapType -> resultBuilder.append("Map<${typeToKotlin(type.types[0])}, " +
                 "${typeToKotlin(type.types[1])}>")
-        is TupleType -> resultBuilder.append("Map<Any, Any>()")
-
+        is TupleType -> resultBuilder.append("Map<String, Any>")
     }
 
     return resultBuilder.toString()
