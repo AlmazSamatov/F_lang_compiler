@@ -57,7 +57,12 @@ object Validator {
             is Conditional -> getConditionalType(value)
 
             // Secondary - Primary - Function
-            is Function -> { scope.add("function$funcId"); funcId++; getFunctionType(value)}
+            is Function -> {
+                scope.add("function${funcId++}")
+                val res = getFunctionType(value)
+                scope.pop()
+                res
+            }
 
             // Secondary - Primary - Array
             // Secondary - Primary - Tuple
@@ -67,6 +72,18 @@ object Validator {
             is ElementOf -> getType(value.varName)
             is NamedTupleElement -> getType(value.secondary)
             is UnnamedTupleElement -> getType(value.secondary)
+
+            is VarReference -> {
+                var type: Class<out Type> = UndefinedType().javaClass
+                scope.forEach {
+                    if (symbolTable.containsKey(Pair(value.name, it)))
+                        type = symbolTable[Pair(value.name, it)]!!
+                }
+                if (type == UndefinedType().javaClass)
+                    errors.add(Error("Variable ${value.name} is " +
+                            "referenced before assignment", value.position!!.start))
+                type
+            }
             else -> throw UnsupportedOperationException("Type can't be deduced")
         }
     }
@@ -127,7 +144,33 @@ object Validator {
     private fun getFunctionType(value: Function): Class<out Type> {
         val parameters = value.parameters
         parameters.map { symbolTable[Pair(it.parName, scope.peek())] = it.type.javaClass }
-        val returnType = value.type ?: UndefinedType()
+
+        val returnType: Class<out Type> = value.type?.javaClass ?: UndefinedType().javaClass
+
+        val bodyType = if (value.body.expression != null) {
+            getType(value.body.expression)
+        } else {
+            var result: Class<out Type> = UndefinedType().javaClass
+            value.body.statements!!.forEach {
+                if (it is ReturnStatement)
+                    result = getType(it.expression)
+            }
+            result
+        }
+
+        return if (returnType == UndefinedType().javaClass) {
+            bodyType
+        } else {
+            if (returnType == bodyType)
+                returnType
+            else {
+                errors.add(Error("Function defined return type ${returnType.simpleName} " +
+                                "doesn't correspond to actual return type ${bodyType.simpleName}",
+                        value.body.position!!.start)
+                )
+                UndefinedType().javaClass
+            }
+        }
     }
 
 }

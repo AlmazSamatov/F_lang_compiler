@@ -1,7 +1,3 @@
 fun main(args: Array<String>) {
-	var a = if (5 * 7 > 55 * 7) {
-	"hello"
-	} else {
-	"world"
-	}
+	var a = fun(f: Int, s: Int) = 2.0 + s
 }

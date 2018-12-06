@@ -1,1 +1,1 @@
-a is if (5 * 7) > 5 then "hello" else "world" end
+a is func(f: integer, s: integer): string => 2.0 + s
