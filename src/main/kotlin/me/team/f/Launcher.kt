@@ -13,6 +13,12 @@ fun main(args: Array<String>) {
 //        throw InputMismatchException("Please, specify filename as only argument")
 //    }
 //    val code = FileInputStream(args[0])
+//    val printer: (Int) -> Int = fun(value: Int) {
+//        print("Result is")
+//        print(value)
+//        return value
+//    }
+
     val code = FileInputStream("test_code.f")
 
     // TODO: fix generator for loop range, e.x for i in 1..(2*2)
@@ -24,9 +30,10 @@ fun main(args: Array<String>) {
         val ast = parseResult.root!!
         val kotlinProgram = mutableListOf("fun main(args: Array<String>) {")
 
-        ast.declarations.map {
-            kotlinProgram.add("\t" + declarationToKotlin(it as VarDeclaration))
-        }
+//        ast.declarations.map {
+//            kotlinProgram.add("\t" + declarationToKotlin(it as VarDeclaration))
+//        }
+        kotlinProgram.addAll(programToKotlin(ast))
 
         kotlinProgram.add("}")
 

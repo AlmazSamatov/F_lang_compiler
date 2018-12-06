@@ -4,15 +4,40 @@ import me.team.f.ast.*
 import me.team.f.ast.Array
 import me.team.f.ast.Function
 import me.team.f.ast.Map
+import java.util.*
+import kotlin.Pair
 
 var used = HashSet<Node>()
+val scope = Stack<String>()
+var funcId = 0
+var loopId = 0
+var currentDecl = ""
+
+fun programToKotlin(p: Program): MutableList<String> {
+    val kotlinProgram = mutableListOf<String>()
+    scope.push("main")
+    p.declarations.map {
+        kotlinProgram.add("\t" + declarationToKotlin(it as VarDeclaration))
+    }
+    return kotlinProgram
+}
 
 fun declarationToKotlin(it: VarDeclaration): String {
     return if (!used.contains(it)) {
         used.add(it)
+        currentDecl = it.varName
+
+        var deducedType: Type = UndefinedType()
+        Validator.symbolTable.map { line ->
+            if (line.key.first == it.varName)
+                deducedType = line.value
+        }
 
         if (it.type != null) {
             ("var " + it.varName + ": " + typeToKotlin(it.type)
+                    + " = " + exprToKotlin(it.value))
+        } else if (deducedType != UndefinedType()) {
+            ("var " + it.varName + ": " + typeToKotlin(deducedType)
                     + " = " + exprToKotlin(it.value))
         } else {
             ("var " + it.varName + " = " + exprToKotlin(it.value))
@@ -149,7 +174,8 @@ fun exprToKotlin(expr: Expression): String {
             is Function -> expr.specificProcess(Function::class.java) {
                 val parameters = StringBuilder()
                 var was = false
-                println(it.parameters)
+                scope.push("function${funcId++}")
+
                 for (p in it.parameters) {
                     if (was) {
                         parameters.append(", ")
@@ -159,7 +185,19 @@ fun exprToKotlin(expr: Expression): String {
                     parameters.append(p.parName + ": " + typeToKotlin(p.type))
                 }
 
-                val type = if (it.type == null) "" else ": ${typeToKotlin(it.type)}"
+                var type = if (it.type == null) "" else ": ${typeToKotlin(it.type)}"
+
+                if (type == "") {
+                    var deducedType: Type = UndefinedType()
+                    it.specificProcess(ReturnStatement::class.java) { stmt ->
+                        deducedType = Validator.symbolTable[Pair(currentDecl, "main")] ?: UndefinedType()
+                    }
+                    if (deducedType != UndefinedType())
+                        if (deducedType.javaClass == FunctionType::class.java)
+                            type = ": ${typeToKotlin((deducedType as FunctionType).types.last())} "
+                        else
+                            type = ": ${typeToKotlin(deducedType)} "
+                }
 
                 val body = if (it.body.expression != null) {
                     " = " + exprToKotlin(it.body.expression)
@@ -172,6 +210,7 @@ fun exprToKotlin(expr: Expression): String {
                 resultBuilder.append(
                     "fun($parameters)$type$body"
                 )
+                scope.pop()
             }
 
             // Composed types
@@ -285,6 +324,7 @@ fun stmtToKotlin(stmt: Statement): String {
 
             is LoopStatement -> stmt.specificProcess(LoopStatement::class.java) {
                 val code = StringBuilder()
+                scope.push("loop${loopId++}")
 
                 when (it.loopHeader) {
                     is ForLoopHeader -> it.loopHeader.specificProcess(ForLoopHeader::class.java) {
@@ -307,6 +347,7 @@ fun stmtToKotlin(stmt: Statement): String {
                 code.append("} ")
 
                 resultBuilder.append(code)
+                scope.pop()
             }
 
             is ReturnStatement -> stmt.specificProcess(ReturnStatement::class.java) {

@@ -8,7 +8,7 @@ import kotlin.collections.HashSet
 import me.team.f.ast.Error as Error
 
 object Validator {
-    val symbolTable = HashMap<Pair<String, String>, Type>()//Class<out Type>>()
+    val symbolTable = HashMap<Pair<String, String>, Type>()
     val scope = Stack<String>()
     val errors = mutableListOf<Error>()
     var funcId = 0
@@ -18,17 +18,16 @@ object Validator {
         scope.push("main")
 
         ast.declarations.map {
-//            errors.addAll(validateDeclaration(it as VarDeclaration))
             validateDeclaration(it as VarDeclaration)
         }
 
 //        println(allowedLogical.containsKey(createTypePair(BooleanType(), BooleanType())))
 //        println(allowedLogical[createTypePair(BooleanType(), BooleanType())]?.simpleName)
-        println("***** Symbol table start *****")
-        symbolTable.map {
-            println(it)
-        }
-        println("***** Symbol table end *****")
+//        println("***** Symbol table start *****")
+//        symbolTable.map {
+//            println(it)
+//        }
+//        println("***** Symbol table end *****")
         return errors
     }
 
@@ -49,7 +48,7 @@ object Validator {
         }
     }
 
-    private fun getActualType(type: Type): Type {
+    /*private */fun getActualType(type: Type): Type {
         return when (type) {
             is BooleanType -> BooleanType()
             is IntegerType -> IntegerType()
@@ -65,7 +64,7 @@ object Validator {
         }
     }
 
-    private fun getType(value: Expression): Type {
+    /*private */fun getType(value: Expression): Type {
         return when (value) {
             is BinaryExpression -> getBinaryType(value)
 
@@ -82,7 +81,7 @@ object Validator {
 
             // Secondary - Primary - Function
             is Function -> {
-                scope.add("function${funcId++}")
+                scope.push("function${funcId++}")
                 val res = getFunctionType(value)
                 scope.pop()
                 res
@@ -333,7 +332,7 @@ object Validator {
             is FunctionCall -> getCallType(Call(value.secondary, value.expressions, value.position))
             is IfStatement -> UndefinedType()
             is LoopStatement -> {
-                scope.add("function${loopId++}")
+                scope.push("loop${loopId++}")
                 val res = validateLoop(value)
                 scope.pop()
                 res
