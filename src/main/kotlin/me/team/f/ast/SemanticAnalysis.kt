@@ -186,8 +186,7 @@ fun Program.validate(): List<Error> {
                 }
             }
             is Call -> {
-                // TODO(implement retrieving type of call)
-                return "any"
+                return type(expression.secondary)
             }
             is ElementOf -> {
                 val element = varsByName[(expression.varName as VarReference).name]
