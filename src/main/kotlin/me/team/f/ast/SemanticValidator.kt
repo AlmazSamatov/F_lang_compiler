@@ -38,7 +38,6 @@ object Validator {
             errors.add(Error("Variable ${declaration.varName} is already declared.",
                 declaration.position!!.start))
         else {
-            // TODO(add checking for defined type vs resulting)
             val decType = getO(getType(declaration.value))
             val assType = if (declaration.type == null) decType else getActualType(declaration.type)
             if (decType != assType) {
@@ -58,10 +57,10 @@ object Validator {
             is RationalType -> RationalType()
             is ComplexType -> ComplexType()
             is StringType -> StringType()
-            is FunctionType -> { FunctionType(type.types.map { getActualType(it) }) }
-//        is ArrayType -> resultBuilder.append() // TODO(add support for array type)
-//        is MapType -> resultBuilder.append() // TODO(add support for map type)
-//        is TupleType -> resultBuilder.append() // TODO(add support for tuple type)
+            is FunctionType -> FunctionType(type.types.map { getActualType(it) })
+            is ArrayType -> ArrayType(getActualType(type.type))
+            is MapType -> MapType(type.types.map { getActualType(it) })
+            is TupleType -> TupleType(type.type.map { getActualType(it) })
             else -> throw UnsupportedOperationException("No such type exist")
         }
     }
