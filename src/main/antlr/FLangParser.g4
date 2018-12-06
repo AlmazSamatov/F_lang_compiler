@@ -80,7 +80,7 @@ ifStatement
     ;
 
 loopStatement
-    : (loopHeader)? LOOP statement* END
+    : loopHeader LOOP statement* END
     ;
 
 loopHeader

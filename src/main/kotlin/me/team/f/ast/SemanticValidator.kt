@@ -291,11 +291,67 @@ object Validator {
         }
     }
 
-    private fun getStatementType(it: Statement): Type {
-        when (it) {
-
+    private fun getStatementType(value: Statement): Type {
+        return when (value) {
+            is Assignment -> {
+                val lhs = getType(value.secondary)
+                val rhs = getType(value.expression)
+                if (lhs == rhs)
+                    lhs
+                else {
+                    errors.add(Error("Value of ${rhs.javaClass.simpleName} " +
+                            "can't be assigned to variable of ${lhs.javaClass.simpleName}",
+                        value.position!!.start)
+                    )
+                    UndefinedType()
+                }
+            }
+            is FunctionCall -> getCallType(Call(value.secondary, value.expressions, value.position))
+            is IfStatement -> UndefinedType()
+            is LoopStatement -> {
+                scope.add("function${loopId++}")
+                val res = validateLoop(value)
+                scope.pop()
+                res
+            }
+            is ReturnStatement -> getType(value.expression)
+            is BreakStatement -> UndefinedType()
+            is PrintStatement -> {
+                // check that all statements to print are defined
+                value.expressions.map { getType(it) }
+                UndefinedType()
+            }
+            is Declaration -> { validateDeclaration(value as VarDeclaration); UndefinedType() }
+            else -> throw UnsupportedOperationException("No such statement exist")
         }
-        return UndefinedType() // TODO(check)
+    }
+
+    private fun validateLoop(value: LoopStatement): Type {
+        val header = value.loopHeader
+
+        when (header) {
+            is ForLoopHeader -> {
+                val idType = getType(header.expressions[0])
+                if (header.id != null)
+                    symbolTable[Pair(header.id, scope.peek())] = idType
+
+                if (header.needRange) {
+                    if (getType(header.expressions[0]) != getType(header.expressions[1])){
+                        errors.add(Error("Loop range borders must have same type, " +
+                                "but received ${getType(header.expressions[0]).javaClass.simpleName}" +
+                                "..${getType(header.expressions[1]).javaClass.simpleName}",
+                            header.position!!.start)
+                        )
+                    }
+                }
+            }
+            is WhileLoopHeader -> {
+                getType(header.expressions[0])
+            }
+        }
+
+        value.statements.map { getStatementType(it) }
+        return UndefinedType()
     }
 
 }

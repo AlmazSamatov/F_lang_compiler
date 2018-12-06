@@ -185,6 +185,48 @@ fun Program.validate(): List<Error> {
                     else -> "func"
                 }
             }
+            is Call -> {
+                return type(expression.secondary)
+            }
+            is ElementOf -> {
+                val element = varsByName[(expression.varName as VarReference).name]
+                val e = element?.value
+                return when (e) {
+                    is Array -> {
+                        if ((expression.index as Int) < e.expressions.size){
+                            return type(e.expressions[expression.index])
+                        }
+                        return "any"
+                    }
+                    is Map -> {
+                        if ((expression.index as Int) < e.pairs.size){
+                            for (i in 0..e.pairs.lastIndex) {
+                                if (e.pairs[0].expressions[0] == expression.index) {
+                                    return type(e.pairs[0].expressions[1])
+                                }
+                            }
+                        }
+                        return "any"
+                    }
+                    else -> "any"
+                }
+            }
+            is NamedTupleElement -> {
+                val element = varsByName[(expression.secondary as VarReference).name]
+                for (e in (element?.value as Tuple).elements) {
+                    if (e.name == expression.fieldName)
+                        return type(e.expression)
+                }
+                return "any"
+            }
+            is UnnamedTupleElement -> {
+                val element = varsByName[(expression.secondary as VarReference).name]
+                for (e in (element?.value as Tuple).elements) {
+                    if (e.name == expression.fieldNum)
+                        return type(e.expression)
+                }
+                return "any"
+            }
             else -> "any"
         }
     }
@@ -258,13 +300,23 @@ fun Program.validate(): List<Error> {
                                     is IntLit -> function.value
                                     else -> function
                                 }
-                                errors.add(
-                                    Error(
-                                        "Non-compatible type of parameters. Parameter in call $nameOfVarInCall is " +
-                                                "not same as in function declaration ${expression.parameters[i].parName}",
-                                        it.expressions[i].position?.start!!
+                                if (nameOfVarInCall is String) {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
                                     )
-                                )
+                                } else {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -314,17 +366,23 @@ fun Program.validate(): List<Error> {
                                     is IntLit -> function.value
                                     else -> function
                                 }
-                                errors.add(
-                                    Error(
-                                        "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(
-                                            function
-                                        )} is " +
-                                                "not same as in function declaration parameter with name ${expression.parameters[i].parName} of type ${type(
-                                                    expression.parameters[i]
-                                                )}",
-                                        it.expressions[i].position?.start!!
+                                if (nameOfVarInCall is String) {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
                                     )
-                                )
+                                } else {
+                                    errors.add(
+                                        Error(
+                                            "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
+                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                            it.expressions[i].position?.start!!
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
