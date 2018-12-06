@@ -95,8 +95,9 @@ object Validator {
                 if (uniqueTypes.size == 1)
                     MapType(listOf(elementTypes[0].first, elementTypes[0].second))
                 else {
-                    errors.add(Error("Array elements have different types " +
-                            "${elementTypes.map { it.javaClass.simpleName }}",
+                    errors.add(Error("Map elements have different types " +
+                            "${elementTypes.map { "(${it.first.javaClass.simpleName}, " +
+                                    "${it.second.javaClass.simpleName})" }}",
                         value.position!!.start)
                     )
                     UndefinedType()
@@ -104,21 +105,10 @@ object Validator {
             }
 
             // Secondary
-            is Call -> { //getType(value.secondary)
-                val callerType = getType(value.secondary)
-                if (callerType.javaClass == FunctionType::class.java) {
-                    val funcTypes = (callerType as FunctionType).types
-                    funcTypes[funcTypes.size - 1]
-                } else {
-                    errors.add(Error("Value of type " +
-                            "${callerType.javaClass.simpleName} can't be called",
-                        value.position!!.start)
-                    )
-                    UndefinedType()
-                }
-            }
+            is Call -> getCallType(value)
 
-            is ElementOf -> getType(value.varName)
+            is ElementOf -> getElementType(value)
+
             is NamedTupleElement -> getType(value.secondary)
             is UnnamedTupleElement -> getType(value.secondary)
 
@@ -134,6 +124,44 @@ object Validator {
                 type
             }
             else -> throw UnsupportedOperationException("Type can't be deduced")
+        }
+    }
+
+    private fun getElementType(value: ElementOf): Type {
+        val callerType = getType(value.varName)
+
+        return if (callerType.javaClass == ArrayType::class.java) {
+            val indexType = getType(value.index)
+
+            if (indexType == (callerType as ArrayType).type)
+                return indexType
+            else {
+                errors.add(Error("Array index should be of IntegerType, " +
+                        "but received ${indexType.javaClass.simpleName}",
+                    value.position!!.start)
+                )
+                UndefinedType()
+            }
+        } else if (callerType.javaClass == MapType::class.java) {
+            val indexType = getType(value.index)
+
+            if (indexType == (callerType as MapType).types[0])
+                return indexType
+            else {
+                errors.add(Error("Map index should be of " +
+                        "${callerType.types[0].javaClass.simpleName}, " +
+                        "but received ${indexType.javaClass.simpleName}",
+                    value.position!!.start)
+                )
+                UndefinedType()
+            }
+        } else {
+            errors.add(Error("Variable of type " +
+                    "${callerType.javaClass.simpleName} is not subcriptable, " +
+                    "should be one of [MapType, ArrayType]",
+                value.position!!.start)
+            )
+            UndefinedType()
         }
     }
 
@@ -224,6 +252,20 @@ object Validator {
                 )
                 UndefinedType()
             }
+        }
+    }
+
+    private fun getCallType(value: Call): Type {
+        val callerType = getType(value.secondary)
+        return if (callerType.javaClass == FunctionType::class.java) {
+            val funcTypes = (callerType as FunctionType).types
+            funcTypes[funcTypes.size - 1]
+        } else {
+            errors.add(Error("Value of type " +
+                    "${callerType.javaClass.simpleName} can't be called",
+                value.position!!.start)
+            )
+            UndefinedType()
         }
     }
 
