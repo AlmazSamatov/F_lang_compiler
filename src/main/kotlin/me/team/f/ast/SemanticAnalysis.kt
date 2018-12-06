@@ -364,6 +364,6 @@ fun Program.validate(): List<Error> {
 
 fun Node.isBefore(varDeclaration: VarDeclaration): Boolean {
     return this.position!!.start.line < varDeclaration.position!!.start.line ||
-            this.position!!.start.line == varDeclaration.position.start.line &&
-            this.position!!.start.col < varDeclaration.position.start.col
+            this.position!!.start.line == varDeclaration.position!!.start.line &&
+            this.position!!.start.col < varDeclaration.position!!.start.col
 }
