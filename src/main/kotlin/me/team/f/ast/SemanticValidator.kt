@@ -81,7 +81,9 @@ object Validator {
                 }
             }
             // Secondary - Primary - Tuple
-            is Tuple -> { TupleType(value.elements.map { getType(it.expression) }) }
+            is Tuple -> {
+                TupleType(value.elements.map { getType(it.expression) })
+            }
 
             // Secondary - Primary - Map
             is Map -> {
@@ -109,8 +111,8 @@ object Validator {
 
             is ElementOf -> getElementType(value)
 
-            is NamedTupleElement -> getType(value.secondary)
-            is UnnamedTupleElement -> getType(value.secondary)
+            is NamedTupleElement -> getNamedTupleElement(value)
+            is UnnamedTupleElement -> getUnnamedTupleElement(value)
 
             is VarReference -> {
                 var type: Type = UndefinedType()
@@ -127,42 +129,24 @@ object Validator {
         }
     }
 
-    private fun getElementType(value: ElementOf): Type {
-        val callerType = getType(value.varName)
+    private fun getNamedTupleElement(value: NamedTupleElement): Type {
+        val callerType = getType(value.secondary)
 
-        return if (callerType.javaClass == ArrayType::class.java) {
-            val indexType = getType(value.index)
-
-            if (indexType == (callerType as ArrayType).type)
-                return indexType
-            else {
-                errors.add(Error("Array index should be of IntegerType, " +
-                        "but received ${indexType.javaClass.simpleName}",
-                    value.position!!.start)
-                )
-                UndefinedType()
-            }
-        } else if (callerType.javaClass == MapType::class.java) {
-            val indexType = getType(value.index)
-
-            if (indexType == (callerType as MapType).types[0])
-                return indexType
-            else {
-                errors.add(Error("Map index should be of " +
-                        "${callerType.types[0].javaClass.simpleName}, " +
-                        "but received ${indexType.javaClass.simpleName}",
-                    value.position!!.start)
-                )
-                UndefinedType()
-            }
+        return if (callerType.javaClass == TupleType::class.java) {
+            val name = (value.secondary as VarReference).name
+            symbolTable[Pair(name, scope.peek())]!!
         } else {
-            errors.add(Error("Variable of type " +
-                    "${callerType.javaClass.simpleName} is not subcriptable, " +
-                    "should be one of [MapType, ArrayType]",
+            errors.add(Error("${callerType.javaClass.simpleName} " +
+                    "is not a TupleType",
                 value.position!!.start)
             )
             UndefinedType()
         }
+    }
+
+    private fun getUnnamedTupleElement(value: UnnamedTupleElement): Type {
+        val named = NamedTupleElement(secondary = value.secondary, fieldName = value.fieldNum)
+        return getNamedTupleElement(named)
     }
 
     private fun getBinaryType(value: BinaryExpression): Type {
@@ -269,8 +253,49 @@ object Validator {
         }
     }
 
+    private fun getElementType(value: ElementOf): Type {
+        val callerType = getType(value.varName)
+
+        return if (callerType.javaClass == ArrayType::class.java) {
+            val indexType = getType(value.index)
+
+            if (indexType == (callerType as ArrayType).type)
+                return indexType
+            else {
+                errors.add(Error("Array index should be of IntegerType, " +
+                        "but received ${indexType.javaClass.simpleName}",
+                    value.position!!.start)
+                )
+                UndefinedType()
+            }
+        } else if (callerType.javaClass == MapType::class.java) {
+            val indexType = getType(value.index)
+
+            if (indexType == (callerType as MapType).types[0])
+                return indexType
+            else {
+                errors.add(Error("Map index should be of " +
+                        "${callerType.types[0].javaClass.simpleName}, " +
+                        "but received ${indexType.javaClass.simpleName}",
+                    value.position!!.start)
+                )
+                UndefinedType()
+            }
+        } else {
+            errors.add(Error("Variable of type " +
+                    "${callerType.javaClass.simpleName} is not subcriptable, " +
+                    "should be one of [MapType, ArrayType]",
+                value.position!!.start)
+            )
+            UndefinedType()
+        }
+    }
+
     private fun getStatementType(it: Statement): Type {
-        return UndefinedType() // TODO(Change)
+        when (it) {
+
+        }
+        return UndefinedType() // TODO(check)
     }
 
 }
