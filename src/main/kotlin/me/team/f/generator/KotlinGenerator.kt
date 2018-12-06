@@ -23,39 +23,36 @@ fun declarationToKotlin(it: VarDeclaration): String {
 fun typeToKotlin(type: Type): String {
     val resultBuilder = StringBuilder()
 
-    if (!used.contains(type)) {
-        used.add(type)
+    when (type) {
+        is BooleanType -> resultBuilder.append("Boolean")
+        is IntegerType -> resultBuilder.append("Int")
+        is RealType -> resultBuilder.append("Double")
+        is RationalType -> resultBuilder.append("Rational")
+        is ComplexType -> resultBuilder.append("Complex")
+        is StringType -> resultBuilder.append("String")
+        is FunctionType -> {
+            resultBuilder.append("(")
+            for (i in 0..type.types.lastIndex) {
 
-        when (type) {
-            is BooleanType -> resultBuilder.append("Boolean")
-            is IntegerType -> resultBuilder.append("Int")
-            is RealType -> resultBuilder.append("Double")
-            is RationalType -> resultBuilder.append("Rational")
-            is ComplexType -> resultBuilder.append("Complex")
-            is StringType -> resultBuilder.append("String")
-            is FunctionType -> {
-                resultBuilder.append("(")
-                for (i in 0..type.types.lastIndex) {
+                if (i == type.types.lastIndex) {
+                    resultBuilder.append(") -> (")
+                    resultBuilder.append(typeToKotlin(type.types[i]))
+                    resultBuilder.append(")")
+                } else {
+                    resultBuilder.append(typeToKotlin(type.types[i]))
 
-                    if (i == type.types.lastIndex) {
-                        resultBuilder.append(")->(")
-                        resultBuilder.append(typeToKotlin(type.types[i]))
-                        resultBuilder.append(")")
-                    } else {
-                        resultBuilder.append(typeToKotlin(type.types[i]))
-
-                        if (i + 1 != type.types.lastIndex)
-                            resultBuilder.append(", ")
-                    }
-
+                    if (i + 1 != type.types.lastIndex)
+                        resultBuilder.append(", ")
                 }
             }
-            is ArrayType -> {
-                resultBuilder.append("List<${typeToKotlin(type.type)}>")
-            }
-            is MapType -> resultBuilder.append("Map<${typeToKotlin(type.types[0])}, ${typeToKotlin(type.types[1])}>")
-            is TupleType -> resultBuilder.append("Map<Any, Any>()")
         }
+        is ArrayType -> {
+            resultBuilder.append("List<${typeToKotlin(type.type)}>")
+        }
+        is MapType -> resultBuilder.append("Map<${typeToKotlin(type.types[0])}, " +
+                "${typeToKotlin(type.types[1])}>")
+        is TupleType -> resultBuilder.append("Map<Any, Any>()")
+
     }
 
     return resultBuilder.toString()
@@ -152,6 +149,7 @@ fun exprToKotlin(expr: Expression): String {
             is Function -> expr.specificProcess(Function::class.java) {
                 val parameters = StringBuilder()
                 var was = false
+                println(it.parameters)
                 for (p in it.parameters) {
                     if (was) {
                         parameters.append(", ")
