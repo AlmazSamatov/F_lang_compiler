@@ -4,14 +4,15 @@ import me.team.f.parsing.Analyser
 import me.team.f.generator.*
 import java.io.File
 import java.io.FileInputStream
+import java.util.*
 
 fun main(args: Array<String>) {
 
-//    if (args.size != 1) {
-//        throw InputMismatchException("Please, specify filename as only argument")
-//    }
+    if (args.size != 1) {
+        throw InputMismatchException("Please, specify filename as only argument")
+    }
 
-    val code = FileInputStream("test_code.f")
+    val code = FileInputStream(args[0])
 
     if (code.available() == 0)
         println("Program is empty")
