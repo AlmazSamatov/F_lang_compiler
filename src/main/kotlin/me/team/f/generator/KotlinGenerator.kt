@@ -8,22 +8,30 @@ import me.team.f.ast.Map
 var used = HashSet<Node>()
 
 fun declarationToKotlin(it: VarDeclaration): String {
-    return if (!used.contains(it)) {
+    if (!used.contains(it)) {
         used.add(it)
 
-        if (it.type != null) {
-            var type = returnTypeToKotlin(it.type!!)
-            if (it.value is Array || it.value is Map || it.value is Tuple)
-                type = returnTypeToKotlin(it.value.type()!!)
+        if (it.value is Function) {
+            val f = exprToKotlin(it.value)
+            return "${f.subSequence(0, 3)} ${it.varName} ${f.subSequence(3, f.length)}"
+        }
+
+        return if (it.type != null) {
+            val type = returnTypeToKotlin(it.type!!)
             if (it.value is Function) {
                 ("var " + it.varName + " = " + exprToKotlin(it.value))
             } else {
                 ("var " + it.varName + ": " + type + " = " + exprToKotlin(it.value))
             }
         } else {
-            ("var " + it.varName + " = " + exprToKotlin(it.value))
+            if (it.value is Array || it.value is Map || it.value is Tuple)
+                ("var " + it.varName + ": " + returnTypeToKotlin(it.value.type()!!) + " = " + exprToKotlin(it.value))
+            else
+                ("var " + it.varName + " = " + exprToKotlin(it.value))
         }
-    } else ""
+    } else {
+            return ""
+    }
 }
 
 fun returnTypeToKotlin(type: Type): String {
@@ -42,7 +50,7 @@ fun returnTypeToKotlin(type: Type): String {
         is ArrayType -> {
             resultBuilder.append("List<${typeToKotlin(type.type)}>")
         }
-        is MapType -> resultBuilder.append("Map<${typeToKotlin(type.types[0])}, ${typeToKotlin(type.types[1])}>")
+        is MapType -> resultBuilder.append("Map<Any, Any>")
         is TupleType -> resultBuilder.append("Map<Any, Any>")
     }
 
@@ -399,16 +407,16 @@ fun binaryToKotlin(expr: BinaryExpression): String {
                 resultBuilder.append(exprToKotlin(it.left) + " >= " + exprToKotlin(it.right))
             }
             is EqualExpression -> expr.specificProcess(EqualExpression::class.java) {
-                resultBuilder.append(exprToKotlin(it.left) + " = " + exprToKotlin(it.right))
+                resultBuilder.append(exprToKotlin(it.left) + " == " + exprToKotlin(it.right))
             }
             is NotEqExpression -> expr.specificProcess(NotEqExpression::class.java) {
-                resultBuilder.append(exprToKotlin(it.left) + " /= " + exprToKotlin(it.right))
+                resultBuilder.append(exprToKotlin(it.left) + " != " + exprToKotlin(it.right))
             }
             is AndExpression -> expr.specificProcess(AndExpression::class.java) {
-                resultBuilder.append(exprToKotlin(it.left) + " & " + exprToKotlin(it.right))
+                resultBuilder.append(exprToKotlin(it.left) + " && " + exprToKotlin(it.right))
             }
             is OrExpression -> expr.specificProcess(OrExpression::class.java) {
-                resultBuilder.append(exprToKotlin(it.left) + " | " + exprToKotlin(it.right))
+                resultBuilder.append(exprToKotlin(it.left) + " || " + exprToKotlin(it.right))
             }
             is XorExpression -> expr.specificProcess(XorExpression::class.java) {
                 resultBuilder.append(exprToKotlin(it.left) + " ^ " + exprToKotlin(it.right))
