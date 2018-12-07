@@ -7,6 +7,14 @@ import me.team.f.ast.Map
 
 var used = HashSet<Node>()
 
+fun programToKotlin(p: Program): MutableList<String> {
+    val kotlinProgram = mutableListOf<String>()
+    p.declarations.map {
+        kotlinProgram.add("\t" + declarationToKotlin(it as VarDeclaration))
+    }
+    return kotlinProgram
+}
+
 fun declarationToKotlin(it: VarDeclaration): String {
     if (!used.contains(it)) {
         used.add(it)

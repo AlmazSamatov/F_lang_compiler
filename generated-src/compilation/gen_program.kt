@@ -1,6 +1,6 @@
 fun main(args: Array<String>) {
-	var a = mapOf("1" to "Hello", "2" to "World")
-	var printer = fun(str: String): Int{
+	var a: Map<Any, Any> = mapOf("1" to "Hello", "2" to "World")
+	fun printer (str: String): Int{
 	print(str)
 	return 0
 	}

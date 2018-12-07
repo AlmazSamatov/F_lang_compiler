@@ -1,3 +1,15 @@
-a is (1 is "Hello", 2 is "World");
-printer is func(str: string): integer do print str return 0 end;
-b is printer(a.1)
+fibb is func(v: integer): integer do
+    if (v = 1) | (v = 2) then
+        return 1
+    else
+        return fibb(v-1) + fibb(v-2)
+    end
+end;
+
+v: integer is 3;
+
+f is func() do
+    print "Fibbonacci of ", v, " is ", fibb(v)
+end;
+
+main is f()

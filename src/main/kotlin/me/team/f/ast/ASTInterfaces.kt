@@ -6,8 +6,6 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 
-//data class Error(val message: String, val position: LineCol)
-
 var globalSymbolTable = HashMap<String, Node>()
 var errors = LinkedList<Error>()
 var localSymbolTable = hashMapOf<String, Node>()
