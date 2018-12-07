@@ -1,8 +1,17 @@
 fun main(args: Array<String>) {
-	var a: Map<Any, Any> = mapOf("1" to "Hello", "2" to "World")
-	fun printer (str: String): Int{
-	print(str)
-	return 0
+	var fibb = fun(v: Int): Int{
+	if (v = 1 | v = 2) {
+	return 1
+	} else {
+	return fibb(v - 1) + fibb(v - 2)
 	}
-	var b = printer(a["1"]!!)
+	}
+	var u: Int = 3
+	var f = fun(){
+	print("Fibbonacci of ")
+	print(u)
+	print(" is ")
+	print(fibb(u))
+	}
+	var main:  = f()
 }

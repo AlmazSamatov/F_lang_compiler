@@ -7,7 +7,6 @@ import java.io.FileInputStream
 import java.util.*
 
 fun main(args: Array<String>) {
-
     if (args.size != 1) {
         throw InputMismatchException("Please, specify filename as only argument")
     }
