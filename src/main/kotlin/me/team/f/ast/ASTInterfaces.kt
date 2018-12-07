@@ -8,12 +8,11 @@ import kotlin.reflect.full.primaryConstructor
 
 //data class Error(val message: String, val position: LineCol)
 
-var globalSymbolTable = HashMap<String, Node>()
 var errors = LinkedList<Error>()
-var localSymbolTable = hashMapOf<String, Node>()
 
 
 interface Node {
+    fun validate(globalSymbolTable: HashMap<String, Node>)
     val position: Position?
 }
 
@@ -93,26 +92,28 @@ data class Program(
     val declarations: List<Declaration>,
     override val position: Position? = null
 ) : Node {
-
-//    fun validate(): List<Error> {
-//        localSymbolTable.putAll(globalSymbolTable)
-//        declarations.forEach { it.validate() }
-//        return errors
-//    }
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        declarations.forEach { it.validate(globalSymbolTable) }
+    }
+    fun validate():List<Error>{
+        val globalSymbolTable = HashMap<String, Node>()
+        validate(globalSymbolTable)
+        return errors
+    }
 }
 
 interface Declaration : Node {
-    fun type(): Type?
-    fun validate()
+    fun type(globalSymbolTable: HashMap<String, Node>): Type
+    override fun validate(globalSymbolTable: HashMap<String, Node>)
 }
 
 interface Expression : Node {
-    fun type(): Type?
-    fun validate()
+    fun type(globalSymbolTable: HashMap<String, Node>): Type
+    override fun validate(globalSymbolTable: HashMap<String, Node>)
 }
 
 interface Statement : Node {
-    fun validate()
+    override fun validate(globalSymbolTable: HashMap<String, Node>)
 }
 
 interface Type : Node {
@@ -133,7 +134,7 @@ data class VarDeclaration(
     val value: Expression,
     override val position: Position? = null
 ) : Declaration, Statement {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
         if (globalSymbolTable.containsKey(varName)) {
             errors.add(
                 Error(
@@ -142,13 +143,14 @@ data class VarDeclaration(
                 )
             )
         } else {
+            val valueType = value.type(globalSymbolTable)
             if (type == null) {
-                type = value.type()
+                type = valueType
             } else {
-                if (type?.typeName() != value.type()?.typeName()) {
+                if (type?.typeName() != valueType.typeName()) {
                     errors.add(
                         Error(
-                            "Declared type \"$type\" doesn't match with value type \"${value.type()}\"",
+                            "Declared type \"$type\" doesn't match with value type \"$valueType\"",
                             position?.start!!
                         )
                     )
@@ -156,12 +158,12 @@ data class VarDeclaration(
             }
             globalSymbolTable[varName] = this
         }
-        value.validate()
+        value.validate(globalSymbolTable)
     }
 
 
-    override fun type(): Type? {
-        return type
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return type as Type
     }
 }
 
@@ -174,7 +176,7 @@ data class Call(
     val expressions: List<Expression>,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
         secondary as VarReference
         if (!globalSymbolTable.containsKey(secondary.name)) {
             errors.add(
@@ -184,10 +186,9 @@ data class Call(
                 )
             )
         } else {
-
             val expression = globalSymbolTable[secondary.name] as Function
 
-            if (expression.type != null) {
+
                 if (expressions.size != expression.parameters.size) {
                     errors.add(
                         Error(
@@ -198,7 +199,7 @@ data class Call(
                 } else {
                     for (i in 0..expression.parameters.lastIndex) {
 //                            val l = expression.parameters[i].type
-                        if (expression.parameters[i].type() != expressions[i].type()) {
+                        if (expression.parameters[i].type(globalSymbolTable) != expressions[i].type(globalSymbolTable)) {
                             val function = expressions[i]
                             val nameOfVarInCall = when (function) {
                                 is VarReference -> function.name
@@ -213,10 +214,10 @@ data class Call(
                             errors.add(
                                 Error(
                                     "Non-compatible type of parameters. Parameter in call with typeName $nameOfVarInCall of type ${
-                                    function.type()
+                                    function.type(globalSymbolTable)
                                     } is " +
                                             "not same as in function declaration parameter with typeName ${expression.parameters[i].parName} of type ${
-                                            expression.parameters[i].type()
+                                            expression.parameters[i].type(globalSymbolTable)
                                             }",
                                     expressions[i].position?.start!!
                                 )
@@ -227,11 +228,10 @@ data class Call(
 
             }
         }
-    }
 
 
-    override fun type(): Type? {
-        return secondary.type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return secondary.type(globalSymbolTable)
     }
 }
 
@@ -240,13 +240,13 @@ data class ElementOf(
     val index: Expression,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        varName.validate()
-        index.validate()
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        varName.validate(globalSymbolTable)
+        index.validate(globalSymbolTable)
     }
 
-    override fun type(): Type? {
-        return varName.type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return varName.type(globalSymbolTable)
     }
 }
 
@@ -255,12 +255,12 @@ data class NamedTupleElement(
     val fieldName: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        secondary.validate()
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        secondary.validate(globalSymbolTable)
     }
 
-    override fun type(): Type? {
-        return secondary.type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return secondary.type(globalSymbolTable)
     }
 }
 
@@ -269,12 +269,12 @@ data class UnnamedTupleElement(
     val fieldNum: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        secondary.validate()
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        secondary.validate(globalSymbolTable)
     }
 
-    override fun type(): Type? {
-        return secondary.type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return secondary.type(globalSymbolTable)
     }
 }
 
@@ -287,14 +287,14 @@ data class Conditional(
     val elseExpr: Expression,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        predicate.validate()
-        thenExpr.validate()
-        elseExpr.validate()
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        predicate.validate(globalSymbolTable)
+        thenExpr.validate(globalSymbolTable)
+        elseExpr.validate(globalSymbolTable)
     }
 
-    override fun type(): Type? {
-        return null
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return AnyType()
     }
 }
 
@@ -303,6 +303,10 @@ data class Conditional(
  */
 
 data class BooleanType(override val position: Position? = null) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "boolean"
     }
@@ -310,36 +314,60 @@ data class BooleanType(override val position: Position? = null) : Type {
 }
 
 data class IntegerType(override val position: Position? = null) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "integer"
     }
 }
 
 data class RealType(override val position: Position? = null) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "real"
     }
 }
 
 data class RationalType(override val position: Position? = null) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "rational"
     }
 }
 
 data class ComplexType(override val position: Position? = null) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "complex"
     }
 }
 
 data class StringType(override val position: Position? = null) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "string"
     }
 }
 
 data class AnyType(override val position: Position? = null) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "any"
     }
@@ -353,17 +381,10 @@ data class VarReference(
     val name: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        if (!localSymbolTable.containsKey(name) && !globalSymbolTable.containsKey(name)) {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        if (!globalSymbolTable.containsKey(name)) {
             errors.add(Error("There is no variable named '$name'", position!!.start))
-        } else if(localSymbolTable[name] != null && localSymbolTable[name] is VarDeclaration){
-            if(isBefore(localSymbolTable[name] as VarDeclaration))errors.add(
-                Error(
-                    "You cannot refer to variable '$name' before its declaration",
-                    position!!.start
-                )
-            )
-        } else if(isBefore((globalSymbolTable[name] as VarDeclaration))){
+        } else if (isBefore((globalSymbolTable[name] as VarDeclaration))) {
             errors.add(
                 Error(
                     "You cannot refer to variable '$name' before its declaration",
@@ -373,11 +394,11 @@ data class VarReference(
         }
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         val node = globalSymbolTable[name]
         return when (node) {
             is VarDeclaration -> {
-                node.type
+                node.type(globalSymbolTable)
             }
             is Parameter -> {
                 node.type
@@ -391,10 +412,10 @@ data class BoolLit(
     val value: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return BooleanType()
     }
 }
@@ -403,10 +424,11 @@ data class IntLit(
     val value: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return IntegerType()
     }
 }
@@ -415,10 +437,11 @@ data class RealLit(
     val value: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return RealType()
     }
 }
@@ -427,11 +450,11 @@ data class RatLit(
     val value: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return RationalType()
     }
 }
@@ -440,11 +463,11 @@ data class CompLit(
     val value: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return ComplexType()
     }
 }
@@ -453,10 +476,11 @@ data class StrLit(
     val value: String,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
-    override fun type(): Type? {
+
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return StringType()
     }
 }
@@ -464,17 +488,17 @@ data class StrLit(
 interface BinaryExpression : Expression {
     val left: Expression
     val right: Expression
-    fun leftType(): Type? {
-        return left.type()
+    fun leftType(globalSymbolTable: HashMap<String, Node>): Type {
+        return left.type(globalSymbolTable)
     }
 
-    fun rightType(): Type? {
-        return right.type()
+    fun rightType(globalSymbolTable: HashMap<String, Node>): Type {
+        return right.type(globalSymbolTable)
     }
 
-    override fun validate() {
-        left.validate()
-        right.validate()
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        left.validate(globalSymbolTable)
+        right.validate(globalSymbolTable)
     }
 }
 
@@ -483,13 +507,13 @@ data class SumExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType -> IntegerType()
@@ -540,7 +564,7 @@ data class SumExpression(
                         position?.start!!
                     )
                 )
-                null
+                AnyType()
             }
         }
     }
@@ -552,9 +576,9 @@ data class SubExpression(
     override val position: Position? = null
 ) : BinaryExpression {
 
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType -> IntegerType()
@@ -576,7 +600,7 @@ data class SubExpression(
                         position?.start!!
                     )
                 )
-                null
+                AnyType()
             }
             typePair.first is ArrayType && typePair.second is ArrayType -> {
                 errors.add(
@@ -585,7 +609,7 @@ data class SubExpression(
                         position?.start!!
                     )
                 )
-                null
+                AnyType()
             }
             else -> {
                 errors.add(
@@ -594,7 +618,7 @@ data class SubExpression(
                         position?.start!!
                     )
                 )
-                null
+                AnyType()
             }
         }
     }
@@ -605,9 +629,9 @@ data class MultExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType -> IntegerType()
@@ -658,9 +682,9 @@ data class DivExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType -> IntegerType()
@@ -712,9 +736,9 @@ data class LessExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType ||
@@ -743,9 +767,9 @@ data class GreaterExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType ||
@@ -774,9 +798,9 @@ data class LessEqExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType ||
@@ -805,9 +829,9 @@ data class GreaterEqExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             typePair.first is IntegerType && typePair.second is IntegerType ||
@@ -836,9 +860,9 @@ data class EqualExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             left is IntegerType && right is IntegerType ||
@@ -867,9 +891,9 @@ data class NotEqExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         val typePair = Pair(left, right)
         return when {
             left is IntegerType && right is IntegerType ||
@@ -898,9 +922,9 @@ data class AndExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         return if (left !is BooleanType || right !is BooleanType) {
             errors.add(
                 Error(
@@ -918,9 +942,9 @@ data class OrExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         return if (left !is BooleanType || right !is BooleanType) {
             errors.add(
                 Error(
@@ -938,9 +962,9 @@ data class XorExpression(
     override val right: Expression,
     override val position: Position? = null
 ) : BinaryExpression {
-    override fun type(): Type? {
-        val left = leftType()
-        val right = rightType()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        val left = leftType(globalSymbolTable)
+        val right = rightType(globalSymbolTable)
         return if (left !is BooleanType || right !is BooleanType) {
             errors.add(
                 Error(
@@ -962,7 +986,7 @@ data class Assignment(
     val expression: Expression,
     override val position: Position? = null
 ) : Statement {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
         secondary as VarReference
         if (!globalSymbolTable.containsKey(secondary.name)) {
             errors.add(
@@ -979,9 +1003,9 @@ data class Assignment(
                 )
             )
         }
-        val left = secondary.type()
-        val right = expression.type()
-        if (left?.typeName() != right?.typeName()) {
+        val left = secondary.type(globalSymbolTable)
+        val right = expression.type(globalSymbolTable)
+        if (left.typeName() != right.typeName()) {
             errors.add(
                 Error(
                     "Connot assign expression of $right type to variable of $left type",
@@ -997,7 +1021,7 @@ data class FunctionCall(
     val expressions: List<Expression>,
     override val position: Position? = null
 ) : Statement {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
         if (!globalSymbolTable.containsKey((secondary as VarReference).name)) {
             errors.add(
                 Error(
@@ -1007,11 +1031,11 @@ data class FunctionCall(
             )
             return
         }
-        secondary.validate()
+        secondary.validate(globalSymbolTable)
 
         val expression = globalSymbolTable[secondary.name] as VarDeclaration
-        val functionType = expression.type()
-        if (functionType != null && functionType is FunctionType) {
+        val functionType = expression.type(globalSymbolTable)
+        if (functionType is FunctionType) {
 
             if (expressions.size != functionType.types.size - 1) {
                 errors.add(
@@ -1022,8 +1046,8 @@ data class FunctionCall(
                 )
             } else {
                 for (i in 0 until expressions.size) {
-                    val paramType = expressions[i].type()
-                    if (functionType.types[i].typeName() != paramType?.typeName()) {
+                    val paramType = expressions[i].type(globalSymbolTable)
+                    if (functionType.types[i].typeName() != paramType.typeName()) {
                         val function = expressions[i]
                         val nameOfVarInCall = when (function) {
                             is VarReference -> function.name
@@ -1056,16 +1080,16 @@ data class IfStatement(
     val elseStatements: List<Statement>,
     override val position: Position? = null
 ) : Statement {
-    override fun validate() {
-        if (predicate.type() != BooleanType()) {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        if (predicate.type(globalSymbolTable) != BooleanType()) {
             errors.add(Error("Predicate expression should return boolean value.", position?.start!!))
         }
-        predicate.validate()
+        predicate.validate(globalSymbolTable)
         if (thenStatements.size == elseStatements.size && elseStatements.size == 1) {
 
         }
-        thenStatements.forEach { it.validate() }
-        elseStatements.forEach { it.validate() }
+        thenStatements.forEach { it.validate(globalSymbolTable) }
+        elseStatements.forEach { it.validate(globalSymbolTable) }
     }
 }
 
@@ -1074,9 +1098,9 @@ data class LoopStatement(
     val statements: List<Statement>,
     override val position: Position? = null
 ) : Statement {
-    override fun validate() {
-        loopHeader.validate()
-        statements.forEach { statement -> statement.validate() }
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        loopHeader.validate(globalSymbolTable)
+        statements.forEach { statement -> statement.validate(globalSymbolTable) }
     }
 }
 
@@ -1088,7 +1112,7 @@ data class ForLoopHeader(
     val needRange: Boolean,
     override val position: Position? = null
 ) : LoopHeader {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 }
@@ -1097,7 +1121,7 @@ class WhileLoopHeader(
     val expressions: List<Expression>,
     override val position: Position? = null
 ) : LoopHeader {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 }
@@ -1109,13 +1133,13 @@ data class ReturnStatement(
     val expression: Expression,
     override val position: Position? = null
 ) : Statement {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 }
 
 data class BreakStatement(override val position: Position? = null) : Statement {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 }
@@ -1124,7 +1148,7 @@ data class PrintStatement(
     val expressions: List<Expression>,
     override val position: Position? = null
 ) : Statement {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 }
@@ -1137,6 +1161,10 @@ data class FunctionType(
     val types: List<Type>,
     override val position: Position? = null
 ) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         val paramList = types.subList(0, types.size - 2)
         var params = ""
@@ -1152,21 +1180,16 @@ data class Function(
     var type: Type? = null,
     override val position: Position? = null
 ) : Expression {
-    init {
-        globalSymbolTable.putAll(localSymbolTable)
-    }
-    override fun validate() {
-        @Suppress("UNCHECKED_CAST")
-        val copy = globalSymbolTable.clone() as HashMap<String, Node>
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
         parameters.forEach {
-            localSymbolTable[it.parName] = it
+            globalSymbolTable[it.parName] = it
         }
 
-        body.validate()
+        body.validate(globalSymbolTable)
         if (body.expression != null) {
-            val bodyExpressionType = body.expression.type()
+            val bodyExpressionType = body.expression.type(globalSymbolTable)
             if (type == null) type = bodyExpressionType
-            else if (bodyExpressionType?.typeName() != type?.typeName()) {
+            else if (bodyExpressionType.typeName() != type?.typeName()) {
                 errors.add(
                     Error(
                         "Function return type $bodyExpressionType doesn't match with declared type $type",
@@ -1177,21 +1200,18 @@ data class Function(
         }
 
         if (type == null) type = AnyType()
-        localSymbolTable.clear()
-        globalSymbolTable.clear()
-        globalSymbolTable = copy
 
     }
 
-    override fun type(): Type? {
-        validate()
-        val bodyExpressionType = body.expression?.type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        validate(globalSymbolTable)
+        val bodyExpressionType = body.expression?.type(globalSymbolTable)
         if (bodyExpressionType != null && type == null) {
             type = bodyExpressionType
         }
         val types = LinkedList<Type>()
         parameters.forEach { parameter -> types.add(parameter.type) }
-        if(type != null)types.add(type as Type)
+        if (type != null) types.add(type as Type)
         else types.add(AnyType())
         return FunctionType(types)
     }
@@ -1202,11 +1222,11 @@ data class Parameter(
     val type: Type,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return type
     }
 }
@@ -1216,12 +1236,12 @@ data class Body(
     val expression: Expression? = null,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        statements?.forEach { statement -> statement.validate() }
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        statements?.forEach { statement -> statement.validate(globalSymbolTable) }
     }
 
-    override fun type(): Type? {
-        return expression?.type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return expression?.type(globalSymbolTable) ?: AnyType()
     }
 }
 
@@ -1233,6 +1253,10 @@ data class ArrayType(
     val type: Type,
     override val position: Position? = null
 ) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "array[$type]"
     }
@@ -1243,12 +1267,12 @@ data class Array(
     val expressions: List<Expression>,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        expressions.forEach { it.validate() }
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        expressions.forEach { it.validate(globalSymbolTable) }
     }
 
-    override fun type(): Type? {
-        return expressions[0].type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return expressions[0].type(globalSymbolTable)
     }
 }
 
@@ -1260,6 +1284,10 @@ data class MapType(
     val types: List<Type>,
     override val position: Position? = null
 ) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         return "map{${types[0]},${types[1]}}"
     }
@@ -1269,12 +1297,12 @@ data class Map(
     val pairs: List<Pair>,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        pairs.forEach { it.validate() }
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        pairs.forEach { it.validate(globalSymbolTable) }
     }
 
-    override fun type(): Type? {
-        return pairs[0].type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return pairs[0].type(globalSymbolTable)
     }
 }
 
@@ -1282,12 +1310,12 @@ data class Pair(
     val expressions: List<Expression>,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        expressions.forEach { it.validate() }
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        expressions.forEach { it.validate(globalSymbolTable) }
     }
 
-    override fun type(): Type? {
-        return TupleType(listOf(expressions[0].type() as Type, expressions[1].type() as Type))
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return TupleType(listOf(expressions[0].type(globalSymbolTable), expressions[1].type(globalSymbolTable)))
     }
 }
 
@@ -1299,6 +1327,10 @@ data class TupleType(
     val types: List<Type>,
     override val position: Position? = null
 ) : Type {
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+
+    }
+
     override fun toString(): String {
         var tupleType = ""
         types.forEach { type ->
@@ -1312,13 +1344,13 @@ data class Tuple(
     val elements: List<TupleElement>,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        elements.forEach { it.validate() }
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        elements.forEach { it.validate(globalSymbolTable) }
     }
 
-    override fun type(): Type? {
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
         val types = LinkedList<Type>()
-        elements.forEach { element -> types.add(element.type() as Type) }
+        elements.forEach { element -> types.add(element.type(globalSymbolTable)) }
         return TupleType(types)
     }
 }
@@ -1327,11 +1359,11 @@ data class TupleElement(
     val name: String, val expression: Expression,
     override val position: Position? = null
 ) : Expression {
-    override fun validate() {
-        expression.validate()
+    override fun validate(globalSymbolTable: HashMap<String, Node>) {
+        expression.validate(globalSymbolTable)
     }
 
-    override fun type(): Type? {
-        return expression.type()
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return expression.type(globalSymbolTable)
     }
 }
