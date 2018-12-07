@@ -1,18 +1,16 @@
 fun main(args: Array<String>) {
-	var max_value: (List<Int>) -> (Int) = fun(arr: List<Int>): Int{
-	var max: Int = 0
-	for (i in arr) {
-	if (max < i) {
-	max = i
-	} else {
-	} 
-	} 
-	return max
+	var swap: (Int, Int) -> (Int) = fun(l: Int, r: Int): Int{
+	var tmp: Int = l
+	l = r
+	r = tmp
+	return 0
 	}
 	var main: () -> (Int) = fun(): Int{
-	var max: Int = max_value(mutableListOf(1, 2, 3, 4, 7, 11, 5, 9))
-	print("Max value is ")
-	print(max)
+	var k: Int = 5
+	var m: Int = 7
+	swap (k, m) 
+	print(k)
+	print(m)
 	return 0
 	}
 	var res: Int = main()

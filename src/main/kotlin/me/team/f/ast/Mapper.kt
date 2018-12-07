@@ -140,7 +140,7 @@ fun StatementContext.toAst(considerPosition: Boolean = false): Statement  {
 }
 
 fun LoopHeaderContext.toAst(considerPosition: Boolean = false) : LoopHeader {
-    return if (FOR() != null)
+    return if (FOR() != null && ID() != null)
         ForLoopHeader(expression().map { it.toAst(considerPosition) },
             ID().text,
             DOTDOT() != null,

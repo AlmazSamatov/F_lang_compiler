@@ -22,12 +22,6 @@ object Validator {
         ast.declarations.map {
             validateDeclaration(it as VarDeclaration)
         }
-
-//        println("***** Symbol table start *****")
-//        symbolTable.map {
-//            println(it)
-//        }
-//        println("***** Symbol table end *****")
         return errors
     }
 
@@ -460,11 +454,10 @@ val allowedLogical = mutableMapOf(
 )
 
 fun createMapPair(l: Type, r: Type, res: Type): Pair<Pair<Type, Type>, Type> {
-//Pair<Pair<Class<Type>, Class<Type>>, Class<Type>> {
     return Pair(createTypePair(l, r), res)
 }
 
-fun createTypePair(l: Type, r: Type): Pair<Type, Type> {//Pair<Class<Type>, Class<Type>> {
+fun createTypePair(l: Type, r: Type): Pair<Type, Type> {
     return Pair(l, r)
 }
 

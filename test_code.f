@@ -1,16 +1,15 @@
-max_value is func(arr: [integer]): integer do
-    max is 0
-    for i in arr loop
-        if max < i then
-            max := i
-        end
-    end
-    return max
+swap is func(l: integer, r: integer): integer do
+    tmp is l
+    l := r
+    r := tmp
+    return 0
 end;
 
 main is func(): integer do
-    max is max_value([1, 2, 3, 4, 7, 11, 5, 9])
-    print "Max value is ", max
+    k is 5
+    m is 7
+    swap(k, m)
+    print k, m
     return 0
 end;
 

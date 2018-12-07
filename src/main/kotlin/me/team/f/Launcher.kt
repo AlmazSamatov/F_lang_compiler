@@ -11,9 +11,6 @@ fun main(args: Array<String>) {
 //        throw InputMismatchException("Please, specify filename as only argument")
 //    }
 
-//    var t: Map<String, Any> = mapOf("name" to "Dima", "surname" to 5)
-//    println(t["surname"])
-
     val code = FileInputStream("test_code.f")
 
     val parseResult = Analyser.parse(code)
