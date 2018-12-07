@@ -12,7 +12,7 @@ fun declarationToKotlin(it: VarDeclaration): String {
         used.add(it)
 
         if (it.type != null) {
-            ("var " + it.varName + ": " + typeToKotlin(it.type)
+            ("var " + it.varName + ": " + typeToKotlin(it.type!!)
                     + " = " + exprToKotlin(it.value))
         } else {
             ("var " + it.varName + " = " + exprToKotlin(it.value))
@@ -161,7 +161,7 @@ fun exprToKotlin(expr: Expression): String {
                     parameters.append(p.parName + ": " + typeToKotlin(p.type))
                 }
 
-                val type = if (it.type == null) "" else ": ${typeToKotlin(it.type)}"
+                val type = if (it.type == null) "" else ": ${typeToKotlin(it.type!!)}"
 
                 val body = if (it.body.expression != null) {
                     " = " + exprToKotlin(it.body.expression)

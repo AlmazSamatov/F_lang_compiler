@@ -9,31 +9,33 @@ import java.util.*
 
 fun main(args: Array<String>) {
 
-    if (args.size != 1) {
-        throw InputMismatchException("Please, specify filename as only argument")
-    }
-    val code = FileInputStream(args[0])
+//    if (args.size != 1) {
+//        throw InputMismatchException("Please, specify filename as only argument")
+//    }
+//    val code = FileInputStream(args[0])
+//    val code = "a is func(f: integer, s: integer): integer => 5 * 7 + (s - f)"
 
-//    val code = "a is 5;" +
-//            "b is 7 * 2;" +
-//            "res is a + b;" +
-//            "isOk: boolean is if a > b then true else false end;" +
-//            "inc is func(v: integer) => v + 1;" +
-//            "arr is [1, 2, 3];" +
-//            "c is func(v: integer) do while a > b loop print 1, 2 end end;" +
-//            "z is func(v: integer) do for gg in 1..10 loop print 1, 2 break end end;" +
-//            "e is func(v: integer) : boolean do if a > b then o is 0 return true else print \"Hello!\" return false end end;" +
+//    val code = "a is 5;\n" +
+//            "b is 7 * 2;\n" +
+//            "res is a + b;\n" +
+//            "isOk: boolean is a > b;\n" +
+//            "inc is func(v: integer) => v + 1;\n" +
+//            "arr is [1, 2, 3];\n" +
+//            "c is func(v: integer) do while a > b loop print 1, 2 end end;\n" +
+//            "z is func(v: integer) do for gg in 1..10 loop print 1, 2 break end end;\n" +
+//            "e is func(v: integer) : boolean do if a > b then o is 0 return true else print \"Hello!\" return false end end;\n" +
 //            "d is func(v: integer) do a := 1 inc(b) print a, b, res end"
 
     // TODO: fix generator for loop range, e.x for i in 1..(2*2)
 
-//    val code = "d is func(v: integer) do print v for i in 1..5 loop print i end end"
+    val code = "a is 1; b is 1; n is 3; fib is func(n:integer) do for i in 1..n loop a := a + b end print a end"
 //    val code = "a is (1 is \"Hello\", 2 is \"World\")"
 
     val parseResult = Analyser.parse(code)
 
     if (parseResult.correct()) {
         val ast = parseResult.root!!
+        println(ast)
         val kotlinProgram = mutableListOf("fun main(args: Array<String>) {")
 
         ast.declarations.map {
@@ -49,8 +51,12 @@ fun main(args: Array<String>) {
     } else {
         val errors = parseResult.errors
         println("ERRORS:")
-        errors.forEach { println("[Line: ${it.position.line}, " +
-                "Column: ${it.position.col}] -> ${it.message}") }
+        errors.forEach {
+            println(
+                "[Line: ${it.position.line}, " +
+                        "Column: ${it.position.col}] -> ${it.message}"
+            )
+        }
     }
 
 }

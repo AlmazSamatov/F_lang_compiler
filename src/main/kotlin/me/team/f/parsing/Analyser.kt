@@ -68,7 +68,7 @@ object Analyser {
             null
         }
 
-        val semanticErrors: List<Error> = ast?.validate() ?: emptyList()
+        val semanticErrors = ast?.validate() ?: emptyList()
 
         val errors = mutableListOf<Error>()
         errors.addAll(lexParseErrors)

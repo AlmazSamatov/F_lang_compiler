@@ -114,6 +114,9 @@ interface Expression : Node {
 
 interface Statement : Node {
     override fun validate(globalSymbolTable: HashMap<String, Node>)
+    fun type(globalSymbolTable: HashMap<String, Node>):Type{
+        return AnyType()
+    }
 }
 
 interface Type : Node {
@@ -294,7 +297,10 @@ data class Conditional(
     }
 
     override fun type(globalSymbolTable: HashMap<String, Node>): Type {
-        return AnyType()
+        val thenType = thenExpr.type(globalSymbolTable)
+        val elseType = elseExpr.type(globalSymbolTable)
+
+        return if(thenType.typeName() == elseType.typeName()) thenType else AnyType()
     }
 }
 
@@ -1085,12 +1091,18 @@ data class IfStatement(
             errors.add(Error("Predicate expression should return boolean value.", position?.start!!))
         }
         predicate.validate(globalSymbolTable)
-        if (thenStatements.size == elseStatements.size && elseStatements.size == 1) {
 
-        }
         thenStatements.forEach { it.validate(globalSymbolTable) }
         elseStatements.forEach { it.validate(globalSymbolTable) }
     }
+//    override fun type(globalSymbolTable: HashMap<String, Node>):Type{
+//        val thenType = thenStatements[0].type(globalSymbolTable)
+//        val elseType = elseStatements[0].type(globalSymbolTable)
+//        return if (thenStatements.size == elseStatements.size && elseStatements.size == 1 && thenType.typeName() == elseType.typeName()) {
+//            thenType
+//        }
+//        else AnyType()
+//    }
 }
 
 data class LoopStatement(
@@ -1136,6 +1148,10 @@ data class ReturnStatement(
     override fun validate(globalSymbolTable: HashMap<String, Node>) {
 
     }
+
+    override fun type(globalSymbolTable: HashMap<String, Node>): Type {
+        return expression.type(globalSymbolTable)
+    }
 }
 
 data class BreakStatement(override val position: Position? = null) : Statement {
@@ -1170,7 +1186,7 @@ data class FunctionType(
         var params = ""
         val returnT = types.last()
         paramList.forEach { params += it.typeName() + ", " }
-        return "(${params.substring(0, params.length - 1)})->$returnT)"
+        return "($params)->$returnT)"
     }
 }
 
