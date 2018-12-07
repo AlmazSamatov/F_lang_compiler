@@ -13,6 +13,9 @@ fun main(args: Array<String>) {
 
     val code = FileInputStream("test_code.f")
 
+    if (code.available() == 0)
+        println("Program is empty")
+
     val parseResult = Analyser.parse(code)
 
     if (parseResult.correct()) {

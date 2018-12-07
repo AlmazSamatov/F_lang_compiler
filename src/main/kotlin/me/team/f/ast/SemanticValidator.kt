@@ -22,6 +22,10 @@ object Validator {
         ast.declarations.map {
             validateDeclaration(it as VarDeclaration)
         }
+
+        symbolTable.map {
+            println(it)
+        }
         return errors
     }
 
@@ -275,7 +279,7 @@ object Validator {
             val funcTypes = (callerType as FunctionType).types
             if (funcTypes.size - 1 != value.expressions.size) {
                 errors.add(Error("Wrong number of parameters, " +
-                        "expected ${funcTypes.size}, received ${value.expressions.size}",
+                        "expected ${funcTypes.size - 1}, received ${value.expressions.size}",
                     value.position!!.start))
                 return UndefinedType()
             }

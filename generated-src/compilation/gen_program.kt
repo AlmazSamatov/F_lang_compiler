@@ -1,20 +1,35 @@
 fun main(args: Array<String>) {
-	var array: List<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-	var max: Int = array[0]
-	var find_max: (List<Int>) -> (Int) = fun(arr: List<Int>): Int{
+	var lengthOfArray: (List<Int>) -> (Int) = fun(arr: List<Int>): Int{
+	var count: Int = 0
 	for (i in arr) {
-	if (i > max) {
-	max = i
-	} else {
+	count = count + 1
 	} 
-	} 
-	return max
+	return count
 	}
-	var main: () -> (Int) = fun(): Int{
-	print("Max is ")
-	print(find_max(array))
+	var telephone_book: Map<String, Int> = mutableMapOf("John Lord" to 1000125, "Ian Gillan" to 2200330)
+	var info: Map<String, Any> = mapOf("name" to "John", "age" to 21)
+	var arr: List<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+	var printTuple: (Map<String, Any>) -> () = fun(t: Map<String, Any>){
+	for (e in t) {
+	print(e)
+	print(" ")
+	} 
 	print("\n")
-	return 0
 	}
-	var res: Int = main()
+	var printArray: (List<Int>) -> () = fun(array: List<Int>){
+	for (e in array) {
+	print(e)
+	print(" ")
+	} 
+	}
+	var main: () -> () = fun(){
+	print("Tuple elements: ")
+	printTuple (info) 
+	print("Array length is: ")
+	print(lengthOfArray(arr))
+	print("\n")
+	print("Array elements are: ")
+	printArray (arr) 
+	}
+	var t: Map<String, Any> = main()
 }

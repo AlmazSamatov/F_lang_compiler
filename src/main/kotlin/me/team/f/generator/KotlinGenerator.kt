@@ -199,7 +199,7 @@ fun exprToKotlin(expr: Expression): String {
                 }
 
                 val body = if (it.body.expression != null) {
-                    " = " + exprToKotlin(it.body.expression)
+                    " = " + exprToKotlin(it.body.expression) + "\n"
                 } else {
                     val statements = StringBuilder()
                     it.body.statements?.map { statements.append("\n\t${stmtToKotlin(it)}") }
