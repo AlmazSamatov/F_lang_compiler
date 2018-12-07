@@ -12,12 +12,41 @@ fun declarationToKotlin(it: VarDeclaration): String {
         used.add(it)
 
         if (it.type != null) {
-            ("var " + it.varName + ": " + typeToKotlin(it.type!!)
-                    + " = " + exprToKotlin(it.value))
+            var type = returnTypeToKotlin(it.type!!)
+            if (it.value is Array || it.value is Map || it.value is Tuple)
+                type = returnTypeToKotlin(it.value.type()!!)
+            if (it.value is Function) {
+                ("var " + it.varName + " = " + exprToKotlin(it.value))
+            } else {
+                ("var " + it.varName + ": " + type + " = " + exprToKotlin(it.value))
+            }
         } else {
             ("var " + it.varName + " = " + exprToKotlin(it.value))
         }
     } else ""
+}
+
+fun returnTypeToKotlin(type: Type): String {
+    val resultBuilder = StringBuilder()
+
+    when (type) {
+        is BooleanType -> resultBuilder.append("Boolean")
+        is IntegerType -> resultBuilder.append("Int")
+        is RealType -> resultBuilder.append("Double")
+        is RationalType -> resultBuilder.append("Rational")
+        is ComplexType -> resultBuilder.append("Complex")
+        is StringType -> resultBuilder.append("String")
+        is FunctionType -> {
+            resultBuilder.append(returnTypeToKotlin(type.types[type.types.lastIndex]))
+        }
+        is ArrayType -> {
+            resultBuilder.append("List<${typeToKotlin(type.type)}>")
+        }
+        is MapType -> resultBuilder.append("Map<${typeToKotlin(type.types[0])}, ${typeToKotlin(type.types[1])}>")
+        is TupleType -> resultBuilder.append("Map<Any, Any>")
+    }
+
+    return resultBuilder.toString()
 }
 
 fun typeToKotlin(type: Type): String {
@@ -157,7 +186,7 @@ fun exprToKotlin(expr: Expression): String {
                     parameters.append(p.parName + ": " + typeToKotlin(p.type))
                 }
 
-                val type = if (it.type == null) "" else ": ${typeToKotlin(it.type!!)}"
+                val type = if (it.type == null || typeToKotlin(it.type!!).isEmpty()) "" else ": ${typeToKotlin(it.type!!)}"
 
                 val body = if (it.body.expression != null) {
                     " = " + exprToKotlin(it.body.expression)
