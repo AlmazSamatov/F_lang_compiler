@@ -28,7 +28,18 @@ fun main(args: Array<String>) {
 
     // TODO: fix generator for loop range, e.x for i in 1..(2*2)
 
-    val code = "a is 1; b is 1; n is 3; fib is func(n:integer) do for i in 1..n loop a := a + b end print a end"
+    val code = "fibb is func(v: integer): integer do\n" +
+            "            if (v = 1) | (v = 2) then\n" +
+            "                return 1\n" +
+            "            else\n" +
+            "                return fibb(v-1) + fibb(v-2)\n" +
+            "            end\n" +
+            "        end;\n" +
+            "        u: integer is 3;\n" +
+            "        f is func() do\n" +
+            "            print \"Fibbonacci of \", u, \" is \", fibb(u)\n" +
+            "        end;\n" +
+            "        main is f()"
 //    val code = "a is (1 is \"Hello\", 2 is \"World\")"
 
     val parseResult = Analyser.parse(code)

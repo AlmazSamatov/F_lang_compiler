@@ -55,7 +55,12 @@ fun Program.validate(): List<Error> {
             is RatLit -> "rational"
             is CompLit -> "complex"
             is StrLit -> "string"
-            is VarReference -> type(varsByName[expression.name]?.value!!)
+            is VarReference -> {
+                if (expression.position == null)
+                    return "any"
+                else
+                    type(varsByName[expression.name]?.value!!)
+            }
             is Map -> "map"
             is Array -> "array"
             is Pair -> "pair"
@@ -287,7 +292,6 @@ fun Program.validate(): List<Error> {
                         )
                     } else {
                         for (i in 0..expression.parameters.lastIndex) {
-                            val l = type(expression.parameters[i])
                             if (type(expression.parameters[i]) != type(it.expressions[i])) {
                                 val function = it.expressions[i]
                                 val nameOfVarInCall = when (function) {
