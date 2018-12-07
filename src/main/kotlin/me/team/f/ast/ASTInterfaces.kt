@@ -96,10 +96,10 @@ data class Program(
     }
 
 //    val globalSymbolTable = HashMap<String, Node>()
-    fun validate(): List<Error> {
-        validate(globalSymbolTable)
-        return errors
-    }
+//    fun validate(): List<Error> {
+//        validate(globalSymbolTable)
+//        return errors
+//    }
 }
 
 interface Declaration : Node {

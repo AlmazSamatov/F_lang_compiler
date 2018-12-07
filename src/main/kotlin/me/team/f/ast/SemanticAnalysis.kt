@@ -27,25 +27,25 @@ fun Program.validate(): List<Error> {
         // TODO(fix problems with scopes)
         varsByName[it.parName] = VarDeclaration(it.parName, it.type, VarReference(it.parName), it.position)
     }
-
-    this.specificProcess(ForLoopHeader::class.java) {
-        if (it.id != null)
-            varsByName[it.id] = VarDeclaration(it.id, null, VarReference(it.id), it.position)
-    }
+//
+//    this.specificProcess(ForLoopHeader::class.java) {
+//        if (it.id != null)
+//            varsByName[it.id] = VarDeclaration(it.id, null, VarReference(it.id), it.position)
+//    }
 
     // check a variable is not referred before being declared
-    this.specificProcess(VarReference::class.java) {
-        if (!varsByName.containsKey(it.name)) {
-            errors.add(Error("There is no variable named '${it.name}'", it.position!!.start))
-        } else if (it.isBefore(varsByName[it.name]!!)) {
-            errors.add(
-                Error(
-                    "You cannot refer to variable '${it.name}' before its declaration",
-                    it.position!!.start
-                )
-            )
-        }
-    }
+//    this.specificProcess(VarReference::class.java) {
+//        if (!varsByName.containsKey(it.name)) {
+//            errors.add(Error("There is no variable named '${it.name}'", it.position!!.start))
+//        } else if (it.isBefore(varsByName[it.name]!!)) {
+//            errors.add(
+//                Error(
+//                    "You cannot refer to variable '${it.name}' before its declaration",
+//                    it.position!!.start
+//                )
+//            )
+//        }
+//    }
 
     fun type(expression: Expression): String {
         return when (expression) {
@@ -123,41 +123,42 @@ fun Program.validate(): List<Error> {
                             Pair("complex", "integer") -> "complex"
                             Pair("complex", "real") -> "complex"
                             Pair("complex", "complex") -> "complex"
-                            Pair("map", "map") -> {
-                                if (expression is SumExpression) {
-                                    "map"
-                                } else {
-                                    errors.add(
-                                        Error(
-                                            "Unsupported operator for expressions of type map.",
-                                            expression.position?.start!!
-                                        )
-                                    )
-                                    "any"
-                                }
-                            }
-                            Pair("array", "array") -> {
-                                if (expression is SumExpression) {
-                                    "array"
-                                } else {
-                                    errors.add(
-                                        Error(
-                                            "Unsupported operator for expressions of type array.",
-                                            expression.position?.start!!
-                                        )
-                                    )
-                                    "any"
-                                }
-                            }
-                            else -> {
-                                errors.add(
-                                    Error(
-                                        "Operator cannot be applied on operands of types ($leftType, $rightType)",
-                                        expression.position?.start!!
-                                    )
-                                )
-                                "any"
-                            }
+//                            Pair("map", "map") -> {
+//                                if (expression is SumExpression) {
+//                                    "map"
+//                                } else {
+//                                    errors.add(
+//                                        Error(
+//                                            "Unsupported operator for expressions of type map.",
+//                                            expression.position?.start!!
+//                                        )
+//                                    )
+//                                    "any"
+//                                }
+//                            }
+//                            Pair("array", "array") -> {
+//                                if (expression is SumExpression) {
+//                                    "array"
+//                                } else {
+//                                    errors.add(
+//                                        Error(
+//                                            "Unsupported operator for expressions of type array.",
+//                                            expression.position?.start!!
+//                                        )
+//                                    )
+//                                    "any"
+//                                }
+//                            }
+//                            else -> {
+//                                errors.add(
+//                                    Error(
+//                                        "Operator cannot be applied on operands of types ($leftType, $rightType)",
+//                                        expression.position?.start!!
+//                                    )
+//                                )
+//                                "any"
+//                            }
+                            else -> "any"
                         }
                     }
                     is AndExpression, is OrExpression, is XorExpression -> {
@@ -236,36 +237,36 @@ fun Program.validate(): List<Error> {
         }
     }
 
-    this.specificProcess(Assignment::class.java) {
-        it.secondary as VarReference
-        if (!varsByName.containsKey(it.secondary.name)) {
-            errors.add(
-                Error(
-                    "There is no variable named '${it.secondary.name}'",
-                    it.position!!.start
-                )
-            )
-        } else if (it.isBefore(varsByName[it.secondary.name]!!)) {
-            errors.add(
-                Error(
-                    "You cannot refer to variable '${it.secondary.name}' before its declaration",
-                    it.position!!.start
-                )
-            )
-        }
-
-        val varType = type(varsByName[it.secondary.name]?.value!!)
-        val expressionType = type(it.expression)
-        if (varType != expressionType) {
-            errors.add(
-                Error(
-                    "Cannot assign value of type $expressionType to variable of type $varType",
-                    it.expression.position?.start!!
-                )
-            )
-        }
-
-    }
+//    this.specificProcess(Assignment::class.java) {
+//        it.secondary as VarReference
+//        if (!varsByName.containsKey(it.secondary.name)) {
+//            errors.add(
+//                Error(
+//                    "There is no variable named '${it.secondary.name}'",
+//                    it.position!!.start
+//                )
+//            )
+//        } else if (it.isBefore(varsByName[it.secondary.name]!!)) {
+//            errors.add(
+//                Error(
+//                    "You cannot refer to variable '${it.secondary.name}' before its declaration",
+//                    it.position!!.start
+//                )
+//            )
+//        }
+//
+//        val varType = type(varsByName[it.secondary.name]?.value!!)
+//        val expressionType = type(it.expression)
+//        if (varType != expressionType) {
+//            errors.add(
+//                Error(
+//                    "Cannot assign value of type $expressionType to variable of type $varType",
+//                    it.expression.position?.start!!
+//                )
+//            )
+//        }
+//
+//    }
 
 
     this.specificProcess(FunctionCall::class.java) {
@@ -304,22 +305,24 @@ fun Program.validate(): List<Error> {
                                     is IntLit -> function.value
                                     else -> function
                                 }
-                                if (nameOfVarInCall is String) {
-                                    errors.add(
-                                        Error(
-                                            "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
-                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
-                                            it.expressions[i].position?.start!!
+                                if (type(it.expressions[i]) != "any" && type(expression.parameters[i]) != "any") {
+                                    if (nameOfVarInCall is String) {
+                                        errors.add(
+                                            Error(
+                                                "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
+                                                        "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                                it.expressions[i].position?.start!!
+                                            )
                                         )
-                                    )
-                                } else {
-                                    errors.add(
-                                        Error(
-                                            "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
-                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
-                                            it.expressions[i].position?.start!!
+                                    } else {
+                                        errors.add(
+                                            Error(
+                                                "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
+                                                        "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                                it.expressions[i].position?.start!!
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
@@ -370,22 +373,24 @@ fun Program.validate(): List<Error> {
                                     is IntLit -> function.value
                                     else -> function
                                 }
-                                if (nameOfVarInCall is String) {
-                                    errors.add(
-                                        Error(
-                                            "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
-                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
-                                            it.expressions[i].position?.start!!
+                                if (type(it.expressions[i]) != "any" && type(expression.parameters[i]) != "any") {
+                                    if (nameOfVarInCall is String) {
+                                        errors.add(
+                                            Error(
+                                                "Non-compatible type of parameters. Parameter in call with name $nameOfVarInCall of type ${type(function)} is " +
+                                                        "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                                it.expressions[i].position?.start!!
+                                            )
                                         )
-                                    )
-                                } else {
-                                    errors.add(
-                                        Error(
-                                            "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
-                                                    "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
-                                            it.expressions[i].position?.start!!
+                                    } else {
+                                        errors.add(
+                                            Error(
+                                                "Non-compatible type of parameters. Parameter in call of type ${type(function)} is " +
+                                                        "not same as in function declaration with name ${expression.parameters[i].parName} of type ${type(expression.parameters[i])}",
+                                                it.expressions[i].position?.start!!
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
@@ -400,26 +405,26 @@ fun Program.validate(): List<Error> {
 
     }
 
-    this.specificProcess(Function::class.java) { function ->
-        val functionType = type(function)
-        var returnStatementType = ""
-        function.body.statements?.forEach { statement ->
-            if (statement is ReturnStatement) {
-                val someType = type(statement.expression)
-                if (returnStatementType.isEmpty())
-                    returnStatementType = someType
-                else if (returnStatementType != someType) {
-                    errors.add(
-                        me.team.f.ast.Error(
-                            "Function return type $returnStatementType doesn't match with declared $functionType",
-                            statement.position?.start!!
-                        )
-                    )
-                }
-            }
-        }
-
-    }
+//    this.specificProcess(Function::class.java) { function ->
+//        val functionType = type(function)
+//        var returnStatementType = ""
+//        function.body.statements?.forEach { statement ->
+//            if (statement is ReturnStatement) {
+//                val someType = type(statement.expression)
+//                if (returnStatementType.isEmpty())
+//                    returnStatementType = someType
+//                else if (returnStatementType != someType) {
+//                    errors.add(
+//                        me.team.f.ast.Error(
+//                            "Function return type $returnStatementType doesn't match with declared $functionType",
+//                            statement.position?.start!!
+//                        )
+//                    )
+//                }
+//            }
+//        }
+//
+//    }
     return errors
 }
 

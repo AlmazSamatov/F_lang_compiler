@@ -26,14 +26,14 @@ fun declarationToKotlin(it: VarDeclaration): String {
 
         return if (it.type != null) {
             val type = returnTypeToKotlin(it.type!!)
-            if (it.value is Function) {
+            if (it.value is Function || type.isEmpty()) {
                 ("var " + it.varName + " = " + exprToKotlin(it.value))
             } else {
                 ("var " + it.varName + ": " + type + " = " + exprToKotlin(it.value))
             }
         } else {
             if (it.value is Array || it.value is Map || it.value is Tuple)
-                ("var " + it.varName + ": " + returnTypeToKotlin(it.value.type()!!) + " = " + exprToKotlin(it.value))
+                ("var " + it.varName + ": " + returnTypeToKotlin(it.value.type(globalSymbolTable)!!) + " = " + exprToKotlin(it.value))
             else
                 ("var " + it.varName + " = " + exprToKotlin(it.value))
         }
