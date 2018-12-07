@@ -12,16 +12,17 @@ fun declarationToKotlin(it: VarDeclaration): String {
         used.add(it)
 
         if (it.type != null) {
-            var type = returnTypeToKotlin(it.type!!)
-            if (it.value is Array || it.value is Map || it.value is Tuple)
-                type = returnTypeToKotlin(it.value.type()!!)
+            val type = returnTypeToKotlin(it.type!!)
             if (it.value is Function) {
                 ("var " + it.varName + " = " + exprToKotlin(it.value))
             } else {
                 ("var " + it.varName + ": " + type + " = " + exprToKotlin(it.value))
             }
         } else {
-            ("var " + it.varName + " = " + exprToKotlin(it.value))
+            if (it.value is Array || it.value is Map || it.value is Tuple)
+                ("var " + it.varName + ": " + returnTypeToKotlin(it.value.type()!!) + " = " + exprToKotlin(it.value))
+            else
+                ("var " + it.varName + " = " + exprToKotlin(it.value))
         }
     } else ""
 }
@@ -42,7 +43,7 @@ fun returnTypeToKotlin(type: Type): String {
         is ArrayType -> {
             resultBuilder.append("List<${typeToKotlin(type.type)}>")
         }
-        is MapType -> resultBuilder.append("Map<${typeToKotlin(type.types[0])}, ${typeToKotlin(type.types[1])}>")
+        is MapType -> resultBuilder.append("Map<Any, Any>")
         is TupleType -> resultBuilder.append("Map<Any, Any>")
     }
 
