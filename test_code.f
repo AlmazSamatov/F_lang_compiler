@@ -1,15 +1,40 @@
-fibb is func(v: integer): integer do
-    if (v = 1) | (v = 2) then
-        return 1
-    else
-        return fibb(v-1) + fibb(v-2)
+lengthOfArray is func(arr: [integer]): integer do
+    count is 0
+
+    for i in arr loop
+        count := count + 1
     end
+
+    return count
 end;
 
-v: integer is 3;
+telephone_book is { "John Lord": 1000125, "Ian Gillan": 2200330 };
 
-f is func() do
-    print "Fibbonacci of ", v, " is ", fibb(v)
+info is (name is "John", age is 21);
+
+arr is [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+printTuple is func(t:(string,integer)) do
+     for e in t loop
+        print e, " "
+     end
+     print "\n"
 end;
 
-main is f()
+printArray is func(array: [integer]) do
+     for e in array loop
+        print e, " "
+     end
+end;
+
+main is func()
+do
+     print "Tuple elements: "
+     printTuple(info)
+     print "Array length is: ", lengthOfArray(arr), "\n"
+     print "Array elements are: "
+     printArray(arr)
+
+end;
+
+t is main()
