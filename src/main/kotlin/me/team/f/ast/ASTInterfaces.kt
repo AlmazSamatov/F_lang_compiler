@@ -9,7 +9,7 @@ import kotlin.reflect.full.primaryConstructor
 //data class Error(val message: String, val position: LineCol)
 
 var errors = LinkedList<Error>()
-
+var globalSymbolTable = HashMap<String, Node>()
 
 interface Node {
     fun validate(globalSymbolTable: HashMap<String, Node>)
@@ -95,8 +95,9 @@ data class Program(
     override fun validate(globalSymbolTable: HashMap<String, Node>) {
         declarations.forEach { it.validate(globalSymbolTable) }
     }
-    fun validate():List<Error>{
-        val globalSymbolTable = HashMap<String, Node>()
+
+//    val globalSymbolTable = HashMap<String, Node>()
+    fun validate(): List<Error> {
         validate(globalSymbolTable)
         return errors
     }
@@ -114,7 +115,7 @@ interface Expression : Node {
 
 interface Statement : Node {
     override fun validate(globalSymbolTable: HashMap<String, Node>)
-    fun type(globalSymbolTable: HashMap<String, Node>):Type{
+    fun type(globalSymbolTable: HashMap<String, Node>): Type {
         return AnyType()
     }
 }
@@ -161,7 +162,7 @@ data class VarDeclaration(
             }
             globalSymbolTable[varName] = this
         }
-        value.validate(globalSymbolTable)
+//        value.validate(globalSymbolTable)
     }
 
 
@@ -189,52 +190,54 @@ data class Call(
                 )
             )
         } else {
-            val expression = globalSymbolTable[secondary.name] as Function
+            val expression = globalSymbolTable[secondary.name]
 
-
-                if (expressions.size != expression.parameters.size) {
-                    errors.add(
-                        Error(
-                            "Wrong number of parameters when call function ${secondary.name}",
-                            secondary.position?.start!!
-                        )
+            if (expression is Function)
+            if (expressions.size != expression.parameters.size) {
+                errors.add(
+                    Error(
+                        "Wrong number of parameters when call function ${secondary.name}",
+                        secondary.position?.start!!
                     )
-                } else {
-                    for (i in 0..expression.parameters.lastIndex) {
+                )
+            } else {
+                for (i in 0..expression.parameters.lastIndex) {
 //                            val l = expression.parameters[i].type
-                        if (expression.parameters[i].type(globalSymbolTable) != expressions[i].type(globalSymbolTable)) {
-                            val function = expressions[i]
-                            val nameOfVarInCall = when (function) {
-                                is VarReference -> function.name
-                                is BoolLit -> function.value
-                                is StrLit -> function.value
-                                is RealLit -> function.value
-                                is RatLit -> function.value
-                                is CompLit -> function.value
-                                is IntLit -> function.value
-                                else -> function.toString()
-                            }
-                            errors.add(
-                                Error(
-                                    "Non-compatible type of parameters. Parameter in call with typeName $nameOfVarInCall of type ${
-                                    function.type(globalSymbolTable)
-                                    } is " +
-                                            "not same as in function declaration parameter with typeName ${expression.parameters[i].parName} of type ${
-                                            expression.parameters[i].type(globalSymbolTable)
-                                            }",
-                                    expressions[i].position?.start!!
-                                )
-                            )
+                    if (expression.parameters[i].type(globalSymbolTable) != expressions[i].type(globalSymbolTable)) {
+                        val function = expressions[i]
+                        val nameOfVarInCall = when (function) {
+                            is VarReference -> function.name
+                            is BoolLit -> function.value
+                            is StrLit -> function.value
+                            is RealLit -> function.value
+                            is RatLit -> function.value
+                            is CompLit -> function.value
+                            is IntLit -> function.value
+                            else -> function.toString()
                         }
+                        errors.add(
+                            Error(
+                                "Non-compatible type of parameters. Parameter in call with typeName $nameOfVarInCall of type ${
+                                function.type(globalSymbolTable)
+                                } is " +
+                                        "not same as in function declaration parameter with typeName ${expression.parameters[i].parName} of type ${
+                                        expression.parameters[i].type(globalSymbolTable)
+                                        }",
+                                expressions[i].position?.start!!
+                            )
+                        )
                     }
                 }
-
             }
+
         }
+    }
 
 
     override fun type(globalSymbolTable: HashMap<String, Node>): Type {
-        return secondary.type(globalSymbolTable)
+        secondary as VarReference
+        val callObject = globalSymbolTable[secondary.name] as VarDeclaration
+        return (callObject.type as FunctionType).types.last()
     }
 }
 
@@ -300,7 +303,7 @@ data class Conditional(
         val thenType = thenExpr.type(globalSymbolTable)
         val elseType = elseExpr.type(globalSymbolTable)
 
-        return if(thenType.typeName() == elseType.typeName()) thenType else AnyType()
+        return if (thenType.typeName() == elseType.typeName()) thenType else AnyType()
     }
 }
 
@@ -390,13 +393,24 @@ data class VarReference(
     override fun validate(globalSymbolTable: HashMap<String, Node>) {
         if (!globalSymbolTable.containsKey(name)) {
             errors.add(Error("There is no variable named '$name'", position!!.start))
-        } else if (isBefore((globalSymbolTable[name] as VarDeclaration))) {
-            errors.add(
-                Error(
-                    "You cannot refer to variable '$name' before its declaration",
-                    position!!.start
+        } else {
+            val node = globalSymbolTable[name]
+            if (node is VarDeclaration) {
+                if(isBefore(node))
+                errors.add(
+                    Error(
+                        "You cannot refer to variable '$name' before its declaration",
+                        position!!.start
+                    )
                 )
-            )
+            } else if (isBefore(node as Parameter)){
+                errors.add(
+                    Error(
+                        "You cannot refer to variable '$name' before its declaration",
+                        position!!.start
+                    )
+                )
+            }
         }
     }
 
@@ -1182,7 +1196,7 @@ data class FunctionType(
     }
 
     override fun toString(): String {
-        val paramList = types.subList(0, types.size - 2)
+        val paramList = types.subList(0, types.size - 1)
         var params = ""
         val returnT = types.last()
         paramList.forEach { params += it.typeName() + ", " }
@@ -1352,7 +1366,7 @@ data class TupleType(
         types.forEach { type ->
             tupleType += type.toString() + ","
         }
-        return "tuple(${tupleType.substring(0, tupleType.length - 2)})"
+        return "tuple(${tupleType.substring(0, tupleType.length - 1)})"
     }
 }
 
