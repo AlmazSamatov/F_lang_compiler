@@ -1,16 +1,19 @@
-swap is func(l: integer, r: integer): integer do
-    tmp is l
-    l := r
-    r := tmp
-    return 0
+array is [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+max: string is array[0];
+
+find_max is func(arr: [integer]) : integer do
+    for i in arr loop
+        if i > max then
+            max := i
+        end
+    end
+    return max
 end;
 
 main is func(): integer do
-    k is 5
-    m is 7
-    swap(k, m)
-    print k, m
-    return 0
+    print "Max is ", find_max(array), "\n"
+    return "hello"
 end;
 
 res is main()
