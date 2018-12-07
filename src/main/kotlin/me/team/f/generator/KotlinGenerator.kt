@@ -32,8 +32,11 @@ fun declarationToKotlin(it: VarDeclaration): String {
                 ("var " + it.varName + ": " + type + " = " + exprToKotlin(it.value))
             }
         } else {
-            if (it.value is Array || it.value is Map || it.value is Tuple)
-                ("var " + it.varName + ": " + returnTypeToKotlin(it.value.type(globalSymbolTable)!!) + " = " + exprToKotlin(it.value))
+            if (it.value is Array ) {
+                ("var " + it.varName + ": List<" + returnTypeToKotlin(it.value.type(globalSymbolTable)!!) + "> = " + exprToKotlin(it.value))
+            } else if (it.value is Map || it.value is Tuple) {
+                ("var " + it.varName + ": Map<Any, Any> = " + exprToKotlin(it.value))
+            }
             else
                 ("var " + it.varName + " = " + exprToKotlin(it.value))
         }
